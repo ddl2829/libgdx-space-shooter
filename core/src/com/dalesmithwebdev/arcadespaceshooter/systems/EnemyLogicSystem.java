@@ -147,11 +147,11 @@ public class EnemyLogicSystem extends EntitySystem {
             float movement = pc.position.x - playerPosition.position.x;
             if (movement > 0)
             {
-                sc.motion.x = -.5f;
+                sc.motion.x = (float)-ec.movementSpeed;
             }
             else
             {
-                sc.motion.x = .5f;
+                sc.motion.x = (float)ec.movementSpeed;
             }
         }
     }

@@ -139,7 +139,8 @@ public class LevelSystem extends EntitySystem {
             double enemyAmount = 0.25 + (0.05 * levelNumber);
             if(rand.nextInt(100) < enemyAmount) {
                 Entity enemy = new Entity();
-                enemy.add(new EnemyComponent(this.randomRange(2000, 5000), rand.nextDouble() * 10000));
+                double[] speeds = new double[] { 0.5, 0.5, 0.5, 0.5, 0.8, 0.8, 0.8, 0.9, 1, 1.1 };
+                enemy.add(new EnemyComponent(this.randomRange(2000, 5000), rand.nextDouble() * 10000, speeds[rand.nextInt(speeds.length)]));
                 enemy.add(new RenderComponent(ArcadeSpaceShooter.enemyShip));
                 enemy.add(new PositionComponent(new Vector2(this.randomRange(50, (int)ArcadeSpaceShooter.screenRect.width - 50), l)));
                 enemy.add(new SpeedComponent(new Vector2(0, -1)));
@@ -150,7 +151,7 @@ public class LevelSystem extends EntitySystem {
         }
 
         Entity boss = new Entity();
-        boss.add(new EnemyComponent(Math.max(1000 - (20 * levelNumber), 100), 0));
+        boss.add(new EnemyComponent(Math.max(1000 - (20 * levelNumber), 100), 0, 0.5 + (0.1 * levelNumber)));
         boss.add(new RenderComponent(ArcadeSpaceShooter.bossTexture));
         boss.add(new PositionComponent(new Vector2(ArcadeSpaceShooter.screenRect.width / 2, levelLength)));
         boss.add(new SpeedComponent(new Vector2(0, -1)));

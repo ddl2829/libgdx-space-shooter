@@ -26,7 +26,7 @@ public class BackgroundElement {
         this.screenBounds = screenBounds;
         Random rand = new Random();
         position = new Vector2(rand.nextInt((int)screenBounds.width), rand.nextInt(500) + (int)ArcadeSpaceShooter.screenRect.height);
-        motion = new Vector2(0, -3);
+        motion = new Vector2(0, -rand.nextInt(6) - 3);
         //motion = new Vector2(0, 0);
         //motion.y = -3;
         textureID += 1;
@@ -39,7 +39,7 @@ public class BackgroundElement {
 
     public void update(float gameTime)
     {
-        position.add(motion.cpy().setLength(gameTime));
+        position.add(motion);
         if (position.y < -100)
         {
             belowScreen = true;

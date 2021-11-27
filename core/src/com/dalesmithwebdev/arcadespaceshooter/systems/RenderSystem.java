@@ -53,6 +53,11 @@ public class RenderSystem extends EntitySystem {
             ArcadeSpaceShooter.bitmapFont.setColor(Color.WHITE);
             ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, scoreText, ArcadeSpaceShooter.screenRect.width - ArcadeSpaceShooter.measureText(scoreText) - 10, ArcadeSpaceShooter.screenRect.height - 50);
 
+            // debug
+            String killcount = "" +ArcadeSpaceShooter.kills;
+            ArcadeSpaceShooter.bitmapFont.setColor(Color.WHITE);
+            ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, killcount, ArcadeSpaceShooter.screenRect.width - ArcadeSpaceShooter.measureText(scoreText) - 10, ArcadeSpaceShooter.screenRect.height - 80);
+
             ArcadeSpaceShooter.spriteBatch.setColor(Color.BLACK);
             ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 8, livesY - 13, 150, 12);
             ArcadeSpaceShooter.spriteBatch.setColor(Color.WHITE);

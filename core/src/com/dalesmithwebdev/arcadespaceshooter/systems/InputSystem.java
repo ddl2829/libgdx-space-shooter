@@ -141,7 +141,7 @@ public class InputSystem extends EntitySystem {
             pc.laserLevel = 2;
             upgradedLasers = true;
         }
-        if (ArcadeSpaceShooter.kills > 60 && pc.laserLevel == 2)
+        if (ArcadeSpaceShooter.kills > 100 && pc.laserLevel == 2)
         {
             pc.laserLevel = 3;
             upgradedLasers = true;
@@ -154,7 +154,7 @@ public class InputSystem extends EntitySystem {
             ArcadeSpaceShooter.engine.addEntity(e);
         }
 
-        if(Gdx.input.isKeyPressed(Input.Keys.SPACE) && !ComponentMap.shieldedComponentComponentMapper.has(player))
+        if(Gdx.input.isKeyPressed(Input.Keys.SPACE))
         {
             Shoot(player);
         }
@@ -189,7 +189,9 @@ public class InputSystem extends EntitySystem {
         PlayerComponent pc = ComponentMap.playerComponentComponentMapper.get(player);//(PlayerComponent)player.components[typeof(PlayerComponent)];
         PositionComponent posc = ComponentMap.positionComponentComponentMapper.get(player);//(PositionComponent)player.components[typeof(PositionComponent)];
 
-        if (pc.lastFireTime > 100)
+        int fireTime = pc.laserLevel == 0 ? 150 : pc.laserLevel == 1 ? 100 : 80;
+
+        if (pc.lastFireTime > fireTime)
         {
             Texture laser = ArcadeSpaceShooter.laserRed;
             if (pc.laserLevel >= 1)
