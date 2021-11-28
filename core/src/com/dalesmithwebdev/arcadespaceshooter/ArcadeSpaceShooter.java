@@ -9,11 +9,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Rectangle;
 import com.dalesmithwebdev.arcadespaceshooter.screens.BackgroundScreen;
 import com.dalesmithwebdev.arcadespaceshooter.screens.BaseScreen;
 import com.dalesmithwebdev.arcadespaceshooter.screens.StartScreen;
 import com.dalesmithwebdev.arcadespaceshooter.systems.*;
+import com.dalesmithwebdev.arcadespaceshooter.utility.ComponentMap;
 
 import java.util.ArrayList;
 
@@ -63,6 +65,12 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 	public static Music backgroundMusic;
 
 	public static ArrayList<BaseScreen> screens;
+	public String empVertexShader;
+	public String empFragmentShader;
+	public static ShaderProgram empShader;
+	public static boolean empActive = false;
+	public static int empElapsedTime = 0;
+	public static int totalTime = 0;
 	
 	@Override
 	public void create () {
@@ -148,6 +156,10 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 
 		fireEffect = new Texture("effects/fire03.png");
 
+		empFragmentShader = Gdx.files.internal("shaders/emp/fragment.glsl").readString();
+		empVertexShader = Gdx.files.internal("shaders/emp/vertex.glsl").readString();
+		empShader = new ShaderProgram(empVertexShader, empFragmentShader);
+
 		//meteorBig = new Texture(Gdx.files.internal("meteors/meteorBig.png"));
 		//meteorSmall = new Texture(Gdx.files.internal("meteors/meteorSmall.png"));
 
@@ -168,7 +180,22 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 	@Override
 	public void render () {
 		float dt = Gdx.graphics.getDeltaTime() * 1000;
+		totalTime += dt;
+		if(empActive) {
+			empElapsedTime += dt;
+			if(empElapsedTime >= 20000) {
+				empActive = false;
+			}
+		}
 		spriteBatch.begin();
+
+		ArcadeSpaceShooter.spriteBatch.setShader(null);
+
+		if(ArcadeSpaceShooter.empActive) {
+			ArcadeSpaceShooter.empShader.setUniformf("iTime", totalTime);
+			ArcadeSpaceShooter.spriteBatch.setShader(ArcadeSpaceShooter.empShader);
+		}
+
 		spriteBatch.draw(background, 0, 0, screenRect.width, screenRect.height);
 		for(int i = 0; i < screens.size(); i++)
 		{

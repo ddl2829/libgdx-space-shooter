@@ -13,21 +13,22 @@ public class GameScreen extends BaseScreen {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.M))
         {
-            //MediaPlayer.Volume = 0.0f;
+            if(ArcadeSpaceShooter.backgroundMusic.getVolume() == 0.0f) {
+                ArcadeSpaceShooter.backgroundMusic.setVolume(1.0f);
+            } else {
+                ArcadeSpaceShooter.backgroundMusic.setVolume(0.0f);
+            }
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
         {
-            //MediaPlayer.Pause();
             ArcadeSpaceShooter.backgroundMusic.pause();
             ArcadeSpaceShooter.PushScreen(new PauseScreen());
             return;
         }
         ArcadeSpaceShooter.engine.update(gameTime);
-        //ArcadeSpaceShooter.instance.world.Draw(spriteBatch, spriteFont);
     }
 
     public void draw(float gameTime) {
-        //ArcadeSpaceShooter.engine.update(gameTime);
     }
 }

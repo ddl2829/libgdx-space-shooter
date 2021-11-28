@@ -247,7 +247,7 @@ public class DamageSystem extends EntitySystem {
                                 e.add(new NotificationComponent("+" + 1000, 200, false));
                                 this.getEngine().addEntity(e);
                             } else {
-                                player.add(new HasEmpComponent());
+                                player.add(new HasEmpComponent(10000));
                                 Timer.schedule(new Timer.Task() {
                                     @Override
                                     public void run() {
@@ -297,7 +297,7 @@ public class DamageSystem extends EntitySystem {
                             this.getEngine().addEntity(e);
 
                             // random chance for a upgrade drop
-                            if(Rand.nextInt(100) < 5) {
+                            if(Rand.nextInt(100) < 8) {
                                 ImmutableArray<Entity> players = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
                                 Entity player = players.first();
 

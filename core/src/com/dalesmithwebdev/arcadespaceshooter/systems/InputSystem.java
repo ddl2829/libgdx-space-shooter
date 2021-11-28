@@ -219,7 +219,9 @@ public class InputSystem extends EntitySystem {
     private void FireEmp(Entity player) {
         HasEmpComponent hasEmpComponent = ComponentMap.hasEmpComponentComponentMapper.get(player);
         if(hasEmpComponent.timeSinceLastShot > hasEmpComponent.shotInterval) {
-
+            hasEmpComponent.timeSinceLastShot = 0;
+            ArcadeSpaceShooter.empActive = true;
+            System.out.println("Emp Active");
         }
     }
 
