@@ -1,41 +1,30 @@
 package com.dalesmithwebdev.arcadespaceshooter.screens;
 
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
-import com.dalesmithwebdev.arcadespaceshooter.entities.BackgroundElement;
+import com.dalesmithwebdev.arcadespaceshooter.components.BackgroundObjectComponent;
+import com.dalesmithwebdev.arcadespaceshooter.prefabs.BackgroundElement;
 
 import java.util.ArrayList;
 
 public class BackgroundScreen extends BaseScreen {
-    ArrayList<BackgroundElement> backgroundObjects;
 
     public BackgroundScreen()
     {
-        backgroundObjects = new ArrayList<BackgroundElement>();
     }
 
     public void update(float gameTime)
     {
+        ImmutableArray<Entity> backgroundObjects = ArcadeSpaceShooter.engine.getEntitiesFor(Family.all(BackgroundObjectComponent.class).get());
+
         if (backgroundObjects.size() < 15)
         {
-            backgroundObjects.add(new BackgroundElement(ArcadeSpaceShooter.backgroundElements, ArcadeSpaceShooter.screenRect));
-        }
-        //Update background objects
-        for (int i = backgroundObjects.size() - 1; i >= 0; i--)
-        {
-            backgroundObjects.get(i).update(gameTime);
-            if (backgroundObjects.get(i).belowScreen)
-            {
-                backgroundObjects.remove(i);
-            }
+            ArcadeSpaceShooter.engine.addEntity(new BackgroundElement());
         }
     }
 
     public void draw(float gameTime) {
-        ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.background, 0, 0, ArcadeSpaceShooter.screenRect.width, ArcadeSpaceShooter.screenRect.height);
-        //Update background objects
-        for (int i = backgroundObjects.size() - 1; i >= 0; i--)
-        {
-            backgroundObjects.get(i).draw(ArcadeSpaceShooter.spriteBatch);
-        }
     }
 }

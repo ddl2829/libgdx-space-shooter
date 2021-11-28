@@ -134,7 +134,9 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		float dt = Gdx.graphics.getDeltaTime() * 1000;
 
+
 		spriteBatch.begin();
+		spriteBatch.draw(background, 0, 0, screenRect.width, screenRect.height);
 		for(int i = 0; i < screens.size(); i++)
 		{
 			BaseScreen screen = screens.get(i);

@@ -321,7 +321,7 @@ public class DamageSystem extends EntitySystem {
                                 {
                                     Entity newMeteor = new Entity();
                                     newMeteor.add(new MeteorComponent(false));
-                                    newMeteor.add(new TakesDamageComponent(5, LASER));
+                                    newMeteor.add(new TakesDamageComponent(2, LASER));
                                     newMeteor.add(new DealsDamageComponent(5, METEOR));
                                     newMeteor.add(new RenderComponent(ArcadeSpaceShooter.meteorSmall));
                                     newMeteor.add(new SpeedComponent(this.randomInRange(-3, 3), this.randomInRange(2, 5) * -1));

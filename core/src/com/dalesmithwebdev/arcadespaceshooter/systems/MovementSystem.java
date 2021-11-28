@@ -2,6 +2,9 @@ package com.dalesmithwebdev.arcadespaceshooter.systems;
 
 import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Vector2;
 import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
 import com.dalesmithwebdev.arcadespaceshooter.components.PositionComponent;
 import com.dalesmithwebdev.arcadespaceshooter.components.RenderComponent;
@@ -18,7 +21,13 @@ public class MovementSystem extends EntitySystem {
         {
             PositionComponent pc = ComponentMap.positionComponentComponentMapper.get(moveable);
             SpeedComponent sc = ComponentMap.speedComponentComponentMapper.get(moveable);
-            pc.position = pc.position.add(sc.motion);
+            Vector2 move = sc.motion.cpy();
+            if(Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT)) {
+                if(ComponentMap.meteorComponentComponentMapper.has(moveable) || ComponentMap.enemyComponentComponentMapper.has(moveable)) {
+                    move.y = move.y * 3;
+                }
+            }
+            pc.position = pc.position.add(move);
 
             if (ComponentMap.playerComponentComponentMapper.has(moveable))
             {

@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
@@ -53,9 +54,10 @@ public class RenderSystem extends EntitySystem {
             ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, scoreText, ArcadeSpaceShooter.screenRect.width - ArcadeSpaceShooter.measureText(scoreText) - 10, ArcadeSpaceShooter.screenRect.height - 50);
 
             // debug
-//            String killcount = "" +ArcadeSpaceShooter.kills;
-//            ArcadeSpaceShooter.bitmapFont.setColor(Color.WHITE);
-//            ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, killcount, ArcadeSpaceShooter.screenRect.width - ArcadeSpaceShooter.measureText(scoreText) - 10, ArcadeSpaceShooter.screenRect.height - 80);
+            int frames = Gdx.graphics.getFramesPerSecond();
+            String fps = "" +frames;
+            ArcadeSpaceShooter.bitmapFont.setColor(Color.WHITE);
+            ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, fps, ArcadeSpaceShooter.screenRect.width - ArcadeSpaceShooter.measureText(scoreText) - 10, ArcadeSpaceShooter.screenRect.height - 80);
 
             ArcadeSpaceShooter.spriteBatch.setColor(Color.BLACK);
             ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 8, livesY - 13, 150, 12);

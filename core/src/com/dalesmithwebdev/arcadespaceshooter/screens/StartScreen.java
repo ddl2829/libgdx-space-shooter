@@ -36,9 +36,9 @@ public class StartScreen extends BaseScreen {
 
     public void draw(float gameTime)
     {
-        glyphLayout.setText(ArcadeSpaceShooter.bitmapFont, "Simple Space Shooter");
+        glyphLayout.setText(ArcadeSpaceShooter.bitmapFont, "Arcade Space Shooter");
         ArcadeSpaceShooter.bitmapFont.setColor(Color.WHITE);
-        ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, "Simple Space Shooter", ArcadeSpaceShooter.screenRect.width / 2 - glyphLayout.width / 2, ArcadeSpaceShooter.screenRect.height / 4);
+        ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, "Arcade Space Shooter", ArcadeSpaceShooter.screenRect.width / 2 - glyphLayout.width / 2, ArcadeSpaceShooter.screenRect.height / 4);
 
         Color flashColor = flashing ? Color.WHITE : Color.YELLOW;
 
