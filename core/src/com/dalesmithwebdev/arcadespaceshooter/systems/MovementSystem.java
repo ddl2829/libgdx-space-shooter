@@ -12,7 +12,7 @@ public class MovementSystem extends EntitySystem {
     public MovementSystem() {}
 
     public void update(float deltaTime) {
-        ImmutableArray<Entity> entities = ArcadeSpaceShooter.engine.getEntitiesFor(Family.all(PositionComponent.class, SpeedComponent.class).get());
+        ImmutableArray<Entity> entities = this.getEngine().getEntitiesFor(Family.all(PositionComponent.class, SpeedComponent.class).get());
 
         for (Entity moveable : entities)
         {
@@ -46,14 +46,14 @@ public class MovementSystem extends EntitySystem {
                 //Despawn lasers shortly after they leave the screen
                 if(pc.position.y < -10 || pc.position.y > ArcadeSpaceShooter.screenRect.height + 10 || pc.position.x < 0 || pc.position.x > ArcadeSpaceShooter.screenRect.width)
                 {
-                    ArcadeSpaceShooter.engine.removeEntity(moveable);
+                    this.getEngine().removeEntity(moveable);
                 }
             }
 
             //Despawn anything going off the bottom of the screen
             if(pc.position.y < -10)
             {
-                ArcadeSpaceShooter.engine.removeEntity(moveable);
+                this.getEngine().removeEntity(moveable);
             }
         }
     }

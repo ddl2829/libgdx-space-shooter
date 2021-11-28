@@ -11,7 +11,7 @@ import com.dalesmithwebdev.arcadespaceshooter.utility.ComponentMap;
 public class ExplosionSystem extends EntitySystem {
     public void update(float gametime)
     {
-        ImmutableArray<Entity> explosions = ArcadeSpaceShooter.engine.getEntitiesFor(Family.all(ExplosionComponent.class).get());
+        ImmutableArray<Entity> explosions = this.getEngine().getEntitiesFor(Family.all(ExplosionComponent.class).get());
         for(Entity explosion : explosions)
         {
             //ExplosionComponent ec = (ExplosionComponent)explosion.components[typeof(ExplosionComponent)];
@@ -19,7 +19,7 @@ public class ExplosionSystem extends EntitySystem {
             ec.elapsedTime += gametime;
             if (ec.elapsedTime > ec.maxLife)
             {
-                ArcadeSpaceShooter.engine.removeEntity(explosion);
+                this.getEngine().removeEntity(explosion);
             }
         }
     }

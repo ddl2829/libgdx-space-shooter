@@ -9,13 +9,11 @@ import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
 import com.dalesmithwebdev.arcadespaceshooter.components.*;
 import com.dalesmithwebdev.arcadespaceshooter.utility.ComponentMap;
 
-import java.util.ArrayList;
-
 public class EnemyLogicSystem extends EntitySystem {
     public void update(float gameTime)
     {
-        ImmutableArray<Entity> players = ArcadeSpaceShooter.engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
-        ImmutableArray<Entity> enemies = ArcadeSpaceShooter.engine.getEntitiesFor(Family.all(EnemyComponent.class, PositionComponent.class, SpeedComponent.class).get());
+        ImmutableArray<Entity> players = this.getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
+        ImmutableArray<Entity> enemies = this.getEngine().getEntitiesFor(Family.all(EnemyComponent.class, PositionComponent.class, SpeedComponent.class).get());
         for(Entity enemy : enemies)
         {
             EnemyComponent ec = ComponentMap.enemyComponentComponentMapper.get(enemy);//(EnemyComponent)enemy.components[typeof(EnemyComponent)];
@@ -59,7 +57,7 @@ public class EnemyLogicSystem extends EntitySystem {
                 continue;
             }
 
-            ec.timeSinceLastShot += gameTime;//.ElapsedGameTime.Milliseconds;
+            ec.timeSinceLastShot += gameTime;
             if (ec.timeSinceLastShot >= ec.shotInterval)
             {
                 ec.timeSinceLastShot = 0;
@@ -71,11 +69,11 @@ public class EnemyLogicSystem extends EntitySystem {
                     if(bossEnemyComponent.laserStrength == 1) {
                         Entity newLaser = new Entity();
                         newLaser.add(new RenderComponent(ArcadeSpaceShooter.laserRed));
-                        newLaser.add(new LaserComponent(ArcadeSpaceShooter.explosionTextureGreen));
+                        newLaser.add(new LaserComponent(ArcadeSpaceShooter.explosionTexture));
                         newLaser.add(new SpeedComponent(new Vector2(0, -20)));
                         newLaser.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f, pc.position.y - 30)));
                         newLaser.add(new DealsDamageComponent(10, DamageSystem.ENEMY_LASER));
-                        ArcadeSpaceShooter.engine.addEntity(newLaser);
+                        this.getEngine().addEntity(newLaser);
                     } else if(bossEnemyComponent.laserStrength == 2) {
                         Entity newLaser = new Entity();
                         newLaser.add(new RenderComponent(ArcadeSpaceShooter.laserGreen));
@@ -83,7 +81,7 @@ public class EnemyLogicSystem extends EntitySystem {
                         newLaser.add(new SpeedComponent(new Vector2(0, -20)));
                         newLaser.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f, pc.position.y - 30)));
                         newLaser.add(new DealsDamageComponent(20, DamageSystem.ENEMY_LASER));
-                        ArcadeSpaceShooter.engine.addEntity(newLaser);
+                        this.getEngine().addEntity(newLaser);
                     } else if(bossEnemyComponent.laserStrength == 3) {
                         Entity newLaser = new Entity();
                         newLaser.add(new RenderComponent(ArcadeSpaceShooter.laserGreen));
@@ -91,7 +89,7 @@ public class EnemyLogicSystem extends EntitySystem {
                         newLaser.add(new SpeedComponent(new Vector2(0, -20)));
                         newLaser.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f - 10, pc.position.y - 30)));
                         newLaser.add(new DealsDamageComponent(20, DamageSystem.ENEMY_LASER));
-                        ArcadeSpaceShooter.engine.addEntity(newLaser);
+                        this.getEngine().addEntity(newLaser);
 
                         Entity newLaser2 = new Entity();
                         newLaser2.add(new RenderComponent(ArcadeSpaceShooter.laserGreen));
@@ -99,7 +97,7 @@ public class EnemyLogicSystem extends EntitySystem {
                         newLaser2.add(new SpeedComponent(new Vector2(0, -20)));
                         newLaser2.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f + 10, pc.position.y - 30)));
                         newLaser2.add(new DealsDamageComponent(20, DamageSystem.ENEMY_LASER));
-                        ArcadeSpaceShooter.engine.addEntity(newLaser2);
+                        this.getEngine().addEntity(newLaser2);
                     } else if (bossEnemyComponent.laserStrength == 4) {
                         Entity newLaser = new Entity();
                         newLaser.add(new RenderComponent(ArcadeSpaceShooter.laserGreen));
@@ -107,7 +105,7 @@ public class EnemyLogicSystem extends EntitySystem {
                         newLaser.add(new SpeedComponent(new Vector2(0, -20)));
                         newLaser.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f - 10, pc.position.y - 30)));
                         newLaser.add(new DealsDamageComponent(20, DamageSystem.ENEMY_LASER));
-                        ArcadeSpaceShooter.engine.addEntity(newLaser);
+                        this.getEngine().addEntity(newLaser);
 
                         Entity newLaser2 = new Entity();
                         newLaser2.add(new RenderComponent(ArcadeSpaceShooter.laserGreen));
@@ -115,7 +113,7 @@ public class EnemyLogicSystem extends EntitySystem {
                         newLaser2.add(new SpeedComponent(new Vector2(0, -20)));
                         newLaser2.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f + 10, pc.position.y - 30)));
                         newLaser2.add(new DealsDamageComponent(20, DamageSystem.ENEMY_LASER));
-                        ArcadeSpaceShooter.engine.addEntity(newLaser2);
+                        this.getEngine().addEntity(newLaser2);
 
                         Entity newLaser3 = new Entity();
                         newLaser3.add(new RenderComponent(ArcadeSpaceShooter.laserGreen));
@@ -123,7 +121,7 @@ public class EnemyLogicSystem extends EntitySystem {
                         newLaser3.add(new SpeedComponent(new Vector2(10, -20)));
                         newLaser3.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f - 10, pc.position.y - 30)));
                         newLaser3.add(new DealsDamageComponent(20, DamageSystem.ENEMY_LASER));
-                        ArcadeSpaceShooter.engine.addEntity(newLaser3);
+                        this.getEngine().addEntity(newLaser3);
 
                         Entity newLaser4 = new Entity();
                         newLaser4.add(new RenderComponent(ArcadeSpaceShooter.laserGreen));
@@ -131,7 +129,7 @@ public class EnemyLogicSystem extends EntitySystem {
                         newLaser4.add(new SpeedComponent(new Vector2(-10, -20)));
                         newLaser4.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f + 10, pc.position.y - 30)));
                         newLaser4.add(new DealsDamageComponent(20, DamageSystem.ENEMY_LASER));
-                        ArcadeSpaceShooter.engine.addEntity(newLaser4);
+                        this.getEngine().addEntity(newLaser4);
                     }
                 } else {
                     Entity newLaser = new Entity();
@@ -140,7 +138,7 @@ public class EnemyLogicSystem extends EntitySystem {
                     newLaser.add(new SpeedComponent(new Vector2(0, -20)));
                     newLaser.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f, pc.position.y - 30)));
                     newLaser.add(new DealsDamageComponent(10, DamageSystem.ENEMY_LASER));
-                    ArcadeSpaceShooter.engine.addEntity(newLaser);
+                    this.getEngine().addEntity(newLaser);
                 }
             }
 

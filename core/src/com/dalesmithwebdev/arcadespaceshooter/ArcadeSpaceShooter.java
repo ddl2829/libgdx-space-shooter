@@ -2,7 +2,6 @@ package com.dalesmithwebdev.arcadespaceshooter;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
@@ -24,6 +23,35 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 	public static SpriteBatch spriteBatch;
 	public static BitmapFont bitmapFont;
 	public static GlyphLayout glyphLayout;
+	public static int kills = 0;
+	public static double playerScore = 0;
+
+	public static Texture playerShield;
+	public static Texture playerLivesGraphic;
+
+	public static Texture background;
+	public static ArrayList<Texture> backgroundElements;
+
+	public static Texture blank;
+
+	public static Texture enemyShip;
+	public static Texture bossTexture;
+
+	public static Texture laserRed;
+	public static Texture laserGreen;
+
+	public static ArrayList<Texture> shipTextures;
+
+	public static Texture meteorBig;
+	public static Texture meteorSmall;
+
+	//Explosions for laser-meteor collisions
+	public static Texture explosionTexture;
+	public static Texture explosionTextureGreen;
+
+	public static Music backgroundMusic;
+
+	public static ArrayList<BaseScreen> screens;
 	
 	@Override
 	public void create () {
@@ -45,45 +73,39 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 		engine.addSystem(new LevelSystem());
 
 		//Spritefont for scores & notifications
-		//scoreFont = Content.Load<SpriteFont>("score");
 		spriteBatch = new SpriteBatch();
 
 		//Purple background
-		background = new Texture(Gdx.files.internal("backgroundColor.png"));
-		backgroundElements.add(new Texture(Gdx.files.internal("speedLine.png")));
-		backgroundElements.add(new Texture(Gdx.files.internal("starBig.png")));
-		backgroundElements.add(new Texture(Gdx.files.internal("starSmall.png")));
-		blank = new Texture(Gdx.files.internal("blank.png"));
+		background = new Texture(Gdx.files.internal("background/backgroundColor.png"));
+		backgroundElements.add(new Texture(Gdx.files.internal("background/speedLine.png")));
+		backgroundElements.add(new Texture(Gdx.files.internal("background/starBig.png")));
+		backgroundElements.add(new Texture(Gdx.files.internal("background/starSmall.png")));
+		blank = new Texture(Gdx.files.internal("ui/blank.png"));
 
-		enemyShip = new Texture(Gdx.files.internal("enemyShip.png"));
-		bossTexture = new Texture(Gdx.files.internal("bossEnemy.png"));
+		enemyShip = new Texture(Gdx.files.internal("ships-enemies/enemyShip.png"));
+		bossTexture = new Texture(Gdx.files.internal("ships-enemies/bossEnemy.png"));
 
-		backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("loop-transit.mp3"));
+		backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/loop-transit.mp3"));
 
 		//Ship textures
 		shipTextures = new ArrayList<Texture>();
-		shipTextures.add(new Texture(Gdx.files.internal("player.png")));
-		shipTextures.add(new Texture(Gdx.files.internal("playerleft.png")));
-		shipTextures.add(new Texture(Gdx.files.internal("playerright.png")));
-		playerLivesGraphic = new Texture(Gdx.files.internal("life.png"));
-		playerShield = new Texture(Gdx.files.internal("shield.png"));
+		shipTextures.add(new Texture(Gdx.files.internal("ships-player/player.png")));
+		shipTextures.add(new Texture(Gdx.files.internal("ships-player/playerleft.png")));
+		shipTextures.add(new Texture(Gdx.files.internal("ships-player/playerright.png")));
+		playerLivesGraphic = new Texture(Gdx.files.internal("ui/life.png"));
+		playerShield = new Texture(Gdx.files.internal("power-ups/shield.png"));
 
 		//Lasers
-		laserRed = new Texture(Gdx.files.internal("laserRed.png"));
-		laserGreen = new Texture(Gdx.files.internal("laserGreen.png"));
+		laserRed = new Texture(Gdx.files.internal("lasers/laserRed.png"));
+		laserGreen = new Texture(Gdx.files.internal("lasers/laserGreen.png"));
 
 		//Meteors
-		meteorBig = new Texture(Gdx.files.internal("meteorBig.png"));
-		meteorSmall = new Texture(Gdx.files.internal("meteorSmall.png"));
+		meteorBig = new Texture(Gdx.files.internal("meteors/meteorBig.png"));
+		meteorSmall = new Texture(Gdx.files.internal("meteors/meteorSmall.png"));
 
 		//Explosions
-		explosionTexture = new Texture(Gdx.files.internal("laserRedShot.png"));
-		explosionTextureGreen = new Texture(Gdx.files.internal("laserGreenShot.png"));
-
-//		MediaPlayer.IsRepeating = true;
-//		MediaPlayer.Volume = .0f;
-//
-//		MediaPlayer.Play(backgroundMusic);
+		explosionTexture = new Texture(Gdx.files.internal("lasers/laserRedShot.png"));
+		explosionTextureGreen = new Texture(Gdx.files.internal("lasers/laserGreenShot.png"));
 
 		PushScreen(new BackgroundScreen());
 		PushScreen(new StartScreen());
@@ -124,37 +146,6 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 		spriteBatch.dispose();
 		bitmapFont.dispose();
 	}
-
-	public static int kills = 0;
-	public static double playerScore = 0;
-
-	public static Texture playerShield;
-	public static Texture playerLivesGraphic;
-
-	public static Texture background;
-	public static ArrayList<Texture> backgroundElements;
-
-	public static Texture blank;
-
-	public static Texture enemyShip;
-	public static Texture bossTexture;
-
-	public static Texture laserRed;
-	public static Texture laserGreen;
-
-	public static ArrayList<Texture> shipTextures;
-
-	public static Texture meteorBig;
-	public static Texture meteorSmall;
-
-	//Explosions for laser-meteor collisions
-	public static Texture explosionTexture;
-	public static Texture explosionTextureGreen;
-
-	public static Music backgroundMusic;
-
-	public static ArrayList<BaseScreen> screens;
-
 
 	public static void PushScreen(BaseScreen screen)
 	{

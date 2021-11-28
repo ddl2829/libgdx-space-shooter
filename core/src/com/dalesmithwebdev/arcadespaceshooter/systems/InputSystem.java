@@ -10,29 +10,19 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
 import com.dalesmithwebdev.arcadespaceshooter.components.*;
+import com.dalesmithwebdev.arcadespaceshooter.prefabs.Player;
 import com.dalesmithwebdev.arcadespaceshooter.screens.GameOverScreen;
 import com.dalesmithwebdev.arcadespaceshooter.utility.ComponentMap;
 
 public class InputSystem extends EntitySystem {
-    //KeyboardState keyboardState;
-
     public void update(float gameTime)
     {
-        //keyboardState = Keyboard.GetState();
-
         Entity player;
-        ImmutableArray<Entity> playerEntities = ArcadeSpaceShooter.engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
+        ImmutableArray<Entity> playerEntities = this.getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
         if (playerEntities.size() == 0)
         {
-            player = new Entity();
-            PlayerComponent ppc = new PlayerComponent();
-            player.add(ppc);
-            player.add(new HasShieldComponent());
-            player.add(new SpeedComponent(new Vector2(0, 0)));
-            player.add(new TakesDamageComponent(50, DamageSystem.ENEMY ^ DamageSystem.ENEMY_LASER ^ DamageSystem.METEOR));
-            ArcadeSpaceShooter.engine.addEntity(player);
-
-            ppc.lives = ppc.maxLives;
+            player = new Player();
+            this.getEngine().addEntity(player);
         }
         else {
             player = playerEntities.get(0);
@@ -42,7 +32,7 @@ public class InputSystem extends EntitySystem {
         {
             ArcadeSpaceShooter.kills = 0;
 
-            PlayerComponent ppc = ComponentMap.playerComponentComponentMapper.get(player);//(PlayerComponent)player.components[typeof(PlayerComponent)];
+            PlayerComponent ppc = ComponentMap.playerComponentComponentMapper.get(player);
 
             ppc.timeSinceRespawn = 0;
             ppc.laserLevel = 0;
@@ -50,7 +40,7 @@ public class InputSystem extends EntitySystem {
             //Remove shield upgrade on respawn
             //player.RemoveComponent(typeof(HasShieldComponent));
 
-            TakesDamageComponent ptdc = ComponentMap.takesDamageComponentComponentMapper.get(player);//(TakesDamageComponent)player.components[typeof(TakesDamageComponent)];
+            TakesDamageComponent ptdc = ComponentMap.takesDamageComponentComponentMapper.get(player);
             ptdc.health = ptdc.maxHealth;
 
             RenderComponent prc = new RenderComponent(ArcadeSpaceShooter.shipTextures.toArray(new Texture[ArcadeSpaceShooter.shipTextures.size()]));
@@ -59,24 +49,22 @@ public class InputSystem extends EntitySystem {
             {
                 player.add(new PositionComponent(new Vector2(
                         (ArcadeSpaceShooter.screenRect.width / 2) - (prc.CurrentTexture().getWidth() / 2.0f),
-                        //(ArcadeSpaceShooter.screenRect.height / 3) * 2 + (prc.CurrentTexture().getHeight() / 2.0f)
                         prc.CurrentTexture().getHeight() + 20
                 )));
             }
             else
             {
-                PositionComponent playerPositionComp = ComponentMap.positionComponentComponentMapper.get(player);//(PositionComponent)player.components[typeof(PositionComponent)];
+                PositionComponent playerPositionComp = ComponentMap.positionComponentComponentMapper.get(player);
                 playerPositionComp.position = new Vector2(
                         (ArcadeSpaceShooter.screenRect.width / 2) - (prc.CurrentTexture().getWidth() / 2.0f),
-                        //(ArcadeSpaceShooter.screenRect.height / 3) * 2 + (prc.CurrentTexture().getHeight() / 2.0f)
                         prc.CurrentTexture().getHeight() + 20
                 );
             }
         }
 
-        PlayerComponent pc = ComponentMap.playerComponentComponentMapper.get(player);//(PlayerComponent)player.components[typeof(PlayerComponent)];
-        SpeedComponent sc = ComponentMap.speedComponentComponentMapper.get(player);//(SpeedComponent)player.components[typeof(SpeedComponent)];
-        RenderComponent rc = ComponentMap.renderComponentComponentMapper.get(player);//(RenderComponent)player.components[typeof(RenderComponent)];
+        PlayerComponent pc = ComponentMap.playerComponentComponentMapper.get(player);
+        SpeedComponent sc = ComponentMap.speedComponentComponentMapper.get(player);
+        RenderComponent rc = ComponentMap.renderComponentComponentMapper.get(player);
 
         if(pc.lives == 0)
         {
@@ -151,7 +139,7 @@ public class InputSystem extends EntitySystem {
         {
             Entity e = new Entity();
             e.add(new NotificationComponent("Lasers Improved", 2000, true));
-            ArcadeSpaceShooter.engine.addEntity(e);
+            this.getEngine().addEntity(e);
         }
 
         if(Gdx.input.isKeyPressed(Input.Keys.SPACE))
@@ -186,8 +174,8 @@ public class InputSystem extends EntitySystem {
 
     private void Shoot(Entity player)
     {
-        PlayerComponent pc = ComponentMap.playerComponentComponentMapper.get(player);//(PlayerComponent)player.components[typeof(PlayerComponent)];
-        PositionComponent posc = ComponentMap.positionComponentComponentMapper.get(player);//(PositionComponent)player.components[typeof(PositionComponent)];
+        PlayerComponent pc = ComponentMap.playerComponentComponentMapper.get(player);
+        PositionComponent posc = ComponentMap.positionComponentComponentMapper.get(player);
 
         int fireTime = pc.laserLevel == 0 ? 150 : pc.laserLevel == 1 ? 100 : 80;
 
@@ -209,7 +197,7 @@ public class InputSystem extends EntitySystem {
                 newLaser.add(new SpeedComponent(new Vector2(0, 20)));
                 newLaser.add(new PositionComponent(new Vector2(posc.position.x, posc.position.y + laser.getHeight() / 2.0f + 40)));
                 newLaser.add(new DealsDamageComponent(pc.laserLevel + 1, DamageSystem.LASER));
-                ArcadeSpaceShooter.engine.addEntity(newLaser);
+                this.getEngine().addEntity(newLaser);
             }
             if (pc.laserLevel >= 2)
             {
@@ -219,7 +207,7 @@ public class InputSystem extends EntitySystem {
                 newLaser1.add(new SpeedComponent(new Vector2(0, 20)));
                 newLaser1.add(new PositionComponent(new Vector2(posc.position.x - 10, posc.position.y + laser.getHeight() / 2.0f + 40)));
                 newLaser1.add(new DealsDamageComponent(pc.laserLevel + 1, DamageSystem.LASER));
-                ArcadeSpaceShooter.engine.addEntity(newLaser1);
+                this.getEngine().addEntity(newLaser1);
 
                 Entity newLaser2 = new Entity();
                 newLaser2.add(new RenderComponent(laser));
@@ -227,7 +215,7 @@ public class InputSystem extends EntitySystem {
                 newLaser2.add(new SpeedComponent(new Vector2(0, 20)));
                 newLaser2.add(new PositionComponent(new Vector2(posc.position.x + 10, posc.position.y + laser.getHeight() / 2.0f + 40)));
                 newLaser2.add(new DealsDamageComponent(pc.laserLevel + 1, DamageSystem.LASER));
-                ArcadeSpaceShooter.engine.addEntity(newLaser2);
+                this.getEngine().addEntity(newLaser2);
             }
             if (pc.laserLevel >= 3)
             {
@@ -237,7 +225,7 @@ public class InputSystem extends EntitySystem {
                 newLaser1.add(new SpeedComponent(new Vector2(-10, 20)));
                 newLaser1.add(new PositionComponent(new Vector2(posc.position.x - 10, posc.position.y + laser.getHeight() / 2.0f + 40)));
                 newLaser1.add(new DealsDamageComponent(pc.laserLevel + 1, DamageSystem.LASER));
-                ArcadeSpaceShooter.engine.addEntity(newLaser1);
+                this.getEngine().addEntity(newLaser1);
 
                 Entity newLaser2 = new Entity();
                 newLaser2.add(new RenderComponent(laser));
@@ -245,7 +233,7 @@ public class InputSystem extends EntitySystem {
                 newLaser2.add(new SpeedComponent(new Vector2(10, 20)));
                 newLaser2.add(new PositionComponent(new Vector2(posc.position.x + 10, posc.position.y + laser.getHeight() / 2.0f + 40)));
                 newLaser2.add(new DealsDamageComponent(pc.laserLevel + 1, DamageSystem.LASER));
-                ArcadeSpaceShooter.engine.addEntity(newLaser2);
+                this.getEngine().addEntity(newLaser2);
             }
             pc.lastFireTime = 0;
         }

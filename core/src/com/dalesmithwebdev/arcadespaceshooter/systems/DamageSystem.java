@@ -20,8 +20,8 @@ public class DamageSystem extends EntitySystem {
 
     public void update(float gameTime)
     {
-        ImmutableArray<Entity> thingsThatDoDamage = ArcadeSpaceShooter.engine.getEntitiesFor(Family.all(DealsDamageComponent.class, PositionComponent.class, RenderComponent.class).get());
-        ImmutableArray<Entity> thingsThatTakeDamage = ArcadeSpaceShooter.engine.getEntitiesFor(Family.all(TakesDamageComponent.class, PositionComponent.class, RenderComponent.class).get());
+        ImmutableArray<Entity> thingsThatDoDamage = this.getEngine().getEntitiesFor(Family.all(DealsDamageComponent.class, PositionComponent.class, RenderComponent.class).get());
+        ImmutableArray<Entity> thingsThatTakeDamage = this.getEngine().getEntitiesFor(Family.all(TakesDamageComponent.class, PositionComponent.class, RenderComponent.class).get());
 
         for (Entity damageDealer : thingsThatDoDamage)
         {
@@ -65,10 +65,10 @@ public class DamageSystem extends EntitySystem {
                         explosion.add(new RenderComponent(dd_lc.explosionTexture));
                         explosion.add(new PositionComponent(dd_pc.position));
                         explosion.add(new ExplosionComponent());
-                        ArcadeSpaceShooter.engine.addEntity(explosion);
+                        this.getEngine().addEntity(explosion);
                     }
 
-                    ArcadeSpaceShooter.engine.removeEntity(damageDealer);
+                    this.getEngine().removeEntity(damageDealer);
 
                     if (tdc.health <= 0)
                     {
@@ -79,7 +79,7 @@ public class DamageSystem extends EntitySystem {
                             damageTaker.remove(RenderComponent.class);
                         } else
                         {
-                            ArcadeSpaceShooter.engine.removeEntity(damageTaker);
+                            this.getEngine().removeEntity(damageTaker);
                         }
 
                         if(ComponentMap.laserComponentComponentMapper.has(damageDealer))
@@ -108,7 +108,7 @@ public class DamageSystem extends EntitySystem {
                             e.add(new PositionComponent(td_pc.position));
                             e.add(new NotificationComponent("+" + Math.round(score), 200, false));
                             //Game1.instance.world.AddEntity(e);
-                            ArcadeSpaceShooter.engine.addEntity(e);
+                            this.getEngine().addEntity(e);
                         }
 
                         //if (damageTaker.HasComponent(typeof(MeteorComponent)))
@@ -129,7 +129,7 @@ public class DamageSystem extends EntitySystem {
                                     newMeteor.add(new RenderComponent(ArcadeSpaceShooter.meteorSmall));
                                     newMeteor.add(new SpeedComponent(new Vector2(this.randomInRange(-3, 3), this.randomInRange(2, 5) * -1)));
                                     newMeteor.add(new PositionComponent(new Vector2(td_pc.position.x, td_pc.position.y)));
-                                    ArcadeSpaceShooter.engine.addEntity(newMeteor);
+                                    this.getEngine().addEntity(newMeteor);
                                 }
                             }
                         }

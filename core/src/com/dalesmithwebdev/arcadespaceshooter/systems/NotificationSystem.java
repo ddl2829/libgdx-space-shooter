@@ -13,14 +13,14 @@ import com.dalesmithwebdev.arcadespaceshooter.utility.ComponentMap;
 public class NotificationSystem extends EntitySystem {
     public void update(float gametime)
     {
-        ImmutableArray<Entity> notifications = ArcadeSpaceShooter.engine.getEntitiesFor(Family.all(NotificationComponent.class).get());
+        ImmutableArray<Entity> notifications = this.getEngine().getEntitiesFor(Family.all(NotificationComponent.class).get());
         for (Entity notification : notifications)
         {
             NotificationComponent notificationComponent = ComponentMap.notificationComponentComponentMapper.get(notification);
             notificationComponent.elapsedTime += gametime;
             if (notificationComponent.elapsedTime > notificationComponent.maxLife)
             {
-                ArcadeSpaceShooter.engine.removeEntity(notification);
+                this.getEngine().removeEntity(notification);
                 continue;
             }
 

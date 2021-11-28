@@ -15,7 +15,7 @@ public class RenderSystem extends EntitySystem {
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        ImmutableArray<Entity> sprites = ArcadeSpaceShooter.engine.getEntitiesFor(Family.all(RenderComponent.class, PositionComponent.class).get());
+        ImmutableArray<Entity> sprites = this.getEngine().getEntitiesFor(Family.all(RenderComponent.class, PositionComponent.class).get());
 
         for(Entity drawable : sprites)
         {
@@ -36,7 +36,7 @@ public class RenderSystem extends EntitySystem {
             }
         }
 
-        ImmutableArray<Entity> players = ArcadeSpaceShooter.engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
+        ImmutableArray<Entity> players = this.getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
         if (players.size() > 0)
         {
             Entity player = players.first();
@@ -84,7 +84,7 @@ public class RenderSystem extends EntitySystem {
             }
         }
 
-        ImmutableArray<Entity> boss = ArcadeSpaceShooter.engine.getEntitiesFor(Family.all(BossEnemyComponent.class).get());
+        ImmutableArray<Entity> boss = this.getEngine().getEntitiesFor(Family.all(BossEnemyComponent.class).get());
         if(boss.size() > 0) {
             // Check if the boss is on screen
             PositionComponent bossPos = ComponentMap.positionComponentComponentMapper.get(boss.first());
