@@ -23,14 +23,19 @@ public class RenderSystem extends EntitySystem {
             RenderComponent rc = ComponentMap.renderComponentComponentMapper.get(drawable);
             if (rc.visible)
             {
-                ArcadeSpaceShooter.spriteBatch.draw(rc.CurrentTexture(), (int)pc.position.x - (rc.CurrentTexture().getWidth() / 2.0f), (int)pc.position.y + (rc.CurrentTexture().getHeight() / 2.0f), rc.CurrentTexture().getWidth(), rc.CurrentTexture().getHeight());
+                if(ComponentMap.explosionComponentComponentMapper.has(drawable)) {
+                    ExplosionComponent ec = ComponentMap.explosionComponentComponentMapper.get(drawable);
+                    ArcadeSpaceShooter.spriteBatch.draw(rc.CurrentTexture(), (int) pc.position.x - ec.radius, (int) pc.position.y - ec.radius, ec.radius * 2, ec.radius * 2);
+                } else {
+                    ArcadeSpaceShooter.spriteBatch.draw(rc.CurrentTexture(), (int) pc.position.x - (rc.CurrentTexture().getWidth() / 2.0f), (int) pc.position.y - (rc.CurrentTexture().getHeight() / 2.0f), rc.CurrentTexture().getWidth(), rc.CurrentTexture().getHeight());
+                }
 
                 if (ComponentMap.playerComponentComponentMapper.has(drawable))
                 {
                     if(ComponentMap.shieldedComponentComponentMapper.has(drawable))
                     {
                         Texture shield = ArcadeSpaceShooter.playerShield;
-                        ArcadeSpaceShooter.spriteBatch.draw(shield, (int)(pc.position.x - rc.CurrentTexture().getWidth() / 2) - 25, (int)(pc.position.y + rc.CurrentTexture().getHeight() / 2) - 30, shield.getWidth(), shield.getHeight());
+                        ArcadeSpaceShooter.spriteBatch.draw(shield, (int)(pc.position.x - rc.CurrentTexture().getWidth() / 2) - 25, (int)(pc.position.y - rc.CurrentTexture().getHeight() / 2) - 10, shield.getWidth(), shield.getHeight());
                     }
                 }
 
@@ -38,7 +43,7 @@ public class RenderSystem extends EntitySystem {
                 if(ComponentMap.missileComponentComponentMapper.has(drawable)) {
                     MissileComponent mc = ComponentMap.missileComponentComponentMapper.get(drawable);
                     if(mc.speedBoosted) {
-                        ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.fireEffect, pc.position.x - (ArcadeSpaceShooter.fireEffect.getWidth() / 2.0f), pc.position.y - (rc.CurrentTexture().getHeight() / 2.0f) - 3);
+                        ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.fireEffect, pc.position.x - (ArcadeSpaceShooter.fireEffect.getWidth() / 2.0f) - 1, pc.position.y - ArcadeSpaceShooter.fireEffect.getHeight() - rc.CurrentTexture().getHeight() / 2.0f - 3);
                     }
                 }
             }

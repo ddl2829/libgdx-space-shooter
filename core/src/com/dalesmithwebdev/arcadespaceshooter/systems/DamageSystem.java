@@ -36,7 +36,13 @@ public class DamageSystem extends EntitySystem {
             PositionComponent dd_pc = ComponentMap.positionComponentComponentMapper.get(damageDealer);
             RenderComponent dd_rc = ComponentMap.renderComponentComponentMapper.get(damageDealer);
 
-            Rectangle damageDealerRect = new Rectangle((int)dd_pc.position.x - (dd_rc.CurrentTexture().getWidth() / 2.0f), (int)dd_pc.position.y - (dd_rc.CurrentTexture().getHeight() / 2.0f), dd_rc.CurrentTexture().getWidth(), dd_rc.CurrentTexture().getHeight());
+            Rectangle damageDealerRect;
+            if(ComponentMap.explosionComponentComponentMapper.has(damageDealer)) {
+                ExplosionComponent ec = ComponentMap.explosionComponentComponentMapper.get(damageDealer);
+                damageDealerRect = new Rectangle((int) dd_pc.position.x - ec.radius, (int) dd_pc.position.y - ec.radius, ec.radius * 2, ec.radius * 2);
+            } else {
+                damageDealerRect = new Rectangle((int) dd_pc.position.x - (dd_rc.CurrentTexture().getWidth() / 2.0f), (int) dd_pc.position.y - (dd_rc.CurrentTexture().getHeight() / 2.0f), dd_rc.CurrentTexture().getWidth(), dd_rc.CurrentTexture().getHeight());
+            }
 
             for (Entity damageTaker : thingsThatTakeDamage)
             {
@@ -86,7 +92,19 @@ public class DamageSystem extends EntitySystem {
                         this.getEngine().addEntity(explosion);
                     }
 
-                    if(!ComponentMap.playerComponentComponentMapper.has(damageDealer)) {
+                    //Check if the damage dealer was a bomb
+                    if(ComponentMap.bombComponentComponentMapper.has(damageDealer))
+                    {
+                        //Spawn an explosion at the location of collision
+                        Entity explosion = new Entity();
+                        explosion.add(new RenderComponent(ArcadeSpaceShooter.explosionTexture));
+                        explosion.add(new PositionComponent(dd_pc.position));
+                        explosion.add(new ExplosionComponent(200));
+                        explosion.add(new DealsDamageComponent(10, DamageSystem.BOMB));
+                        this.getEngine().addEntity(explosion);
+                    }
+
+                    if(!ComponentMap.playerComponentComponentMapper.has(damageDealer) && !ComponentMap.explosionComponentComponentMapper.has(damageDealer)) {
                         this.getEngine().removeEntity(damageDealer);
                     }
 
@@ -163,7 +181,7 @@ public class DamageSystem extends EntitySystem {
                                 e.add(new NotificationComponent("+" + 1000, 200, false));
                                 this.getEngine().addEntity(e);
                             } else {
-                                player.add(new HasBombsComponent());
+                                player.add(new HasBombsComponent(500));
                                 Timer.schedule(new Timer.Task() {
                                     @Override
                                     public void run() {
@@ -334,7 +352,7 @@ public class DamageSystem extends EntitySystem {
                                 {
                                     Entity newMeteor = new Entity();
                                     newMeteor.add(new MeteorComponent(false));
-                                    newMeteor.add(new TakesDamageComponent(2, LASER ^ MISSILE));
+                                    newMeteor.add(new TakesDamageComponent(2, LASER ^ MISSILE ^ BOMB));
                                     newMeteor.add(new DealsDamageComponent(5, METEOR));
                                     newMeteor.add(new RenderComponent(ArcadeSpaceShooter.smallMeteors.get(Rand.nextInt(ArcadeSpaceShooter.smallMeteors.size()))));
                                     newMeteor.add(new SpeedComponent(this.randomInRange(-3, 3), this.randomInRange(2, 5) * -1));

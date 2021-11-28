@@ -56,7 +56,7 @@ public class MovementSystem extends EntitySystem {
                 missile.timelived += deltaTime;
                 if(missile.timelived >= 150 && !missile.speedBoosted) {
                     missile.speedBoosted = true;
-                    sc.motion.y = 20;
+                    sc.motion.y = 15;
                     sc.motion.x = 0;
                 }
             }

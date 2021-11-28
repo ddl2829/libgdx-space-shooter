@@ -203,7 +203,16 @@ public class InputSystem extends EntitySystem {
     private void FireBomb(Entity player) {
         HasBombsComponent hasBombsComponent = ComponentMap.hasBombsComponentComponentMapper.get(player);
         if(hasBombsComponent.timeSinceLastShot > hasBombsComponent.shotInterval) {
+            hasBombsComponent.timeSinceLastShot = 0;
 
+            PositionComponent posc = ComponentMap.positionComponentComponentMapper.get(player);
+            Entity missile1 = new Entity();
+            missile1.add(new RenderComponent(ArcadeSpaceShooter.bomb));
+            missile1.add(new PositionComponent(posc.position.x, posc.position.y + 50));
+            missile1.add(new SpeedComponent(0, 5));
+            missile1.add(new DealsDamageComponent(10, DamageSystem.BOMB));
+            missile1.add(new BombComponent());
+            getEngine().addEntity(missile1);
         }
     }
 

@@ -31,4 +31,5 @@ public class ComponentMap {
     public static ComponentMapper<EmpUpgradeComponent> empUpgradeComponentComponentMapper = ComponentMapper.getFor(EmpUpgradeComponent.class);
     public static ComponentMapper<BackgroundObjectComponent> backgroundObjectComponentComponentMapper = ComponentMapper.getFor(BackgroundObjectComponent.class);
     public static ComponentMapper<MissileComponent> missileComponentComponentMapper = ComponentMapper.getFor(MissileComponent.class);
+    public static ComponentMapper<BombComponent> bombComponentComponentMapper = ComponentMapper.getFor(BombComponent.class);
 }
