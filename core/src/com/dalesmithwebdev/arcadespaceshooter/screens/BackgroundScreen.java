@@ -7,8 +7,6 @@ import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
 import com.dalesmithwebdev.arcadespaceshooter.components.BackgroundObjectComponent;
 import com.dalesmithwebdev.arcadespaceshooter.prefabs.BackgroundElement;
 
-import java.util.ArrayList;
-
 public class BackgroundScreen extends BaseScreen {
 
     public BackgroundScreen()

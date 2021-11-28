@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -15,7 +14,6 @@ import com.dalesmithwebdev.arcadespaceshooter.screens.BackgroundScreen;
 import com.dalesmithwebdev.arcadespaceshooter.screens.BaseScreen;
 import com.dalesmithwebdev.arcadespaceshooter.screens.StartScreen;
 import com.dalesmithwebdev.arcadespaceshooter.systems.*;
-import com.dalesmithwebdev.arcadespaceshooter.utility.ComponentMap;
 
 import java.util.ArrayList;
 

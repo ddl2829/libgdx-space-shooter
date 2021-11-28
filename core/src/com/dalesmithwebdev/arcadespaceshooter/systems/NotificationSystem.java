@@ -7,7 +7,6 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
 import com.dalesmithwebdev.arcadespaceshooter.components.NotificationComponent;
 import com.dalesmithwebdev.arcadespaceshooter.components.PositionComponent;
-import com.dalesmithwebdev.arcadespaceshooter.components.SpeedComponent;
 import com.dalesmithwebdev.arcadespaceshooter.utility.ComponentMap;
 
 public class NotificationSystem extends EntitySystem {
