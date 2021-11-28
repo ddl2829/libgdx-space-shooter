@@ -140,7 +140,26 @@ public class DamageSystem extends EntitySystem {
                             }
                         }
                         if(ComponentMap.bombUpgradeComponentComponentMapper.has(damageTaker)) {
+                            ImmutableArray<Entity> players = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
+                            Entity player = players.first();
+                            if(ComponentMap.hasBombsComponentComponentMapper.has(player)) {
+                                ArcadeSpaceShooter.playerScore += 1000;
 
+                                Entity e = new Entity();
+                                e.add(new PositionComponent(td_pc.position));
+                                e.add(new NotificationComponent("+" + 1000, 200, false));
+                                this.getEngine().addEntity(e);
+                            } else {
+                                player.add(new HasBombsComponent());
+                                Timer.schedule(new Timer.Task() {
+                                    @Override
+                                    public void run() {
+                                        Entity e = new Entity();
+                                        e.add(new NotificationComponent("Press Z to launch a bomb", 3000, true));
+                                        getEngine().addEntity(e);
+                                    }
+                                }, 0);
+                            }
                         }
                         if(ComponentMap.shieldUpgradeComponentComponentMapper.has(damageTaker)) {
                             ImmutableArray<Entity> players = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
@@ -165,10 +184,48 @@ public class DamageSystem extends EntitySystem {
                             }
                         }
                         if(ComponentMap.missileUpgradeComponentComponentMapper.has(damageTaker)) {
+                            ImmutableArray<Entity> players = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
+                            Entity player = players.first();
+                            if(ComponentMap.hasMissilesComponentComponentMapper.has(player)) {
+                                ArcadeSpaceShooter.playerScore += 1000;
 
+                                Entity e = new Entity();
+                                e.add(new PositionComponent(td_pc.position));
+                                e.add(new NotificationComponent("+" + 1000, 200, false));
+                                this.getEngine().addEntity(e);
+                            } else {
+                                player.add(new HasMissilesComponent());
+                                Timer.schedule(new Timer.Task() {
+                                    @Override
+                                    public void run() {
+                                        Entity e = new Entity();
+                                        e.add(new NotificationComponent("Press X to fire missiles", 3000, true));
+                                        getEngine().addEntity(e);
+                                    }
+                                }, 0);
+                            }
                         }
                         if(ComponentMap.empUpgradeComponentComponentMapper.has(damageTaker)) {
+                            ImmutableArray<Entity> players = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
+                            Entity player = players.first();
+                            if(ComponentMap.hasEmpComponentComponentMapper.has(player)) {
+                                ArcadeSpaceShooter.playerScore += 1000;
 
+                                Entity e = new Entity();
+                                e.add(new PositionComponent(td_pc.position));
+                                e.add(new NotificationComponent("+" + 1000, 200, false));
+                                this.getEngine().addEntity(e);
+                            } else {
+                                player.add(new HasEmpComponent());
+                                Timer.schedule(new Timer.Task() {
+                                    @Override
+                                    public void run() {
+                                        Entity e = new Entity();
+                                        e.add(new NotificationComponent("Press C to blast EMP", 3000, true));
+                                        getEngine().addEntity(e);
+                                    }
+                                }, 0);
+                            }
                         }
 
 

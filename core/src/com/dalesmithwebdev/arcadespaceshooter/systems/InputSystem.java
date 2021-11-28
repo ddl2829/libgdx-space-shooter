@@ -119,30 +119,29 @@ public class InputSystem extends EntitySystem {
             }
         }
 
-//        HasLasersComponent hasLasersComponent = ComponentMap.hasLasersComponentComponentMapper.get(player);
-//        boolean upgradedLasers = false;
-//        if (ArcadeSpaceShooter.kills > 10 && pc.laserLevel == 0)
-//        {
-//            pc.laserLevel = 1;
-//            upgradedLasers = true;
-//        }
-//        if (ArcadeSpaceShooter.kills > 20 && pc.laserLevel == 1)
-//        {
-//            pc.laserLevel = 2;
-//            upgradedLasers = true;
-//        }
-//        if (ArcadeSpaceShooter.kills > 100 && pc.laserLevel == 2)
-//        {
-//            pc.laserLevel = 3;
-//            upgradedLasers = true;
-//        }
+        if(ComponentMap.hasMissilesComponentComponentMapper.has(player)) {
+            HasMissilesComponent hasMissilesComponent = ComponentMap.hasMissilesComponentComponentMapper.get(player);
+            hasMissilesComponent.timeSinceLastShot += gameTime;
+            if(Gdx.input.isKeyPressed(Input.Keys.X)) {
+                FireMissile(player);
+            }
+        }
 
-//        if (upgradedLasers)
-//        {
-//            Entity e = new Entity();
-//            e.add(new NotificationComponent("Lasers Improved", 2000, true));
-//            this.getEngine().addEntity(e);
-//        }
+        if(ComponentMap.hasBombsComponentComponentMapper.has(player)) {
+            HasBombsComponent hasBombsComponent = ComponentMap.hasBombsComponentComponentMapper.get(player);
+            hasBombsComponent.timeSinceLastShot += gameTime;
+            if(Gdx.input.isKeyPressed(Input.Keys.Z)) {
+                FireBomb(player);
+            }
+        }
+
+        if(ComponentMap.hasEmpComponentComponentMapper.has(player)) {
+            HasEmpComponent hasEmpComponent = ComponentMap.hasEmpComponentComponentMapper.get(player);
+            hasEmpComponent.timeSinceLastShot += gameTime;
+            if(Gdx.input.isKeyPressed(Input.Keys.C)) {
+                FireEmp(player);
+            }
+        }
 
         hasLasersComponent.timeSinceLastShot += gameTime;
 
@@ -176,6 +175,27 @@ public class InputSystem extends EntitySystem {
         }
 
         sc.motion.scl(5);// *= 5;
+    }
+
+    private void FireMissile(Entity player) {
+        HasMissilesComponent hasMissilesComponent = ComponentMap.hasMissilesComponentComponentMapper.get(player);
+        if(hasMissilesComponent.timeSinceLastShot > hasMissilesComponent.shotInterval) {
+
+        }
+    }
+
+    private void FireBomb(Entity player) {
+        HasBombsComponent hasBombsComponent = ComponentMap.hasBombsComponentComponentMapper.get(player);
+        if(hasBombsComponent.timeSinceLastShot > hasBombsComponent.shotInterval) {
+
+        }
+    }
+
+    private void FireEmp(Entity player) {
+        HasEmpComponent hasEmpComponent = ComponentMap.hasEmpComponentComponentMapper.get(player);
+        if(hasEmpComponent.timeSinceLastShot > hasEmpComponent.shotInterval) {
+
+        }
     }
 
     private void Shoot(Entity player)
