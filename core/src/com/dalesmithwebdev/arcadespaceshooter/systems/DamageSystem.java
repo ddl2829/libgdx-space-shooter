@@ -4,12 +4,15 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
 import com.dalesmithwebdev.arcadespaceshooter.components.*;
 import com.dalesmithwebdev.arcadespaceshooter.screens.GameScreen;
 import com.dalesmithwebdev.arcadespaceshooter.utility.ComponentMap;
+import com.dalesmithwebdev.arcadespaceshooter.utility.Rand;
 
 public class DamageSystem extends EntitySystem {
     public static int PLAYER = 1;
@@ -68,10 +71,34 @@ public class DamageSystem extends EntitySystem {
                         this.getEngine().addEntity(explosion);
                     }
 
-                    this.getEngine().removeEntity(damageDealer);
+                    if(!ComponentMap.playerComponentComponentMapper.has(damageDealer)) {
+                        this.getEngine().removeEntity(damageDealer);
+                    }
 
                     if (tdc.health <= 0)
                     {
+                        if(ComponentMap.laserUpgradeComponentComponentMapper.has(damageTaker)) {
+                            ImmutableArray<Entity> players = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
+                            Entity player = players.first();
+                            HasLasersComponent lasersComponent = ComponentMap.hasLasersComponentComponentMapper.get(player);
+                            if((lasersComponent.typeMask & HasLasersComponent.UPGRADED) > 0) {
+                                // already level 1
+                                lasersComponent.typeMask = lasersComponent.typeMask ^ HasLasersComponent.UPGRADED;
+                                lasersComponent.typeMask = lasersComponent.typeMask ^ HasLasersComponent.UPGRADED_AGAIN;
+
+                                Entity e = new Entity();
+                                e.add(new NotificationComponent("Laser Upgraded!", 3000, true));
+                                this.getEngine().addEntity(e);
+                            } else if((lasersComponent.typeMask & HasLasersComponent.UPGRADED_AGAIN) > 0) {
+                                // already level 2, do nothing
+                            } else {
+                                // level 1
+                                lasersComponent.typeMask = lasersComponent.typeMask ^ HasLasersComponent.UPGRADED;
+                                Entity e = new Entity();
+                                e.add(new NotificationComponent("Laser Upgraded!", 3000, true));
+                                this.getEngine().addEntity(e);
+                            }
+                        }
                         if(ComponentMap.playerComponentComponentMapper.has(damageTaker))
                         {
                             PlayerComponent playerComp = ComponentMap.playerComponentComponentMapper.get(damageTaker);
@@ -107,6 +134,34 @@ public class DamageSystem extends EntitySystem {
                             e.add(new PositionComponent(td_pc.position));
                             e.add(new NotificationComponent("+" + Math.round(score), 200, false));
                             this.getEngine().addEntity(e);
+
+                            // random chance for a laser upgrade drop
+                            if(Rand.nextInt(100) < 5) {
+                                ImmutableArray<Entity> players = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
+                                Entity player = players.first();
+                                HasLasersComponent lasersComponent = ComponentMap.hasLasersComponentComponentMapper.get(player);
+                                if((lasersComponent.typeMask & HasLasersComponent.UPGRADED) > 0) {
+                                    //spawn second upgrade
+                                    Entity upgradeOne = new Entity();
+                                    upgradeOne.add(new RenderComponent(new Texture(Gdx.files.internal("power-ups/powerupBlue_bolt.png"))));
+                                    upgradeOne.add(new PositionComponent(td_pc.position.x, td_pc.position.y));
+                                    upgradeOne.add(new SpeedComponent(0, -1));
+                                    upgradeOne.add(new TakesDamageComponent(1, DamageSystem.PLAYER));
+                                    upgradeOne.add(new LaserUpgradeComponent());
+                                    this.getEngine().addEntity(upgradeOne);
+                                } else if((lasersComponent.typeMask & HasLasersComponent.UPGRADED_AGAIN) > 0) {
+                                    // do not upgrade again
+                                } else {
+                                    // spawn first upgrade
+                                    Entity upgradeOne = new Entity();
+                                    upgradeOne.add(new RenderComponent(new Texture(Gdx.files.internal("power-ups/powerupGreen_bolt.png"))));
+                                    upgradeOne.add(new PositionComponent(td_pc.position.x, td_pc.position.y));
+                                    upgradeOne.add(new SpeedComponent(0, -1));
+                                    upgradeOne.add(new TakesDamageComponent(1, DamageSystem.PLAYER));
+                                    upgradeOne.add(new LaserUpgradeComponent());
+                                    this.getEngine().addEntity(upgradeOne);
+                                }
+                            }
                         }
 
                         if(ComponentMap.meteorComponentComponentMapper.has(damageTaker))

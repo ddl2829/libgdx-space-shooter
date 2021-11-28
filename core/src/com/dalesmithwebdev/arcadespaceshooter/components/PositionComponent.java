@@ -11,7 +11,7 @@ public class PositionComponent implements Component {
         position = p;
     }
 
-    public PositionComponent(int x, int y)
+    public PositionComponent(float x, float y)
     {
         position = new Vector2(x, y);
     }
