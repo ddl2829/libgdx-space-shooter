@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
+import com.dalesmithwebdev.arcadespaceshooter.components.MissileComponent;
 import com.dalesmithwebdev.arcadespaceshooter.components.PositionComponent;
 import com.dalesmithwebdev.arcadespaceshooter.components.RenderComponent;
 import com.dalesmithwebdev.arcadespaceshooter.components.SpeedComponent;
@@ -23,7 +24,7 @@ public class MovementSystem extends EntitySystem {
             SpeedComponent sc = ComponentMap.speedComponentComponentMapper.get(moveable);
             Vector2 move = sc.motion.cpy();
             if(Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT)) {
-                if(ComponentMap.meteorComponentComponentMapper.has(moveable) || ComponentMap.enemyComponentComponentMapper.has(moveable)) {
+                if(ComponentMap.meteorComponentComponentMapper.has(moveable) || ComponentMap.enemyComponentComponentMapper.has(moveable) || ComponentMap.backgroundObjectComponentComponentMapper.has(moveable)) {
                     move.y = move.y * 3;
                 }
             }
@@ -50,9 +51,19 @@ public class MovementSystem extends EntitySystem {
                 }
             }
 
-            if (ComponentMap.laserComponentComponentMapper.has(moveable))
+            if(ComponentMap.missileComponentComponentMapper.has(moveable)) {
+                MissileComponent missile = ComponentMap.missileComponentComponentMapper.get(moveable);
+                missile.timelived += deltaTime;
+                if(missile.timelived >= 150 && !missile.speedBoosted) {
+                    missile.speedBoosted = true;
+                    sc.motion.y = 20;
+                    sc.motion.x = 0;
+                }
+            }
+
+            if (ComponentMap.laserComponentComponentMapper.has(moveable) || ComponentMap.missileComponentComponentMapper.has(moveable))
             {
-                //Despawn lasers shortly after they leave the screen
+                //Despawn lasers and missiles shortly after they leave the screen
                 if(pc.position.y < -ArcadeSpaceShooter.laserRed.getHeight() || pc.position.y > ArcadeSpaceShooter.screenRect.height + ArcadeSpaceShooter.laserRed.getHeight() || pc.position.x < 0 || pc.position.x > ArcadeSpaceShooter.screenRect.width)
                 {
                     this.getEngine().removeEntity(moveable);

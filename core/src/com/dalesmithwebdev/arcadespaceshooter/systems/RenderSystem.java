@@ -23,14 +23,22 @@ public class RenderSystem extends EntitySystem {
             RenderComponent rc = ComponentMap.renderComponentComponentMapper.get(drawable);
             if (rc.visible)
             {
-                ArcadeSpaceShooter.spriteBatch.draw(rc.CurrentTexture(), (int)pc.position.x - (rc.CurrentTexture().getWidth() / 2.0f), (int)pc.position.y - (rc.CurrentTexture().getHeight() / 2.0f), rc.CurrentTexture().getWidth(), rc.CurrentTexture().getHeight());
+                ArcadeSpaceShooter.spriteBatch.draw(rc.CurrentTexture(), (int)pc.position.x - (rc.CurrentTexture().getWidth() / 2.0f), (int)pc.position.y + (rc.CurrentTexture().getHeight() / 2.0f), rc.CurrentTexture().getWidth(), rc.CurrentTexture().getHeight());
 
                 if (ComponentMap.playerComponentComponentMapper.has(drawable))
                 {
                     if(ComponentMap.shieldedComponentComponentMapper.has(drawable))
                     {
                         Texture shield = ArcadeSpaceShooter.playerShield;
-                        ArcadeSpaceShooter.spriteBatch.draw(shield, (int)(pc.position.x - rc.CurrentTexture().getWidth() / 2) - 25, (int)(pc.position.y - rc.CurrentTexture().getHeight() / 2) - 30, shield.getWidth(), shield.getHeight());
+                        ArcadeSpaceShooter.spriteBatch.draw(shield, (int)(pc.position.x - rc.CurrentTexture().getWidth() / 2) - 25, (int)(pc.position.y + rc.CurrentTexture().getHeight() / 2) - 30, shield.getWidth(), shield.getHeight());
+                    }
+                }
+
+                // Put a little flame trail behind missiles that have entered their second phase
+                if(ComponentMap.missileComponentComponentMapper.has(drawable)) {
+                    MissileComponent mc = ComponentMap.missileComponentComponentMapper.get(drawable);
+                    if(mc.speedBoosted) {
+                        ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.fireEffect, pc.position.x - (ArcadeSpaceShooter.fireEffect.getWidth() / 2.0f), pc.position.y - (rc.CurrentTexture().getHeight() / 2.0f) - 3);
                     }
                 }
             }

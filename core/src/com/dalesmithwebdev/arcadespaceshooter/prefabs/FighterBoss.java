@@ -28,7 +28,7 @@ public class FighterBoss extends Entity {
         this.add(new RenderComponent(ArcadeSpaceShooter.bossTexture));
         this.add(new PositionComponent(new Vector2(ArcadeSpaceShooter.screenRect.width / 2, yPos)));
         this.add(new SpeedComponent(0.5 + (0.1 * levelNumber)));
-        this.add(new TakesDamageComponent(50 + (10 * levelNumber), DamageSystem.LASER));
+        this.add(new TakesDamageComponent(50 + (10 * levelNumber), DamageSystem.LASER ^ DamageSystem.MISSILE));
         this.add(new DealsDamageComponent(20, DamageSystem.ENEMY));
         this.add(new BossEnemyComponent());
     }

@@ -47,13 +47,18 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 
 	public static ArrayList<Texture> shipTextures;
 
-	public static Texture meteorBig;
-	public static Texture meteorSmall;
+	public static ArrayList<Texture> smallMeteors;
+	public static ArrayList<Texture> bigMeteors;
 
 	//Explosions for laser-meteor collisions
 	public static Texture explosionTexture;
 	public static Texture explosionTextureGreen;
 	public static Texture explosionTextureBlue;
+
+	public static Texture missile;
+	public static Texture bomb;
+
+	public static Texture fireEffect;
 
 	public static Music backgroundMusic;
 
@@ -110,9 +115,41 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 		laserGreen = new Texture(Gdx.files.internal("lasers/laserGreen.png"));
 		laserBlue = new Texture(Gdx.files.internal("lasers/laserBlue12.png"));
 
+		missile = new Texture(Gdx.files.internal("lasers/spaceMissiles_009.png"));
+		bomb = new Texture(Gdx.files.internal("lasers/spaceMissiles_012.png"));
+
 		//Meteors
-		meteorBig = new Texture(Gdx.files.internal("meteors/meteorBig.png"));
-		meteorSmall = new Texture(Gdx.files.internal("meteors/meteorSmall.png"));
+		bigMeteors = new ArrayList<>();
+		bigMeteors.add(new Texture("meteors/meteorBig.png"));
+		bigMeteors.add(new Texture("meteors/meteorBrown_big1.png"));
+		bigMeteors.add(new Texture("meteors/meteorBrown_big2.png"));
+		bigMeteors.add(new Texture("meteors/meteorBrown_big3.png"));
+		bigMeteors.add(new Texture("meteors/meteorBrown_big4.png"));
+		bigMeteors.add(new Texture("meteors/meteorBrown_med1.png"));
+		bigMeteors.add(new Texture("meteors/meteorBrown_med2.png"));
+
+		bigMeteors.add(new Texture("meteors/meteorGrey_big1.png"));
+		bigMeteors.add(new Texture("meteors/meteorGrey_big2.png"));
+		bigMeteors.add(new Texture("meteors/meteorGrey_big3.png"));
+		bigMeteors.add(new Texture("meteors/meteorGrey_big4.png"));
+		bigMeteors.add(new Texture("meteors/meteorGrey_med1.png"));
+		bigMeteors.add(new Texture("meteors/meteorGrey_med2.png"));
+
+		smallMeteors = new ArrayList<>();
+		smallMeteors.add(new Texture("meteors/meteorBrown_small1.png"));
+		smallMeteors.add(new Texture("meteors/meteorBrown_small2.png"));
+		smallMeteors.add(new Texture("meteors/meteorBrown_tiny1.png"));
+		smallMeteors.add(new Texture("meteors/meteorBrown_tiny2.png"));
+
+		smallMeteors.add(new Texture("meteors/meteorGrey_small1.png"));
+		smallMeteors.add(new Texture("meteors/meteorGrey_small2.png"));
+		smallMeteors.add(new Texture("meteors/meteorGrey_tiny1.png"));
+		smallMeteors.add(new Texture("meteors/meteorGrey_tiny2.png"));
+
+		fireEffect = new Texture("effects/fire03.png");
+
+		//meteorBig = new Texture(Gdx.files.internal("meteors/meteorBig.png"));
+		//meteorSmall = new Texture(Gdx.files.internal("meteors/meteorSmall.png"));
 
 		//Explosions
 		explosionTexture = new Texture(Gdx.files.internal("lasers/laserRedShot.png"));
@@ -130,11 +167,7 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(1, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		float dt = Gdx.graphics.getDeltaTime() * 1000;
-
-
 		spriteBatch.begin();
 		spriteBatch.draw(background, 0, 0, screenRect.width, screenRect.height);
 		for(int i = 0; i < screens.size(); i++)

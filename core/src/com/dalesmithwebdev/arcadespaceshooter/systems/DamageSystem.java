@@ -22,6 +22,8 @@ public class DamageSystem extends EntitySystem {
     public static int ENEMY = 4;
     public static int LASER = 8;
     public static int ENEMY_LASER = 16;
+    public static int MISSILE = 32;
+    public static int BOMB = 64;
 
     public void update(float gameTime)
     {
@@ -68,6 +70,17 @@ public class DamageSystem extends EntitySystem {
                         //Spawn an explosion at the location of collision
                         Entity explosion = new Entity();
                         explosion.add(new RenderComponent(dd_lc.explosionTexture));
+                        explosion.add(new PositionComponent(dd_pc.position));
+                        explosion.add(new ExplosionComponent());
+                        this.getEngine().addEntity(explosion);
+                    }
+
+                    //Check if the damage dealer was a missile
+                    if(ComponentMap.missileComponentComponentMapper.has(damageDealer))
+                    {
+                        //Spawn an explosion at the location of collision
+                        Entity explosion = new Entity();
+                        explosion.add(new RenderComponent(ArcadeSpaceShooter.explosionTexture));
                         explosion.add(new PositionComponent(dd_pc.position));
                         explosion.add(new ExplosionComponent());
                         this.getEngine().addEntity(explosion);
@@ -194,7 +207,7 @@ public class DamageSystem extends EntitySystem {
                                 e.add(new NotificationComponent("+" + 1000, 200, false));
                                 this.getEngine().addEntity(e);
                             } else {
-                                player.add(new HasMissilesComponent());
+                                player.add(new HasMissilesComponent(1000));
                                 Timer.schedule(new Timer.Task() {
                                     @Override
                                     public void run() {
@@ -321,9 +334,9 @@ public class DamageSystem extends EntitySystem {
                                 {
                                     Entity newMeteor = new Entity();
                                     newMeteor.add(new MeteorComponent(false));
-                                    newMeteor.add(new TakesDamageComponent(2, LASER));
+                                    newMeteor.add(new TakesDamageComponent(2, LASER ^ MISSILE));
                                     newMeteor.add(new DealsDamageComponent(5, METEOR));
-                                    newMeteor.add(new RenderComponent(ArcadeSpaceShooter.meteorSmall));
+                                    newMeteor.add(new RenderComponent(ArcadeSpaceShooter.smallMeteors.get(Rand.nextInt(ArcadeSpaceShooter.smallMeteors.size()))));
                                     newMeteor.add(new SpeedComponent(this.randomInRange(-3, 3), this.randomInRange(2, 5) * -1));
                                     newMeteor.add(new PositionComponent(new Vector2(td_pc.position.x, td_pc.position.y)));
                                     this.getEngine().addEntity(newMeteor);

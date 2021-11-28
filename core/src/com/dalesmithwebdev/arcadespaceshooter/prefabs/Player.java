@@ -14,5 +14,8 @@ public class Player extends Entity {
         this.add(new SpeedComponent(0, 0));
         this.add(new TakesDamageComponent(50, DamageSystem.ENEMY ^ DamageSystem.ENEMY_LASER ^ DamageSystem.METEOR));
         this.add(new DealsDamageComponent(5, DamageSystem.PLAYER));
+
+        // Debug upgrades
+        //this.add(new HasMissilesComponent(1000));
     }
 }
