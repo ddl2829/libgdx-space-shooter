@@ -72,17 +72,8 @@ public class LevelSystem extends EntitySystem {
                             @Override
                             public void run() {
                                 Entity e = new Entity();
-                                e.add(new NotificationComponent("Hold left shift to shield", 3000, true));
+                                e.add(new NotificationComponent("Good Luck!", 3000, true));
                                 engine.addEntity(e);
-
-                                Timer.schedule(new Timer.Task() {
-                                    @Override
-                                    public void run() {
-                                        Entity e = new Entity();
-                                        e.add(new NotificationComponent("Good Luck!", 3000, true));
-                                        engine.addEntity(e);
-                                    }
-                                }, 3);
                             }
                         }, 3);
                     }
@@ -96,22 +87,22 @@ public class LevelSystem extends EntitySystem {
 
     private void BuildLevel()
     {
-        levelLength = (int)ArcadeSpaceShooter.screenRect.height + 1000 + (500 * levelNumber);
+        levelLength = (int)ArcadeSpaceShooter.screenRect.height + 3000 + (500 * levelNumber);
 
         int startPosition = levelNumber == 1 ? (int)ArcadeSpaceShooter.screenRect.height + 1000 : (int)ArcadeSpaceShooter.screenRect.height;
 
         for (int l = startPosition; l < levelLength; l++)
         {
             //Initialize random meteors
-            double randomAmt = 0.5 + (0.05 * levelNumber);
+            double randomAmt = 1 + (0.05 * levelNumber);
             if(Rand.nextFloat() * 100 < randomAmt) {
-                boolean bigMeteor = Rand.nextBoolean();
+                boolean bigMeteor = Rand.nextFloat() * 100 < 20;
                 Entity newMeteor = bigMeteor ? new LargeMeteor(l) : new SmallMeteor(l);
                 this.getEngine().addEntity(newMeteor);
             }
 
-            double enemyAmount = 0.25 + (0.05 * levelNumber);
-            if(Rand.nextInt(100) < enemyAmount) {
+            double enemyAmount = 0.1 + (0.05 * levelNumber);
+            if(Rand.nextFloat() * 100 < enemyAmount) {
                 Entity enemy = new EnemyFighter(levelNumber, l);
                 this.getEngine().addEntity(enemy);
             }
@@ -131,7 +122,7 @@ public class LevelSystem extends EntitySystem {
         if (bossEntities.size() > 0)
         {
             Entity boss = bossEntities.get(0);
-            PositionComponent bossPosition = ComponentMap.positionComponentComponentMapper.get(boss);//(PositionComponent)boss.components[typeof(PositionComponent)];
+            PositionComponent bossPosition = ComponentMap.positionComponentComponentMapper.get(boss);
             double pct = (levelLength - bossPosition.position.y) / levelLength;
             ArcadeSpaceShooter.spriteBatch.setColor(Color.WHITE);
             ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, ArcadeSpaceShooter.screenRect.width - 159, 26, (int)(pct * 148), 10);

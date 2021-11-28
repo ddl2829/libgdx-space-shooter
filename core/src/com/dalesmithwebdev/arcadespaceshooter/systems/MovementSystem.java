@@ -44,7 +44,7 @@ public class MovementSystem extends EntitySystem {
             if (ComponentMap.laserComponentComponentMapper.has(moveable))
             {
                 //Despawn lasers shortly after they leave the screen
-                if(pc.position.y < -10 || pc.position.y > ArcadeSpaceShooter.screenRect.height + 10 || pc.position.x < 0 || pc.position.x > ArcadeSpaceShooter.screenRect.width)
+                if(pc.position.y < -ArcadeSpaceShooter.laserRed.getHeight() || pc.position.y > ArcadeSpaceShooter.screenRect.height + ArcadeSpaceShooter.laserRed.getHeight() || pc.position.x < 0 || pc.position.x > ArcadeSpaceShooter.screenRect.width)
                 {
                     this.getEngine().removeEntity(moveable);
                 }

@@ -34,6 +34,10 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 
 	public static Texture blank;
 
+	public static Texture ufoBlue;
+	public static Texture ufoGreen;
+	public static Texture ufoRed;
+	public static Texture ufoYellow;
 	public static Texture enemyShip;
 	public static Texture bossTexture;
 
@@ -84,6 +88,10 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 		backgroundElements.add(new Texture(Gdx.files.internal("background/starSmall.png")));
 		blank = new Texture(Gdx.files.internal("ui/blank.png"));
 
+		ufoBlue = new Texture(Gdx.files.internal("ships-enemies/ufoBlue.png"));
+		ufoGreen = new Texture(Gdx.files.internal("ships-enemies/ufoGreen.png"));
+		ufoRed = new Texture(Gdx.files.internal("ships-enemies/ufoRed.png"));
+		ufoYellow = new Texture(Gdx.files.internal("ships-enemies/ufoYellow.png"));
 		enemyShip = new Texture(Gdx.files.internal("ships-enemies/enemyShip.png"));
 		bossTexture = new Texture(Gdx.files.internal("ships-enemies/bossEnemy.png"));
 

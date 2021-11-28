@@ -53,9 +53,9 @@ public class RenderSystem extends EntitySystem {
             ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, scoreText, ArcadeSpaceShooter.screenRect.width - ArcadeSpaceShooter.measureText(scoreText) - 10, ArcadeSpaceShooter.screenRect.height - 50);
 
             // debug
-            String killcount = "" +ArcadeSpaceShooter.kills;
-            ArcadeSpaceShooter.bitmapFont.setColor(Color.WHITE);
-            ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, killcount, ArcadeSpaceShooter.screenRect.width - ArcadeSpaceShooter.measureText(scoreText) - 10, ArcadeSpaceShooter.screenRect.height - 80);
+//            String killcount = "" +ArcadeSpaceShooter.kills;
+//            ArcadeSpaceShooter.bitmapFont.setColor(Color.WHITE);
+//            ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, killcount, ArcadeSpaceShooter.screenRect.width - ArcadeSpaceShooter.measureText(scoreText) - 10, ArcadeSpaceShooter.screenRect.height - 80);
 
             ArcadeSpaceShooter.spriteBatch.setColor(Color.BLACK);
             ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 8, livesY - 13, 150, 12);
@@ -79,8 +79,8 @@ public class RenderSystem extends EntitySystem {
                     ArcadeSpaceShooter.spriteBatch.setColor(Color.PURPLE);
                     ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 31, (int)(Math.min((hasShieldComponent.shieldPower / hasShieldComponent.maxShieldPower), 1) * 148), 10);
                 }
-                ArcadeSpaceShooter.spriteBatch.setColor(Color.WHITE);
             }
+            ArcadeSpaceShooter.spriteBatch.setColor(Color.WHITE);
         }
 
         ImmutableArray<Entity> boss = this.getEngine().getEntitiesFor(Family.all(BossEnemyComponent.class).get());

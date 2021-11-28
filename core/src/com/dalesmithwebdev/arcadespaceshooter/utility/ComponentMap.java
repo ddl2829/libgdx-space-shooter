@@ -22,5 +22,11 @@ public class ComponentMap {
     public static ComponentMapper<HasEmpComponent> hasEmpComponentComponentMapper = ComponentMapper.getFor(HasEmpComponent.class);
     public static ComponentMapper<HasLasersComponent> hasLasersComponentComponentMapper = ComponentMapper.getFor(HasLasersComponent.class);
     public static ComponentMapper<HasMissilesComponent> hasMissilesComponentComponentMapper = ComponentMapper.getFor(HasMissilesComponent.class);
-    public static ComponentMapper<LaserUpgradeComponent> laserUpgradeComponentComponentMapper = ComponentMapper.getFor(LaserUpgradeComponent.class);
+    public static ComponentMapper<LaserStrengthUpgradeComponent> laserUpgradeComponentComponentMapper = ComponentMapper.getFor(LaserStrengthUpgradeComponent.class);
+    public static ComponentMapper<DualLaserUpgradeComponent> dualLaserUpgradeComponentComponentMapper = ComponentMapper.getFor(DualLaserUpgradeComponent.class);
+    public static ComponentMapper<DiagonalLaserUpgradeComponent> diagonalLaserUpgradeComponentComponentMapper = ComponentMapper.getFor(DiagonalLaserUpgradeComponent.class);
+    public static ComponentMapper<BombUpgradeComponent> bombUpgradeComponentComponentMapper = ComponentMapper.getFor(BombUpgradeComponent.class);
+    public static ComponentMapper<MissileUpgradeComponent> missileUpgradeComponentComponentMapper = ComponentMapper.getFor(MissileUpgradeComponent.class);
+    public static ComponentMapper<ShieldUpgradeComponent> shieldUpgradeComponentComponentMapper = ComponentMapper.getFor(ShieldUpgradeComponent.class);
+    public static ComponentMapper<EmpUpgradeComponent> empUpgradeComponentComponentMapper = ComponentMapper.getFor(EmpUpgradeComponent.class);
 }

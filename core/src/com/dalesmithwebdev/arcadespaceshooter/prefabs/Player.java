@@ -10,7 +10,6 @@ public class Player extends Entity {
 
         PlayerComponent ppc = new PlayerComponent();
         this.add(ppc);
-        this.add(new HasShieldComponent());
         this.add(new HasLasersComponent(150, HasLasersComponent.SINGLE));
         this.add(new SpeedComponent(0, 0));
         this.add(new TakesDamageComponent(50, DamageSystem.ENEMY ^ DamageSystem.ENEMY_LASER ^ DamageSystem.METEOR));
