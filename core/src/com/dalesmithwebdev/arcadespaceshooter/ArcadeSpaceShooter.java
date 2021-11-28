@@ -39,6 +39,7 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 
 	public static Texture laserRed;
 	public static Texture laserGreen;
+	public static Texture laserBlue;
 
 	public static ArrayList<Texture> shipTextures;
 
@@ -48,6 +49,7 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 	//Explosions for laser-meteor collisions
 	public static Texture explosionTexture;
 	public static Texture explosionTextureGreen;
+	public static Texture explosionTextureBlue;
 
 	public static Music backgroundMusic;
 
@@ -98,6 +100,7 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 		//Lasers
 		laserRed = new Texture(Gdx.files.internal("lasers/laserRed.png"));
 		laserGreen = new Texture(Gdx.files.internal("lasers/laserGreen.png"));
+		laserBlue = new Texture(Gdx.files.internal("lasers/laserBlue12.png"));
 
 		//Meteors
 		meteorBig = new Texture(Gdx.files.internal("meteors/meteorBig.png"));
@@ -106,6 +109,7 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 		//Explosions
 		explosionTexture = new Texture(Gdx.files.internal("lasers/laserRedShot.png"));
 		explosionTextureGreen = new Texture(Gdx.files.internal("lasers/laserGreenShot.png"));
+		explosionTextureBlue = new Texture(Gdx.files.internal("lasers/laserBlue08.png"));
 
 		PushScreen(new BackgroundScreen());
 		PushScreen(new StartScreen());

@@ -28,6 +28,8 @@ public class InputSystem extends EntitySystem {
             player = playerEntities.get(0);
         }
 
+        HasLasersComponent hasLasersComponent = ComponentMap.hasLasersComponentComponentMapper.get(player);
+
         if(!ComponentMap.renderComponentComponentMapper.has(player))
         {
             ArcadeSpaceShooter.kills = 0;
@@ -35,7 +37,7 @@ public class InputSystem extends EntitySystem {
             PlayerComponent ppc = ComponentMap.playerComponentComponentMapper.get(player);
 
             ppc.timeSinceRespawn = 0;
-            ppc.laserLevel = 0;
+            hasLasersComponent.typeMask = HasLasersComponent.SINGLE;
 
             //Remove shield upgrade on respawn
             //player.RemoveComponent(typeof(HasShieldComponent));
@@ -74,7 +76,6 @@ public class InputSystem extends EntitySystem {
         }
 
         sc.motion = new Vector2(0, 0);
-        pc.lastFireTime += gameTime;
 
         if(ComponentMap.hasShieldComponentComponentMapper.has(player))
         {
@@ -118,33 +119,38 @@ public class InputSystem extends EntitySystem {
             }
         }
 
-        boolean upgradedLasers = false;
-        if (ArcadeSpaceShooter.kills > 10 && pc.laserLevel == 0)
-        {
-            pc.laserLevel = 1;
-            upgradedLasers = true;
-        }
-        if (ArcadeSpaceShooter.kills > 20 && pc.laserLevel == 1)
-        {
-            pc.laserLevel = 2;
-            upgradedLasers = true;
-        }
-        if (ArcadeSpaceShooter.kills > 100 && pc.laserLevel == 2)
-        {
-            pc.laserLevel = 3;
-            upgradedLasers = true;
-        }
+//        HasLasersComponent hasLasersComponent = ComponentMap.hasLasersComponentComponentMapper.get(player);
+//        boolean upgradedLasers = false;
+//        if (ArcadeSpaceShooter.kills > 10 && pc.laserLevel == 0)
+//        {
+//            pc.laserLevel = 1;
+//            upgradedLasers = true;
+//        }
+//        if (ArcadeSpaceShooter.kills > 20 && pc.laserLevel == 1)
+//        {
+//            pc.laserLevel = 2;
+//            upgradedLasers = true;
+//        }
+//        if (ArcadeSpaceShooter.kills > 100 && pc.laserLevel == 2)
+//        {
+//            pc.laserLevel = 3;
+//            upgradedLasers = true;
+//        }
 
-        if (upgradedLasers)
-        {
-            Entity e = new Entity();
-            e.add(new NotificationComponent("Lasers Improved", 2000, true));
-            this.getEngine().addEntity(e);
-        }
+//        if (upgradedLasers)
+//        {
+//            Entity e = new Entity();
+//            e.add(new NotificationComponent("Lasers Improved", 2000, true));
+//            this.getEngine().addEntity(e);
+//        }
+
+        hasLasersComponent.timeSinceLastShot += gameTime;
 
         if(Gdx.input.isKeyPressed(Input.Keys.SPACE))
         {
-            Shoot(player);
+            if(ComponentMap.hasLasersComponentComponentMapper.has(player)) {
+                Shoot(player);
+            }
         }
         if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
         {
@@ -174,68 +180,75 @@ public class InputSystem extends EntitySystem {
 
     private void Shoot(Entity player)
     {
-        PlayerComponent pc = ComponentMap.playerComponentComponentMapper.get(player);
         PositionComponent posc = ComponentMap.positionComponentComponentMapper.get(player);
+        HasLasersComponent hasLasersComponent = ComponentMap.hasLasersComponentComponentMapper.get(player);
+        //int fireTime = pc.laserLevel == 0 ? 150 : pc.laserLevel == 1 ? 100 : 80;
 
-        int fireTime = pc.laserLevel == 0 ? 150 : pc.laserLevel == 1 ? 100 : 80;
-
-        if (pc.lastFireTime > fireTime)
+        if (hasLasersComponent.timeSinceLastShot > hasLasersComponent.shotInterval)
         {
+            hasLasersComponent.timeSinceLastShot = 0;
+
             Texture laser = ArcadeSpaceShooter.laserRed;
-            if (pc.laserLevel >= 1)
+            Texture explosion = ArcadeSpaceShooter.explosionTexture;
+            int laserDamage = 1;
+            if ((hasLasersComponent.typeMask & HasLasersComponent.UPGRADED) > 0)
             {
                 laser = ArcadeSpaceShooter.laserGreen;
+                laserDamage = 2;
+                explosion = ArcadeSpaceShooter.explosionTextureGreen;
+            }
+            if ((hasLasersComponent.typeMask & HasLasersComponent.UPGRADED_AGAIN) > 0)
+            {
+                laser = ArcadeSpaceShooter.laserBlue;
+                laserDamage = 3;
+                explosion = ArcadeSpaceShooter.explosionTextureBlue;
             }
 
-            Texture expTexToUse = pc.laserLevel == 0 ? ArcadeSpaceShooter.explosionTexture : ArcadeSpaceShooter.explosionTextureGreen;
-
-            if (pc.laserLevel < 2)
-            {
+            if((hasLasersComponent.typeMask & HasLasersComponent.SINGLE) > 0) {
                 Entity newLaser = new Entity();
                 newLaser.add(new RenderComponent(laser));
-                newLaser.add(new LaserComponent(expTexToUse));
-                newLaser.add(new SpeedComponent(new Vector2(0, 20)));
+                newLaser.add(new LaserComponent(explosion));
+                newLaser.add(new SpeedComponent(0, 20));
                 newLaser.add(new PositionComponent(new Vector2(posc.position.x, posc.position.y + laser.getHeight() / 2.0f + 40)));
-                newLaser.add(new DealsDamageComponent(pc.laserLevel + 1, DamageSystem.LASER));
+                newLaser.add(new DealsDamageComponent(laserDamage, DamageSystem.LASER));
                 this.getEngine().addEntity(newLaser);
             }
-            if (pc.laserLevel >= 2)
-            {
+
+            if((hasLasersComponent.typeMask & HasLasersComponent.DUAL) > 0) {
                 Entity newLaser1 = new Entity();
                 newLaser1.add(new RenderComponent(laser));
-                newLaser1.add(new LaserComponent(expTexToUse));
-                newLaser1.add(new SpeedComponent(new Vector2(0, 20)));
+                newLaser1.add(new LaserComponent(explosion));
+                newLaser1.add(new SpeedComponent(0, 20));
                 newLaser1.add(new PositionComponent(new Vector2(posc.position.x - 10, posc.position.y + laser.getHeight() / 2.0f + 40)));
-                newLaser1.add(new DealsDamageComponent(pc.laserLevel + 1, DamageSystem.LASER));
+                newLaser1.add(new DealsDamageComponent(laserDamage, DamageSystem.LASER));
                 this.getEngine().addEntity(newLaser1);
 
                 Entity newLaser2 = new Entity();
                 newLaser2.add(new RenderComponent(laser));
-                newLaser2.add(new LaserComponent(expTexToUse));
-                newLaser2.add(new SpeedComponent(new Vector2(0, 20)));
+                newLaser2.add(new LaserComponent(explosion));
+                newLaser2.add(new SpeedComponent(0, 20));
                 newLaser2.add(new PositionComponent(new Vector2(posc.position.x + 10, posc.position.y + laser.getHeight() / 2.0f + 40)));
-                newLaser2.add(new DealsDamageComponent(pc.laserLevel + 1, DamageSystem.LASER));
+                newLaser2.add(new DealsDamageComponent(laserDamage, DamageSystem.LASER));
                 this.getEngine().addEntity(newLaser2);
             }
-            if (pc.laserLevel >= 3)
-            {
+
+            if((hasLasersComponent.typeMask & HasLasersComponent.DIAGONAL) > 0) {
                 Entity newLaser1 = new Entity();
                 newLaser1.add(new RenderComponent(laser));
-                newLaser1.add(new LaserComponent(expTexToUse));
-                newLaser1.add(new SpeedComponent(new Vector2(-10, 20)));
+                newLaser1.add(new LaserComponent(explosion));
+                newLaser1.add(new SpeedComponent(-10, 20));
                 newLaser1.add(new PositionComponent(new Vector2(posc.position.x - 10, posc.position.y + laser.getHeight() / 2.0f + 40)));
-                newLaser1.add(new DealsDamageComponent(pc.laserLevel + 1, DamageSystem.LASER));
+                newLaser1.add(new DealsDamageComponent( laserDamage, DamageSystem.LASER));
                 this.getEngine().addEntity(newLaser1);
 
                 Entity newLaser2 = new Entity();
                 newLaser2.add(new RenderComponent(laser));
-                newLaser2.add(new LaserComponent(expTexToUse));
-                newLaser2.add(new SpeedComponent(new Vector2(10, 20)));
+                newLaser2.add(new LaserComponent(explosion));
+                newLaser2.add(new SpeedComponent(10, 20));
                 newLaser2.add(new PositionComponent(new Vector2(posc.position.x + 10, posc.position.y + laser.getHeight() / 2.0f + 40)));
-                newLaser2.add(new DealsDamageComponent(pc.laserLevel + 1, DamageSystem.LASER));
+                newLaser2.add(new DealsDamageComponent(laserDamage, DamageSystem.LASER));
                 this.getEngine().addEntity(newLaser2);
             }
-            pc.lastFireTime = 0;
         }
     }
 }

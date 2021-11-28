@@ -4,10 +4,12 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
 import com.dalesmithwebdev.arcadespaceshooter.components.*;
 import com.dalesmithwebdev.arcadespaceshooter.utility.ComponentMap;
+import com.dalesmithwebdev.arcadespaceshooter.utility.Rand;
 
 public class EnemyLogicSystem extends EntitySystem {
     public void update(float gameTime)
@@ -16,10 +18,8 @@ public class EnemyLogicSystem extends EntitySystem {
         ImmutableArray<Entity> enemies = this.getEngine().getEntitiesFor(Family.all(EnemyComponent.class, PositionComponent.class, SpeedComponent.class).get());
         for(Entity enemy : enemies)
         {
-            EnemyComponent ec = ComponentMap.enemyComponentComponentMapper.get(enemy);//(EnemyComponent)enemy.components[typeof(EnemyComponent)];
-            PositionComponent pc = ComponentMap.positionComponentComponentMapper.get(enemy);//(PositionComponent)enemy.components[typeof(PositionComponent)];
-            SpeedComponent sc = ComponentMap.speedComponentComponentMapper.get(enemy);//(SpeedComponent)enemy.components[typeof(SpeedComponent)];
-
+            PositionComponent pc = ComponentMap.positionComponentComponentMapper.get(enemy);
+            SpeedComponent sc = ComponentMap.speedComponentComponentMapper.get(enemy);
 
             if (pc.position.y >= ArcadeSpaceShooter.screenRect.height)
             {
@@ -57,99 +57,88 @@ public class EnemyLogicSystem extends EntitySystem {
                 continue;
             }
 
-            ec.timeSinceLastShot += gameTime;
-            if (ec.timeSinceLastShot >= ec.shotInterval)
-            {
-                ec.timeSinceLastShot = 0;
+            EnemyComponent ec = ComponentMap.enemyComponentComponentMapper.get(enemy);
+            if(ComponentMap.hasLasersComponentComponentMapper.has(enemy)) {
+                HasLasersComponent hasLasersComponent = ComponentMap.hasLasersComponentComponentMapper.get(enemy);
+                hasLasersComponent.timeSinceLastShot += gameTime;
+                if (hasLasersComponent.timeSinceLastShot >= hasLasersComponent.shotInterval) {
+                    if(Rand.nextInt(100) < 20) {
+                        hasLasersComponent.timeSinceLastShot = 0;
 
-                // is this a boss firing this laser?
-                if(ComponentMap.bossEnemyComponentComponentMapper.has(enemy)) {
-                    // check the laser level
-                    BossEnemyComponent bossEnemyComponent = ComponentMap.bossEnemyComponentComponentMapper.get(enemy);
-                    if(bossEnemyComponent.laserStrength == 1) {
-                        Entity newLaser = new Entity();
-                        newLaser.add(new RenderComponent(ArcadeSpaceShooter.laserRed));
-                        newLaser.add(new LaserComponent(ArcadeSpaceShooter.explosionTexture));
-                        newLaser.add(new SpeedComponent(new Vector2(0, -20)));
-                        newLaser.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f, pc.position.y - 30)));
-                        newLaser.add(new DealsDamageComponent(10, DamageSystem.ENEMY_LASER));
-                        this.getEngine().addEntity(newLaser);
-                    } else if(bossEnemyComponent.laserStrength == 2) {
-                        Entity newLaser = new Entity();
-                        newLaser.add(new RenderComponent(ArcadeSpaceShooter.laserGreen));
-                        newLaser.add(new LaserComponent(ArcadeSpaceShooter.explosionTextureGreen));
-                        newLaser.add(new SpeedComponent(new Vector2(0, -20)));
-                        newLaser.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f, pc.position.y - 30)));
-                        newLaser.add(new DealsDamageComponent(20, DamageSystem.ENEMY_LASER));
-                        this.getEngine().addEntity(newLaser);
-                    } else if(bossEnemyComponent.laserStrength == 3) {
-                        Entity newLaser = new Entity();
-                        newLaser.add(new RenderComponent(ArcadeSpaceShooter.laserGreen));
-                        newLaser.add(new LaserComponent(ArcadeSpaceShooter.explosionTextureGreen));
-                        newLaser.add(new SpeedComponent(new Vector2(0, -20)));
-                        newLaser.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f - 10, pc.position.y - 30)));
-                        newLaser.add(new DealsDamageComponent(20, DamageSystem.ENEMY_LASER));
-                        this.getEngine().addEntity(newLaser);
+                        boolean upgraded = (hasLasersComponent.typeMask & HasLasersComponent.UPGRADED) > 0;
+                        boolean upgraded_twice = (hasLasersComponent.typeMask & HasLasersComponent.UPGRADED_AGAIN) > 0;
 
-                        Entity newLaser2 = new Entity();
-                        newLaser2.add(new RenderComponent(ArcadeSpaceShooter.laserGreen));
-                        newLaser2.add(new LaserComponent(ArcadeSpaceShooter.explosionTextureGreen));
-                        newLaser2.add(new SpeedComponent(new Vector2(0, -20)));
-                        newLaser2.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f + 10, pc.position.y - 30)));
-                        newLaser2.add(new DealsDamageComponent(20, DamageSystem.ENEMY_LASER));
-                        this.getEngine().addEntity(newLaser2);
-                    } else if (bossEnemyComponent.laserStrength == 4) {
-                        Entity newLaser = new Entity();
-                        newLaser.add(new RenderComponent(ArcadeSpaceShooter.laserGreen));
-                        newLaser.add(new LaserComponent(ArcadeSpaceShooter.explosionTextureGreen));
-                        newLaser.add(new SpeedComponent(new Vector2(0, -20)));
-                        newLaser.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f - 10, pc.position.y - 30)));
-                        newLaser.add(new DealsDamageComponent(20, DamageSystem.ENEMY_LASER));
-                        this.getEngine().addEntity(newLaser);
+                        int damageAmount = 10;
+                        Texture explosion = ArcadeSpaceShooter.explosionTexture;
+                        Texture laserGraphic = ArcadeSpaceShooter.laserRed;
+                        if(upgraded) {
+                            damageAmount = 20;
+                            explosion = ArcadeSpaceShooter.explosionTextureGreen;
+                            laserGraphic = ArcadeSpaceShooter.laserGreen;
+                        }
+                        if(upgraded_twice) {
+                            damageAmount = 30;
+                            explosion = ArcadeSpaceShooter.explosionTextureBlue;
+                            laserGraphic = ArcadeSpaceShooter.laserBlue;
+                        }
 
-                        Entity newLaser2 = new Entity();
-                        newLaser2.add(new RenderComponent(ArcadeSpaceShooter.laserGreen));
-                        newLaser2.add(new LaserComponent(ArcadeSpaceShooter.explosionTextureGreen));
-                        newLaser2.add(new SpeedComponent(new Vector2(0, -20)));
-                        newLaser2.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f + 10, pc.position.y - 30)));
-                        newLaser2.add(new DealsDamageComponent(20, DamageSystem.ENEMY_LASER));
-                        this.getEngine().addEntity(newLaser2);
+                        if((hasLasersComponent.typeMask & HasLasersComponent.SINGLE) > 0) {
+                            Entity newLaser = new Entity();
+                            newLaser.add(new RenderComponent(laserGraphic));
+                            newLaser.add(new LaserComponent(explosion));
+                            newLaser.add(new SpeedComponent(0, -20));
+                            newLaser.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f, pc.position.y - 30)));
+                            newLaser.add(new DealsDamageComponent(damageAmount, DamageSystem.ENEMY_LASER));
+                            this.getEngine().addEntity(newLaser);
+                        }
 
-                        Entity newLaser3 = new Entity();
-                        newLaser3.add(new RenderComponent(ArcadeSpaceShooter.laserGreen));
-                        newLaser3.add(new LaserComponent(ArcadeSpaceShooter.explosionTextureGreen));
-                        newLaser3.add(new SpeedComponent(new Vector2(10, -20)));
-                        newLaser3.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f - 10, pc.position.y - 30)));
-                        newLaser3.add(new DealsDamageComponent(20, DamageSystem.ENEMY_LASER));
-                        this.getEngine().addEntity(newLaser3);
+                        if ((hasLasersComponent.typeMask & HasLasersComponent.DUAL) > 0) {
+                            Entity newLaser = new Entity();
+                            newLaser.add(new RenderComponent(laserGraphic));
+                            newLaser.add(new LaserComponent(explosion));
+                            newLaser.add(new SpeedComponent(0, -20));
+                            newLaser.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f - 10, pc.position.y - 30)));
+                            newLaser.add(new DealsDamageComponent(damageAmount, DamageSystem.ENEMY_LASER));
+                            this.getEngine().addEntity(newLaser);
 
-                        Entity newLaser4 = new Entity();
-                        newLaser4.add(new RenderComponent(ArcadeSpaceShooter.laserGreen));
-                        newLaser4.add(new LaserComponent(ArcadeSpaceShooter.explosionTextureGreen));
-                        newLaser4.add(new SpeedComponent(new Vector2(-10, -20)));
-                        newLaser4.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f + 10, pc.position.y - 30)));
-                        newLaser4.add(new DealsDamageComponent(20, DamageSystem.ENEMY_LASER));
-                        this.getEngine().addEntity(newLaser4);
+                            Entity newLaser2 = new Entity();
+                            newLaser2.add(new RenderComponent(laserGraphic));
+                            newLaser2.add(new LaserComponent(explosion));
+                            newLaser2.add(new SpeedComponent(0, -20));
+                            newLaser2.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f + 10, pc.position.y - 30)));
+                            newLaser2.add(new DealsDamageComponent(damageAmount, DamageSystem.ENEMY_LASER));
+                            this.getEngine().addEntity(newLaser2);
+                        }
+
+                        if ((hasLasersComponent.typeMask & HasLasersComponent.DIAGONAL) > 0) {
+                            Entity newLaser3 = new Entity();
+                            newLaser3.add(new RenderComponent(laserGraphic));
+                            newLaser3.add(new LaserComponent(explosion));
+                            newLaser3.add(new SpeedComponent(10, -20));
+                            newLaser3.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f - 10, pc.position.y - 30)));
+                            newLaser3.add(new DealsDamageComponent(damageAmount, DamageSystem.ENEMY_LASER));
+                            this.getEngine().addEntity(newLaser3);
+
+                            Entity newLaser4 = new Entity();
+                            newLaser4.add(new RenderComponent(laserGraphic));
+                            newLaser4.add(new LaserComponent(explosion));;
+                            newLaser4.add(new SpeedComponent(-10, -20));
+                            newLaser4.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f + 10, pc.position.y - 30)));
+                            newLaser4.add(new DealsDamageComponent(damageAmount, DamageSystem.ENEMY_LASER));
+                            this.getEngine().addEntity(newLaser4);
+                        }
                     }
-                } else {
-                    Entity newLaser = new Entity();
-                    newLaser.add(new RenderComponent(ArcadeSpaceShooter.laserGreen));
-                    newLaser.add(new LaserComponent(ArcadeSpaceShooter.explosionTextureGreen));
-                    newLaser.add(new SpeedComponent(new Vector2(0, -20)));
-                    newLaser.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f, pc.position.y - 30)));
-                    newLaser.add(new DealsDamageComponent(10, DamageSystem.ENEMY_LASER));
-                    this.getEngine().addEntity(newLaser);
                 }
             }
 
             float movement = pc.position.x - playerPosition.position.x;
             if (movement > 0)
             {
-                sc.motion.x = (float)-ec.movementSpeed;
+                sc.motion.x = (float)-sc.movementSpeed;
             }
             else
             {
-                sc.motion.x = (float)ec.movementSpeed;
+                sc.motion.x = (float)sc.movementSpeed;
             }
         }
     }

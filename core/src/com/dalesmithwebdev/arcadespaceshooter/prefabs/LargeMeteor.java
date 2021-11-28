@@ -14,7 +14,7 @@ public class LargeMeteor extends Entity {
         this.add(new TakesDamageComponent(10, DamageSystem.LASER));
         this.add(new DealsDamageComponent(10, DamageSystem.METEOR));
         int[] speeds = new int[] { 1, 1, 1, 2, 2, 2, 3, 3, 4, 5 };
-        this.add(new SpeedComponent(new Vector2(0, -speeds[Rand.nextInt(speeds.length)])));
+        this.add(new SpeedComponent(0, -speeds[Rand.nextInt(speeds.length)]));
         this.add(new PositionComponent(new Vector2(Rand.nextInt((int)ArcadeSpaceShooter.screenRect.width), yPos)));
     }
 }

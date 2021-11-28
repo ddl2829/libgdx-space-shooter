@@ -18,4 +18,8 @@ public class ComponentMap {
     public static ComponentMapper<ShieldedComponent> shieldedComponentComponentMapper = ComponentMapper.getFor(ShieldedComponent.class);
     public static ComponentMapper<SpeedComponent> speedComponentComponentMapper = ComponentMapper.getFor(SpeedComponent.class);
     public static ComponentMapper<TakesDamageComponent> takesDamageComponentComponentMapper = ComponentMapper.getFor(TakesDamageComponent.class);
+    public static ComponentMapper<HasBombsComponent> hasBombsComponentComponentMapper = ComponentMapper.getFor(HasBombsComponent.class);
+    public static ComponentMapper<HasEmpComponent> hasEmpComponentComponentMapper = ComponentMapper.getFor(HasEmpComponent.class);
+    public static ComponentMapper<HasLasersComponent> hasLasersComponentComponentMapper = ComponentMapper.getFor(HasLasersComponent.class);
+    public static ComponentMapper<HasMissilesComponent> hasMissilesComponentComponentMapper = ComponentMapper.getFor(HasMissilesComponent.class);
 }
