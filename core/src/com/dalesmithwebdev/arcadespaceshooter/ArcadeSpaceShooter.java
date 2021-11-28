@@ -4,10 +4,13 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Rectangle;
 import com.dalesmithwebdev.arcadespaceshooter.screens.BackgroundScreen;
@@ -158,9 +161,6 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 		empVertexShader = Gdx.files.internal("shaders/emp/vertex.glsl").readString();
 		empShader = new ShaderProgram(empVertexShader, empFragmentShader);
 
-		//meteorBig = new Texture(Gdx.files.internal("meteors/meteorBig.png"));
-		//meteorSmall = new Texture(Gdx.files.internal("meteors/meteorSmall.png"));
-
 		//Explosions
 		explosionTexture = new Texture(Gdx.files.internal("lasers/laserRedShot.png"));
 		explosionTextureGreen = new Texture(Gdx.files.internal("lasers/laserGreenShot.png"));
@@ -185,21 +185,30 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 				empActive = false;
 			}
 		}
+
+		spriteBatch.begin();
+		spriteBatch.draw(ArcadeSpaceShooter.background, 0, 0, screenRect.width, screenRect.height);
+		spriteBatch.end();
+
+		FrameBuffer fbo = new FrameBuffer(Pixmap.Format.RGBA8888, (int)screenRect.width, (int)screenRect.height, false);
+		fbo.begin();
+
 		spriteBatch.begin();
 
-		ArcadeSpaceShooter.spriteBatch.setShader(null);
-
-		if(ArcadeSpaceShooter.empActive) {
-			ArcadeSpaceShooter.empShader.setUniformf("iTime", totalTime);
-			ArcadeSpaceShooter.spriteBatch.setShader(ArcadeSpaceShooter.empShader);
-		}
-
-		spriteBatch.draw(background, 0, 0, screenRect.width, screenRect.height);
 		for(int i = 0; i < screens.size(); i++)
 		{
 			BaseScreen screen = screens.get(i);
 			screen.draw(dt);
 		}
+
+		spriteBatch.end();
+
+		fbo.end();
+
+		Sprite s = new Sprite(fbo.getColorBufferTexture());
+		s.flip(false,true);
+
+		spriteBatch.begin();
 		for(int i = screens.size() - 1; i >= 0; i--)
 		{
 			BaseScreen screen = screens.get(i);
@@ -210,6 +219,11 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 			}
 		}
 		spriteBatch.end();
+
+		spriteBatch.begin();
+		spriteBatch.draw(s, 0, 0, screenRect.width, screenRect.height);
+		spriteBatch.end();
+
 	}
 
 	
