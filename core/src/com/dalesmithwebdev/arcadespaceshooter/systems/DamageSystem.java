@@ -73,7 +73,7 @@ public class DamageSystem extends EntitySystem {
 
                         //Spawn an explosion at the location of collision
                         Entity explosion = new Entity();
-                        explosion.add(new RenderComponent(dd_lc.explosionTexture));
+                        explosion.add(new RenderComponent(dd_lc.explosionTexture, RenderComponent.PLANE_ABOVE));
                         explosion.add(new PositionComponent(dd_pc.position));
                         explosion.add(new ExplosionComponent());
                         this.getEngine().addEntity(explosion);
@@ -84,7 +84,7 @@ public class DamageSystem extends EntitySystem {
                     {
                         //Spawn an explosion at the location of collision
                         Entity explosion = new Entity();
-                        explosion.add(new RenderComponent(ArcadeSpaceShooter.explosionTexture));
+                        explosion.add(new RenderComponent(ArcadeSpaceShooter.explosionTexture, RenderComponent.PLANE_ABOVE));
                         explosion.add(new PositionComponent(dd_pc.position));
                         explosion.add(new ExplosionComponent());
                         this.getEngine().addEntity(explosion);
@@ -95,7 +95,7 @@ public class DamageSystem extends EntitySystem {
                     {
                         //Spawn an explosion at the location of collision
                         Entity explosion = new Entity();
-                        explosion.add(new RenderComponent(ArcadeSpaceShooter.explosionTexture));
+                        explosion.add(new RenderComponent(ArcadeSpaceShooter.explosionTexture, RenderComponent.PLANE_ABOVE));
                         explosion.add(new PositionComponent(dd_pc.position));
                         explosion.add(new ExplosionComponent(200));
                         explosion.add(new DealsDamageComponent(10, DamageSystem.BOMB));
@@ -352,7 +352,7 @@ public class DamageSystem extends EntitySystem {
                                     newMeteor.add(new MeteorComponent(false));
                                     newMeteor.add(new TakesDamageComponent(2, LASER ^ MISSILE ^ BOMB));
                                     newMeteor.add(new DealsDamageComponent(5, METEOR));
-                                    newMeteor.add(new RenderComponent(ArcadeSpaceShooter.smallMeteors.get(Rand.nextInt(ArcadeSpaceShooter.smallMeteors.size()))));
+                                    newMeteor.add(new RenderComponent(ArcadeSpaceShooter.smallMeteors.get(Rand.nextInt(ArcadeSpaceShooter.smallMeteors.size())), RenderComponent.PLANE_MAIN));
                                     newMeteor.add(new SpeedComponent(this.randomInRange(-3, 3), this.randomInRange(2, 5) * -1));
                                     newMeteor.add(new PositionComponent(new Vector2(td_pc.position.x, td_pc.position.y)));
                                     this.getEngine().addEntity(newMeteor);

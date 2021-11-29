@@ -31,6 +31,8 @@ public class StartScreen extends BaseScreen {
         {
             Gdx.app.exit();
         }
+
+        ArcadeSpaceShooter.engine.update(gameTime);
     }
 
     public void draw(float gameTime)

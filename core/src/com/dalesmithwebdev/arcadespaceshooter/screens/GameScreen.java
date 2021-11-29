@@ -3,9 +3,16 @@ package com.dalesmithwebdev.arcadespaceshooter.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
+import com.dalesmithwebdev.arcadespaceshooter.systems.InputSystem;
+import com.dalesmithwebdev.arcadespaceshooter.systems.LevelSystem;
 
 public class GameScreen extends BaseScreen {
     public static float timeStayedAlive = 0;
+
+    public GameScreen() {
+        ArcadeSpaceShooter.engine.addSystem(new LevelSystem());
+        ArcadeSpaceShooter.engine.addSystem(new InputSystem());
+    }
 
     public void update(float gameTime)
     {

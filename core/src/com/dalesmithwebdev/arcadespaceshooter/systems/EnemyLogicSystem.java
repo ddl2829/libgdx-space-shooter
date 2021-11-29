@@ -84,7 +84,7 @@ public class EnemyLogicSystem extends EntitySystem {
 
                         if((hasLasersComponent.typeMask & HasLasersComponent.SINGLE) > 0) {
                             Entity newLaser = new Entity();
-                            newLaser.add(new RenderComponent(laserGraphic));
+                            newLaser.add(new RenderComponent(laserGraphic, RenderComponent.PLANE_ABOVE));
                             newLaser.add(new LaserComponent(explosion));
                             newLaser.add(new SpeedComponent(0, -20));
                             newLaser.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f, pc.position.y - 30)));
@@ -94,7 +94,7 @@ public class EnemyLogicSystem extends EntitySystem {
 
                         if ((hasLasersComponent.typeMask & HasLasersComponent.DUAL) > 0) {
                             Entity newLaser = new Entity();
-                            newLaser.add(new RenderComponent(laserGraphic));
+                            newLaser.add(new RenderComponent(laserGraphic, RenderComponent.PLANE_ABOVE));
                             newLaser.add(new LaserComponent(explosion));
                             newLaser.add(new SpeedComponent(0, -20));
                             newLaser.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f - 10, pc.position.y - 30)));
@@ -102,7 +102,7 @@ public class EnemyLogicSystem extends EntitySystem {
                             this.getEngine().addEntity(newLaser);
 
                             Entity newLaser2 = new Entity();
-                            newLaser2.add(new RenderComponent(laserGraphic));
+                            newLaser2.add(new RenderComponent(laserGraphic, RenderComponent.PLANE_ABOVE));
                             newLaser2.add(new LaserComponent(explosion));
                             newLaser2.add(new SpeedComponent(0, -20));
                             newLaser2.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f + 10, pc.position.y - 30)));
@@ -112,7 +112,7 @@ public class EnemyLogicSystem extends EntitySystem {
 
                         if ((hasLasersComponent.typeMask & HasLasersComponent.DIAGONAL) > 0) {
                             Entity newLaser3 = new Entity();
-                            newLaser3.add(new RenderComponent(laserGraphic));
+                            newLaser3.add(new RenderComponent(laserGraphic, RenderComponent.PLANE_ABOVE));
                             newLaser3.add(new LaserComponent(explosion));
                             newLaser3.add(new SpeedComponent(10, -20));
                             newLaser3.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f - 10, pc.position.y - 30)));
@@ -120,7 +120,7 @@ public class EnemyLogicSystem extends EntitySystem {
                             this.getEngine().addEntity(newLaser3);
 
                             Entity newLaser4 = new Entity();
-                            newLaser4.add(new RenderComponent(laserGraphic));
+                            newLaser4.add(new RenderComponent(laserGraphic, RenderComponent.PLANE_ABOVE));
                             newLaser4.add(new LaserComponent(explosion));;
                             newLaser4.add(new SpeedComponent(-10, -20));
                             newLaser4.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f + 10, pc.position.y - 30)));

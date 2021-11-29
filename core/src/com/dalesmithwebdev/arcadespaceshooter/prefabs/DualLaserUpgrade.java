@@ -8,7 +8,7 @@ import com.dalesmithwebdev.arcadespaceshooter.systems.DamageSystem;
 
 public class DualLaserUpgrade extends Entity {
     public DualLaserUpgrade(float xPos, float yPos) {
-        this.add(new RenderComponent(new Texture(Gdx.files.internal("power-ups/pill_red.png"))));
+        this.add(new RenderComponent(new Texture(Gdx.files.internal("power-ups/pill_red.png")), RenderComponent.PLANE_ABOVE));
         this.add(new PositionComponent(xPos, yPos));
         this.add(new SpeedComponent(0, -1));
         this.add(new TakesDamageComponent(1, DamageSystem.PLAYER));

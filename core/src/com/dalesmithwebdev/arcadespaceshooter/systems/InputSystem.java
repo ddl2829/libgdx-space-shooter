@@ -45,12 +45,12 @@ public class InputSystem extends EntitySystem {
             TakesDamageComponent ptdc = ComponentMap.takesDamageComponentComponentMapper.get(player);
             ptdc.health = ptdc.maxHealth;
 
-            RenderComponent prc = new RenderComponent(ArcadeSpaceShooter.shipTextures.toArray(new Texture[ArcadeSpaceShooter.shipTextures.size()]));
+            RenderComponent prc = new RenderComponent(ArcadeSpaceShooter.shipTextures.toArray(new Texture[ArcadeSpaceShooter.shipTextures.size()]), RenderComponent.PLANE_MAIN);
             player.add(prc);
             if(!ComponentMap.positionComponentComponentMapper.has(player))
             {
                 player.add(new PositionComponent(new Vector2(
-                        (ArcadeSpaceShooter.screenRect.width / 2) - (prc.CurrentTexture().getWidth() / 2.0f),
+                        (ArcadeSpaceShooter.screenRect.width / 2),
                         prc.CurrentTexture().getHeight() + 20
                 )));
             }
@@ -58,7 +58,7 @@ public class InputSystem extends EntitySystem {
             {
                 PositionComponent playerPositionComp = ComponentMap.positionComponentComponentMapper.get(player);
                 playerPositionComp.position = new Vector2(
-                        (ArcadeSpaceShooter.screenRect.width / 2) - (prc.CurrentTexture().getWidth() / 2.0f),
+                        (ArcadeSpaceShooter.screenRect.width / 2),
                         prc.CurrentTexture().getHeight() + 20
                 );
             }
@@ -183,7 +183,7 @@ public class InputSystem extends EntitySystem {
             hasMissilesComponent.timeSinceLastShot = 0;
             PositionComponent posc = ComponentMap.positionComponentComponentMapper.get(player);
             Entity missile1 = new Entity();
-            missile1.add(new RenderComponent(ArcadeSpaceShooter.missile));
+            missile1.add(new RenderComponent(ArcadeSpaceShooter.missile, RenderComponent.PLANE_ABOVE));
             missile1.add(new PositionComponent(posc.position.x - 60, posc.position.y));
             missile1.add(new SpeedComponent(-3, 1));
             missile1.add(new DealsDamageComponent(8, DamageSystem.MISSILE));
@@ -191,7 +191,7 @@ public class InputSystem extends EntitySystem {
             getEngine().addEntity(missile1);
 
             Entity missile2 = new Entity();
-            missile2.add(new RenderComponent(ArcadeSpaceShooter.missile));
+            missile2.add(new RenderComponent(ArcadeSpaceShooter.missile, RenderComponent.PLANE_ABOVE));
             missile2.add(new PositionComponent(posc.position.x + 60, posc.position.y));
             missile2.add(new SpeedComponent(3, 1));
             missile2.add(new DealsDamageComponent(5, DamageSystem.MISSILE));
@@ -207,7 +207,7 @@ public class InputSystem extends EntitySystem {
 
             PositionComponent posc = ComponentMap.positionComponentComponentMapper.get(player);
             Entity missile1 = new Entity();
-            missile1.add(new RenderComponent(ArcadeSpaceShooter.bomb));
+            missile1.add(new RenderComponent(ArcadeSpaceShooter.bomb, RenderComponent.PLANE_ABOVE));
             missile1.add(new PositionComponent(posc.position.x, posc.position.y + 50));
             missile1.add(new SpeedComponent(0, 5));
             missile1.add(new DealsDamageComponent(10, DamageSystem.BOMB));
@@ -253,7 +253,7 @@ public class InputSystem extends EntitySystem {
 
             if((hasLasersComponent.typeMask & HasLasersComponent.SINGLE) > 0) {
                 Entity newLaser = new Entity();
-                newLaser.add(new RenderComponent(laser));
+                newLaser.add(new RenderComponent(laser, RenderComponent.PLANE_ABOVE));
                 newLaser.add(new LaserComponent(explosion));
                 newLaser.add(new SpeedComponent(0, 20));
                 newLaser.add(new PositionComponent(new Vector2(posc.position.x, posc.position.y + laser.getHeight() / 2.0f + 40)));
@@ -263,7 +263,7 @@ public class InputSystem extends EntitySystem {
 
             if((hasLasersComponent.typeMask & HasLasersComponent.DUAL) > 0) {
                 Entity newLaser1 = new Entity();
-                newLaser1.add(new RenderComponent(laser));
+                newLaser1.add(new RenderComponent(laser, RenderComponent.PLANE_ABOVE));
                 newLaser1.add(new LaserComponent(explosion));
                 newLaser1.add(new SpeedComponent(0, 20));
                 newLaser1.add(new PositionComponent(new Vector2(posc.position.x - 10, posc.position.y + laser.getHeight() / 2.0f + 40)));
@@ -271,7 +271,7 @@ public class InputSystem extends EntitySystem {
                 this.getEngine().addEntity(newLaser1);
 
                 Entity newLaser2 = new Entity();
-                newLaser2.add(new RenderComponent(laser));
+                newLaser2.add(new RenderComponent(laser, RenderComponent.PLANE_ABOVE));
                 newLaser2.add(new LaserComponent(explosion));
                 newLaser2.add(new SpeedComponent(0, 20));
                 newLaser2.add(new PositionComponent(new Vector2(posc.position.x + 10, posc.position.y + laser.getHeight() / 2.0f + 40)));
@@ -281,7 +281,7 @@ public class InputSystem extends EntitySystem {
 
             if((hasLasersComponent.typeMask & HasLasersComponent.DIAGONAL) > 0) {
                 Entity newLaser1 = new Entity();
-                newLaser1.add(new RenderComponent(laser));
+                newLaser1.add(new RenderComponent(laser, RenderComponent.PLANE_ABOVE));
                 newLaser1.add(new LaserComponent(explosion));
                 newLaser1.add(new SpeedComponent(-10, 20));
                 newLaser1.add(new PositionComponent(new Vector2(posc.position.x - 10, posc.position.y + laser.getHeight() / 2.0f + 40)));
@@ -289,7 +289,7 @@ public class InputSystem extends EntitySystem {
                 this.getEngine().addEntity(newLaser1);
 
                 Entity newLaser2 = new Entity();
-                newLaser2.add(new RenderComponent(laser));
+                newLaser2.add(new RenderComponent(laser, RenderComponent.PLANE_ABOVE));
                 newLaser2.add(new LaserComponent(explosion));
                 newLaser2.add(new SpeedComponent(10, 20));
                 newLaser2.add(new PositionComponent(new Vector2(posc.position.x + 10, posc.position.y + laser.getHeight() / 2.0f + 40)));

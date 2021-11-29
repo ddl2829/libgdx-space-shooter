@@ -6,6 +6,8 @@ import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
 import com.dalesmithwebdev.arcadespaceshooter.components.*;
 import com.dalesmithwebdev.arcadespaceshooter.systems.DamageSystem;
 
+import javax.naming.ldap.Rdn;
+
 public class FighterBoss extends Entity {
     public FighterBoss(int levelNumber, int yPos) {
 
@@ -25,7 +27,7 @@ public class FighterBoss extends Entity {
 
         this.add(new EnemyComponent());
         this.add(new HasLasersComponent(Math.max(1000 - (20 * levelNumber), 100), laserMask));
-        this.add(new RenderComponent(ArcadeSpaceShooter.bossTexture));
+        this.add(new RenderComponent(ArcadeSpaceShooter.bossTexture, RenderComponent.PLANE_MAIN));
         this.add(new PositionComponent(new Vector2(ArcadeSpaceShooter.screenRect.width / 2, yPos)));
         this.add(new SpeedComponent(0.5 + (0.1 * levelNumber)));
         this.add(new TakesDamageComponent(50 + (10 * levelNumber), DamageSystem.LASER ^ DamageSystem.MISSILE ^ DamageSystem.BOMB));

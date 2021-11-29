@@ -7,17 +7,29 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Sort;
 import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
 import com.dalesmithwebdev.arcadespaceshooter.components.*;
 import com.dalesmithwebdev.arcadespaceshooter.utility.ComponentMap;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 public class RenderSystem extends EntitySystem {
 
-    @Override
-    public void update(float deltaTime) {
-        ImmutableArray<Entity> sprites = this.getEngine().getEntitiesFor(Family.all(RenderComponent.class, PositionComponent.class).get());
-
-        for(Entity drawable : sprites)
+    public void RenderList(ImmutableArray<Entity> sprites) {
+        Array<Entity> s = new Array<>(sprites.toArray());
+        Sort.instance().sort(s, new Comparator<Entity>() {
+            @Override
+            public int compare(Entity o1, Entity o2) {
+                RenderComponent r1 = ComponentMap.renderComponentComponentMapper.get(o1);
+                RenderComponent r2 = ComponentMap.renderComponentComponentMapper.get(o2);
+                return Integer.compare(r1.zIndex, r2.zIndex);
+            }
+        });
+        for(Entity drawable : s)
         {
             PositionComponent pc = ComponentMap.positionComponentComponentMapper.get(drawable);
             RenderComponent rc = ComponentMap.renderComponentComponentMapper.get(drawable);
@@ -27,7 +39,11 @@ public class RenderSystem extends EntitySystem {
                     ExplosionComponent ec = ComponentMap.explosionComponentComponentMapper.get(drawable);
                     ArcadeSpaceShooter.spriteBatch.draw(rc.CurrentTexture(), (int) pc.position.x - ec.radius, (int) pc.position.y - ec.radius, ec.radius * 2, ec.radius * 2);
                 } else {
-                    ArcadeSpaceShooter.spriteBatch.draw(rc.CurrentTexture(), (int) pc.position.x - (rc.CurrentTexture().getWidth() / 2.0f), (int) pc.position.y - (rc.CurrentTexture().getHeight() / 2.0f), rc.CurrentTexture().getWidth(), rc.CurrentTexture().getHeight());
+                    if(rc.width == 0) {
+                        ArcadeSpaceShooter.spriteBatch.draw(rc.CurrentTexture(), (int) pc.position.x - (rc.CurrentTexture().getWidth() / 2.0f), (int) pc.position.y - (rc.CurrentTexture().getHeight() / 2.0f), rc.CurrentTexture().getWidth(), rc.CurrentTexture().getHeight());
+                    } else {
+                        ArcadeSpaceShooter.spriteBatch.draw(rc.CurrentTexture(), (int) pc.position.x - (rc.width / 2.0f), (int) pc.position.y - (rc.height / 2.0f), rc.width, rc.height);
+                    }
                 }
 
                 if (ComponentMap.playerComponentComponentMapper.has(drawable))
@@ -48,7 +64,17 @@ public class RenderSystem extends EntitySystem {
                 }
             }
         }
+    }
 
+    @Override
+    public void update(float deltaTime) {
+        ImmutableArray<Entity> sprites = this.getEngine().getEntitiesFor(Family.all(RenderComponent.class, PositionComponent.class).get());
+
+        ArcadeSpaceShooter.spriteBatch.begin();
+        RenderList(sprites);
+        ArcadeSpaceShooter.spriteBatch.end();
+
+        ArcadeSpaceShooter.spriteBatch.begin();
         ImmutableArray<Entity> players = this.getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
         if (players.size() > 0)
         {
@@ -117,5 +143,39 @@ public class RenderSystem extends EntitySystem {
                 ArcadeSpaceShooter.spriteBatch.setColor(Color.WHITE);
             }
         }
+
+
+        ImmutableArray<Entity> notifications = this.getEngine().getEntitiesFor(Family.all(NotificationComponent.class).get());
+        for (Entity notification : notifications)
+        {
+            NotificationComponent notificationComponent = ComponentMap.notificationComponentComponentMapper.get(notification);
+            notificationComponent.elapsedTime += deltaTime;
+            if (notificationComponent.elapsedTime > notificationComponent.maxLife)
+            {
+                this.getEngine().removeEntity(notification);
+                continue;
+            }
+
+            ArcadeSpaceShooter.bitmapFont.setColor(notificationComponent.color);
+            if (notificationComponent.centerText)
+            {
+                ArcadeSpaceShooter.bitmapFont.draw(
+                        ArcadeSpaceShooter.spriteBatch,
+                        notificationComponent.text,
+                        ArcadeSpaceShooter.screenRect.width / 2 - ArcadeSpaceShooter.measureText(notificationComponent.text) / 2,
+                        ArcadeSpaceShooter.screenRect.height - ArcadeSpaceShooter.screenRect.height / 3
+                );
+            }
+            else
+            {
+                if(ComponentMap.positionComponentComponentMapper.has(notification))
+                {
+                    PositionComponent pc = ComponentMap.positionComponentComponentMapper.get(notification);
+                    ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, notificationComponent.text, pc.position.x, pc.position.y);
+                }
+            }
+        }
+
+        ArcadeSpaceShooter.spriteBatch.end();
     }
 }

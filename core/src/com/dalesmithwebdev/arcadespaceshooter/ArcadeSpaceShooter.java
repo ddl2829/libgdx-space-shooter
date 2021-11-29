@@ -87,10 +87,9 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 		engine.addSystem(new MovementSystem());
 		engine.addSystem(new DamageSystem());
 		engine.addSystem(new EnemyLogicSystem());
-		engine.addSystem(new InputSystem());
+		//engine.addSystem(new InputSystem());
 		engine.addSystem(new ExplosionSystem());
-		engine.addSystem(new NotificationSystem());
-		engine.addSystem(new LevelSystem());
+		//engine.addSystem(new LevelSystem());
 
 		//Spritefont for scores & notifications
 		spriteBatch = new SpriteBatch();
@@ -186,29 +185,6 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 			}
 		}
 
-		spriteBatch.begin();
-		spriteBatch.draw(ArcadeSpaceShooter.background, 0, 0, screenRect.width, screenRect.height);
-		spriteBatch.end();
-
-		FrameBuffer fbo = new FrameBuffer(Pixmap.Format.RGBA8888, (int)screenRect.width, (int)screenRect.height, false);
-		fbo.begin();
-
-		spriteBatch.begin();
-
-		for(int i = 0; i < screens.size(); i++)
-		{
-			BaseScreen screen = screens.get(i);
-			screen.draw(dt);
-		}
-
-		spriteBatch.end();
-
-		fbo.end();
-
-		Sprite s = new Sprite(fbo.getColorBufferTexture());
-		s.flip(false,true);
-
-		spriteBatch.begin();
 		for(int i = screens.size() - 1; i >= 0; i--)
 		{
 			BaseScreen screen = screens.get(i);
@@ -218,10 +194,13 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 				break;
 			}
 		}
-		spriteBatch.end();
 
 		spriteBatch.begin();
-		spriteBatch.draw(s, 0, 0, screenRect.width, screenRect.height);
+		for(int i = 0; i < screens.size(); i++)
+		{
+			BaseScreen screen = screens.get(i);
+			screen.draw(dt);
+		}
 		spriteBatch.end();
 
 	}
