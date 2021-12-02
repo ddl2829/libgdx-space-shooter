@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Timer;
 import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
 import com.dalesmithwebdev.arcadespaceshooter.components.*;
 import com.dalesmithwebdev.arcadespaceshooter.prefabs.Player;
@@ -70,8 +71,15 @@ public class InputSystem extends EntitySystem {
 
         if(pc.lives == 0)
         {
-            ArcadeSpaceShooter.PopScreen();
-            ArcadeSpaceShooter.PushScreen(new GameOverScreen());
+            rc.visible = false;
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    ArcadeSpaceShooter.PopScreen();
+                    ArcadeSpaceShooter.PushScreen(new GameOverScreen());
+                }
+            }, 3);
+
             return;
         }
 

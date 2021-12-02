@@ -6,35 +6,55 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Sort;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.StringBuilder;
 import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
 import com.dalesmithwebdev.arcadespaceshooter.components.*;
 import com.dalesmithwebdev.arcadespaceshooter.utility.ComponentMap;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 public class RenderSystem extends EntitySystem {
 
-    public void RenderList(ImmutableArray<Entity> sprites) {
-        Array<Entity> s = new Array<>(sprites.toArray());
-        Sort.instance().sort(s, new Comparator<Entity>() {
-            @Override
-            public int compare(Entity o1, Entity o2) {
-                RenderComponent r1 = ComponentMap.renderComponentComponentMapper.get(o1);
-                RenderComponent r2 = ComponentMap.renderComponentComponentMapper.get(o2);
-                return Integer.compare(r1.zIndex, r2.zIndex);
-            }
-        });
-        for(Entity drawable : s)
+    private StringBuilder sb = new StringBuilder();
+    private FrameBuffer fbo = new FrameBuffer(
+            Pixmap.Format.RGBA8888,
+            (int)ArcadeSpaceShooter.screenRect.width,
+            (int)ArcadeSpaceShooter.screenRect.height,
+            false
+    );
+
+    public void RenderList(Iterable<Entity> sprites) {
+        for(Entity drawable : sprites)
         {
             PositionComponent pc = ComponentMap.positionComponentComponentMapper.get(drawable);
             RenderComponent rc = ComponentMap.renderComponentComponentMapper.get(drawable);
+
+            if(ComponentMap.recentlyDamagedComponentComponentMapper.has(drawable)) {
+                rc.shader = ArcadeSpaceShooter.outlineShader;
+            } else {
+                rc.shader = null;
+            }
+
             if (rc.visible)
             {
+                if(rc.shader != null) {
+                    if(rc.shader.hasUniform("iResolution")) {
+                        rc.shader.setUniformf("iResolution", new Vector2(ArcadeSpaceShooter.screenRect.width, ArcadeSpaceShooter.screenRect.height));
+                    }
+                    if(rc.shader.hasUniform("texSize")) {
+                        rc.shader.setUniformf("texSize", new Vector2(rc.CurrentTexture().getWidth(), rc.CurrentTexture().getHeight()));
+                    }
+                }
                 if(ComponentMap.explosionComponentComponentMapper.has(drawable)) {
                     ExplosionComponent ec = ComponentMap.explosionComponentComponentMapper.get(drawable);
                     ArcadeSpaceShooter.spriteBatch.draw(rc.CurrentTexture(), (int) pc.position.x - ec.radius, (int) pc.position.y - ec.radius, ec.radius * 2, ec.radius * 2);
@@ -69,10 +89,56 @@ public class RenderSystem extends EntitySystem {
     @Override
     public void update(float deltaTime) {
         ImmutableArray<Entity> sprites = this.getEngine().getEntitiesFor(Family.all(RenderComponent.class, PositionComponent.class).get());
+        TreeMap<Integer, HashMap<ShaderProgram, List<Entity>>> layers = new TreeMap<>();
+        for(Entity e : sprites) {
+            RenderComponent rc = ComponentMap.renderComponentComponentMapper.get(e);
+            if(!layers.containsKey(rc.zIndex)) {
+                layers.put(rc.zIndex, new HashMap<ShaderProgram, List<Entity>>());
+            }
+            HashMap<ShaderProgram, List<Entity>> thisLayer = layers.get(rc.zIndex);
+            if(!thisLayer.containsKey(rc.shader)) {
+                thisLayer.put(rc.shader, new ArrayList<Entity>());
+            }
+            if(rc.shader != null) {
+                rc.shaderTime += deltaTime;
+            }
+            List<Entity> thisShader = thisLayer.get(rc.shader);
+            thisShader.add(e);
+        }
+
+        fbo.begin();
+        Gdx.gl.glClearColor(149.0f/255.0f, 50.0f/255.0f, 168.0f/255.0f, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        for(Integer layer : layers.keySet()) {
+            HashMap<ShaderProgram, List<Entity>> thisLayer = layers.get(layer);
+            for(ShaderProgram shader : thisLayer.keySet()) {
+                if(shader == ArcadeSpaceShooter.outlineShader) {
+                    ArcadeSpaceShooter.spriteBatch.begin();
+                    ArcadeSpaceShooter.spriteBatch.setShader(null);
+                    RenderList(thisLayer.get(shader));
+                    ArcadeSpaceShooter.spriteBatch.setShader(shader);
+                    RenderList(thisLayer.get(shader));
+                    ArcadeSpaceShooter.spriteBatch.end();
+                } else {
+                    ArcadeSpaceShooter.spriteBatch.begin();
+                    ArcadeSpaceShooter.spriteBatch.setShader(shader);
+                    RenderList(thisLayer.get(shader));
+                    ArcadeSpaceShooter.spriteBatch.end();
+                }
+            }
+        }
+        fbo.end();
+
+        Texture texture = fbo.getColorBufferTexture();
+        Sprite sprite = new Sprite(texture);
+        sprite.flip(false, true);
 
         ArcadeSpaceShooter.spriteBatch.begin();
-        RenderList(sprites);
+        ArcadeSpaceShooter.spriteBatch.setShader(ArcadeSpaceShooter.vignetteShader);
+        ArcadeSpaceShooter.spriteBatch.draw(sprite, 0, 0, ArcadeSpaceShooter.screenRect.width, ArcadeSpaceShooter.screenRect.height);
         ArcadeSpaceShooter.spriteBatch.end();
+
+        ArcadeSpaceShooter.spriteBatch.setShader(null);
 
         ArcadeSpaceShooter.spriteBatch.begin();
         ImmutableArray<Entity> players = this.getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
@@ -88,15 +154,19 @@ public class RenderSystem extends EntitySystem {
                 ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.playerLivesGraphic, 40 * i + 10, livesY, ArcadeSpaceShooter.playerLivesGraphic.getWidth(), ArcadeSpaceShooter.playerLivesGraphic.getHeight());
             }
 
-            String scoreText = "" + Math.floor(ArcadeSpaceShooter.playerScore);
+            //String scoreText = "" + Math.floor(ArcadeSpaceShooter.playerScore);
+            sb.clear();
+            sb.append((int)Math.floor(ArcadeSpaceShooter.playerScore));
             ArcadeSpaceShooter.bitmapFont.setColor(Color.WHITE);
-            ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, scoreText, ArcadeSpaceShooter.screenRect.width - ArcadeSpaceShooter.measureText(scoreText) - 10, ArcadeSpaceShooter.screenRect.height - 50);
+            ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, sb, ArcadeSpaceShooter.screenRect.width - ArcadeSpaceShooter.measureText(sb) - 10, ArcadeSpaceShooter.screenRect.height - 50);
 
             // debug
             int frames = Gdx.graphics.getFramesPerSecond();
-            String fps = "" +frames;
+            //String fps = "" +frames;
+            sb.clear();
+            sb.append(frames);
             ArcadeSpaceShooter.bitmapFont.setColor(Color.WHITE);
-            ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, fps, ArcadeSpaceShooter.screenRect.width - ArcadeSpaceShooter.measureText(scoreText) - 10, ArcadeSpaceShooter.screenRect.height - 80);
+            ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, sb, ArcadeSpaceShooter.screenRect.width - ArcadeSpaceShooter.measureText(sb) - 10, ArcadeSpaceShooter.screenRect.height - 80);
 
             ArcadeSpaceShooter.spriteBatch.setColor(Color.BLACK);
             ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 8, livesY - 13, 150, 12);

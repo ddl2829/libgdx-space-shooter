@@ -4,20 +4,20 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Rectangle;
 import com.dalesmithwebdev.arcadespaceshooter.screens.BackgroundScreen;
 import com.dalesmithwebdev.arcadespaceshooter.screens.BaseScreen;
 import com.dalesmithwebdev.arcadespaceshooter.screens.StartScreen;
+import com.dalesmithwebdev.arcadespaceshooter.screens.tests.ShaderTestScreen;
 import com.dalesmithwebdev.arcadespaceshooter.systems.*;
+import com.dalesmithwebdev.arcadespaceshooter.utility.GameTestCase;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 public class ArcadeSpaceShooter extends ApplicationAdapter {
@@ -66,12 +66,31 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 	public static Music backgroundMusic;
 
 	public static ArrayList<BaseScreen> screens;
-	public String empVertexShader;
-	public String empFragmentShader;
+
 	public static ShaderProgram empShader;
+	public static ShaderProgram outlineShader;
+	public static ShaderProgram vignetteShader;
+
 	public static boolean empActive = false;
 	public static int empElapsedTime = 0;
 	public static int totalTime = 0;
+	public static GameTestCase testCase;
+	public int memoryLastReported = 0;
+
+	public static Texture laserStrengthUpgradeGreen;
+	public static Texture laserStrengthUpgradeBlue;
+	public static Texture dualLaserUpgrade;
+	public static Texture diagonalLaserUpgrade;
+	public static Texture missileUpgrade;
+	public static Texture bombUpgrade;
+	public static Texture shieldUpgrade;
+	public static Texture empUpgrade;
+
+	public ArcadeSpaceShooter(GameTestCase testCase) {
+		super();
+		ShaderProgram.pedantic = false;
+		ArcadeSpaceShooter.testCase = testCase;
+	}
 	
 	@Override
 	public void create () {
@@ -87,12 +106,19 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 		engine.addSystem(new MovementSystem());
 		engine.addSystem(new DamageSystem());
 		engine.addSystem(new EnemyLogicSystem());
-		//engine.addSystem(new InputSystem());
 		engine.addSystem(new ExplosionSystem());
-		//engine.addSystem(new LevelSystem());
 
 		//Spritefont for scores & notifications
 		spriteBatch = new SpriteBatch();
+
+		laserStrengthUpgradeGreen = new Texture(Gdx.files.internal("power-ups/powerupGreen_bolt.png"));
+		laserStrengthUpgradeBlue = new Texture(Gdx.files.internal("power-ups/powerupBlue_bolt.png"));
+		diagonalLaserUpgrade = new Texture(Gdx.files.internal("power-ups/pill_green.png"));
+		bombUpgrade = new Texture(Gdx.files.internal("power-ups/powerupRed_star.png"));
+		dualLaserUpgrade = new Texture(Gdx.files.internal("power-ups/pill_red.png"));
+		empUpgrade = new Texture(Gdx.files.internal("power-ups/powerupBlue_star.png"));
+		missileUpgrade = new Texture(Gdx.files.internal("power-ups/powerupYellow_star.png"));
+		shieldUpgrade = new Texture(Gdx.files.internal("power-ups/powerupBlue_shield.png"));
 
 		//Purple background
 		background = new Texture(Gdx.files.internal("background/backgroundColor.png"));
@@ -156,17 +182,38 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 
 		fireEffect = new Texture("effects/fire03.png");
 
-		empFragmentShader = Gdx.files.internal("shaders/emp/fragment.glsl").readString();
-		empVertexShader = Gdx.files.internal("shaders/emp/vertex.glsl").readString();
-		empShader = new ShaderProgram(empVertexShader, empFragmentShader);
+		empShader = new ShaderProgram(
+				Gdx.files.internal("shaders/emp/vertex.glsl").readString(),
+				Gdx.files.internal("shaders/emp/fragment.glsl").readString()
+		);
+
+		outlineShader = new ShaderProgram(
+				Gdx.files.internal("shaders/outline/vertex.glsl").readString(),
+				Gdx.files.internal("shaders/outline/fragment.glsl").readString()
+		);
+
+		vignetteShader = new ShaderProgram(
+				Gdx.files.internal("shaders/vignette/vertex.glsl").readString(),
+				Gdx.files.internal("shaders/vignette/fragment.glsl").readString()
+		);
 
 		//Explosions
 		explosionTexture = new Texture(Gdx.files.internal("lasers/laserRedShot.png"));
 		explosionTextureGreen = new Texture(Gdx.files.internal("lasers/laserGreenShot.png"));
 		explosionTextureBlue = new Texture(Gdx.files.internal("lasers/laserBlue08.png"));
 
-		PushScreen(new BackgroundScreen());
-		PushScreen(new StartScreen());
+		if(testCase == null) {
+			PushScreen(new BackgroundScreen());
+			PushScreen(new StartScreen());
+		} else {
+			switch(testCase) {
+				case SHADER:
+					PushScreen(new ShaderTestScreen());
+					break;
+				default:
+					break;
+			}
+		}
 	}
 
 	public static float measureText(CharSequence text) {
@@ -203,6 +250,22 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 		}
 		spriteBatch.end();
 
+
+		memoryLastReported += dt;
+		if(memoryLastReported > 10000) {
+			memoryLastReported = 0;
+			Runtime runtime = Runtime.getRuntime();
+			NumberFormat format = NumberFormat.getInstance();
+
+			long maxMemory = runtime.maxMemory();
+			long allocatedMemory = runtime.totalMemory();
+			long freeMemory = runtime.freeMemory();
+
+			System.out.println("free memory: " + format.format(freeMemory / 1024));
+			System.out.println("allocated memory: " + format.format(allocatedMemory / 1024));
+			System.out.println("max memory: " + format.format(maxMemory / 1024));
+			System.out.println("total free memory: " + format.format((freeMemory + (maxMemory - allocatedMemory)) / 1024));
+		}
 	}
 
 	

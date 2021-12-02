@@ -2,6 +2,7 @@ package com.dalesmithwebdev.arcadespaceshooter.components;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +14,8 @@ public class RenderComponent implements Component {
     public int width = 0;
     public int height = 0;
     public int zIndex = 0;
+    public ShaderProgram shader = null;
+    public int shaderTime = 0;
 
     public static int PLANE_BACKGROUND_IMAGE = -2;
     public static int PLANE_BACKGROUND_OBJECTS = -1;
@@ -45,6 +48,8 @@ public class RenderComponent implements Component {
     {
         textures = new ArrayList<>();
         textures.addAll(Arrays.asList(inTextures));
+        width = inTextures[0].getWidth();
+        height = inTextures[0].getHeight();
         zIndex = zPlane;
     }
 }

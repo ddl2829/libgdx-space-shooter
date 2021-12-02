@@ -6,8 +6,6 @@ import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
 import com.dalesmithwebdev.arcadespaceshooter.components.*;
 import com.dalesmithwebdev.arcadespaceshooter.systems.DamageSystem;
 
-import javax.naming.ldap.Rdn;
-
 public class FighterBoss extends Entity {
     public FighterBoss(int levelNumber, int yPos) {
 

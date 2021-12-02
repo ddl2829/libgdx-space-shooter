@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.utils.StringBuilder;
 import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
 
 public class StartScreen extends BaseScreen {
@@ -11,6 +12,7 @@ public class StartScreen extends BaseScreen {
     double flashInterval = 500;
     boolean flashing = false;
     GlyphLayout glyphLayout = new GlyphLayout();
+    StringBuilder sb = new StringBuilder();
 
     public void update(float gameTime)
     {
@@ -37,18 +39,24 @@ public class StartScreen extends BaseScreen {
 
     public void draw(float gameTime)
     {
-        glyphLayout.setText(ArcadeSpaceShooter.bitmapFont, "Arcade Space Shooter");
+        sb.clear();
+        sb.append("Arcade Space Shooter");
+        glyphLayout.setText(ArcadeSpaceShooter.bitmapFont, sb);
         ArcadeSpaceShooter.bitmapFont.setColor(Color.WHITE);
-        ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, "Arcade Space Shooter", ArcadeSpaceShooter.screenRect.width / 2 - glyphLayout.width / 2, ArcadeSpaceShooter.screenRect.height / 4);
+        ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, sb, ArcadeSpaceShooter.screenRect.width / 2 - glyphLayout.width / 2, ArcadeSpaceShooter.screenRect.height / 4);
 
         Color flashColor = flashing ? Color.WHITE : Color.YELLOW;
 
+        sb.clear();
+        sb.append("Press Enter to Play");
         ArcadeSpaceShooter.bitmapFont.setColor(flashColor);
-        glyphLayout.setText(ArcadeSpaceShooter.bitmapFont, "Press Enter to Play");
-        ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, "Press Enter to Play", ArcadeSpaceShooter.screenRect.width / 2 - glyphLayout.width / 2, ArcadeSpaceShooter.screenRect.height / 3 * 2);
+        glyphLayout.setText(ArcadeSpaceShooter.bitmapFont, sb);
+        ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, sb, ArcadeSpaceShooter.screenRect.width / 2 - glyphLayout.width / 2, ArcadeSpaceShooter.screenRect.height / 3 * 2);
 
+        sb.clear();
+        sb.append("Press Escape to Quit");
         ArcadeSpaceShooter.bitmapFont.setColor(Color.WHITE);
-        glyphLayout.setText(ArcadeSpaceShooter.bitmapFont, "Press Escape to Quit");
-        ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, "Press Escape to Quit", ArcadeSpaceShooter.screenRect.width / 2 - glyphLayout.width / 2, ArcadeSpaceShooter.screenRect.height / 4 * 3);
+        glyphLayout.setText(ArcadeSpaceShooter.bitmapFont, sb);
+        ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, sb, ArcadeSpaceShooter.screenRect.width / 2 - glyphLayout.width / 2, ArcadeSpaceShooter.screenRect.height / 4 * 3);
     }
 }

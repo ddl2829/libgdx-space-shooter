@@ -28,18 +28,31 @@ public class DamageSystem extends EntitySystem {
         ImmutableArray<Entity> thingsThatDoDamage = this.getEngine().getEntitiesFor(Family.all(DealsDamageComponent.class, PositionComponent.class, RenderComponent.class).get());
         ImmutableArray<Entity> thingsThatTakeDamage = this.getEngine().getEntitiesFor(Family.all(TakesDamageComponent.class, PositionComponent.class, RenderComponent.class).get());
 
+        ImmutableArray<Entity> thingsThatRecentlyTookDamage = this.getEngine().getEntitiesFor(Family.all(RecentlyDamagedComponent.class).get());
+        for(Entity damaged : thingsThatRecentlyTookDamage) {
+            RecentlyDamagedComponent rdc = ComponentMap.recentlyDamagedComponentComponentMapper.get(damaged);
+            rdc.timeSinceDamaged += gameTime;
+            if(rdc.timeSinceDamaged >= rdc.timeout) {
+                damaged.remove(RecentlyDamagedComponent.class);
+            }
+        }
+
         for (Entity damageDealer : thingsThatDoDamage)
         {
             DealsDamageComponent ddc = ComponentMap.dealsDamageComponentComponentMapper.get(damageDealer);
             PositionComponent dd_pc = ComponentMap.positionComponentComponentMapper.get(damageDealer);
             RenderComponent dd_rc = ComponentMap.renderComponentComponentMapper.get(damageDealer);
 
-            Rectangle damageDealerRect;
+            Rectangle damageDealerRect = new Rectangle();
             if(ComponentMap.explosionComponentComponentMapper.has(damageDealer)) {
                 ExplosionComponent ec = ComponentMap.explosionComponentComponentMapper.get(damageDealer);
                 damageDealerRect = new Rectangle((int) dd_pc.position.x - ec.radius, (int) dd_pc.position.y - ec.radius, ec.radius * 2, ec.radius * 2);
             } else {
-                damageDealerRect = new Rectangle((int) dd_pc.position.x - (dd_rc.CurrentTexture().getWidth() / 2.0f), (int) dd_pc.position.y - (dd_rc.CurrentTexture().getHeight() / 2.0f), dd_rc.CurrentTexture().getWidth(), dd_rc.CurrentTexture().getHeight());
+                try {
+                    damageDealerRect = new Rectangle((int) dd_pc.position.x - (dd_rc.width / 2.0f), (int) dd_pc.position.y - (dd_rc.height / 2.0f), dd_rc.width, dd_rc.height);
+                } catch (NullPointerException npe) {
+                    npe.printStackTrace();
+                }
             }
 
             for (Entity damageTaker : thingsThatTakeDamage)
@@ -64,6 +77,15 @@ public class DamageSystem extends EntitySystem {
                     if(!ComponentMap.shieldedComponentComponentMapper.has(damageTaker))
                     {
                         tdc.health -= ddc.strength;
+                    }
+
+                    RecentlyDamagedComponent rdc;
+                    if(ComponentMap.recentlyDamagedComponentComponentMapper.has(damageTaker)) {
+                        rdc = ComponentMap.recentlyDamagedComponentComponentMapper.get(damageTaker);
+                        rdc.timeSinceDamaged = 0;
+                    } else {
+                        rdc = new RecentlyDamagedComponent(50);
+                        damageTaker.add(rdc);
                     }
 
                     //Check if the damage dealer was a laser

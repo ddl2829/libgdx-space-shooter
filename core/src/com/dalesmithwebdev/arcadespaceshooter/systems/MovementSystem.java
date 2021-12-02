@@ -73,7 +73,7 @@ public class MovementSystem extends EntitySystem {
             }
 
             //Despawn anything going off the bottom of the screen
-            if(pc.position.y < -10)
+            if(pc.position.y < -10 && !ComponentMap.backgroundObjectComponentComponentMapper.has(moveable))
             {
                 this.getEngine().removeEntity(moveable);
             }
