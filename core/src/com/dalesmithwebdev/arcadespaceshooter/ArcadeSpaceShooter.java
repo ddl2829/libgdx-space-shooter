@@ -103,13 +103,6 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 		playerLivesGraphic = textures.findRegion("life");
 		playerShield = textures.findRegion("shield");
 
-//		//Lasers
-//		laserRed = new Texture(Gdx.files.internal("lasers/laserRed.png"));
-//		laserGreen = new Texture(Gdx.files.internal("lasers/laserGreen.png"));
-//		laserBlue = new Texture(Gdx.files.internal("lasers/laserBlue12.png"));
-
-//		missile = new Texture(Gdx.files.internal("lasers/spaceMissiles_009.png"));
-//		bomb = new Texture(Gdx.files.internal("lasers/spaceMissiles_012.png"));
 		missile = textures.findRegion("spaceMissiles", 9);
 		bomb = textures.findRegion("spaceMissiles", 12);
 
@@ -139,7 +132,6 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 		smallMeteors.add(textures.findRegion("meteorGrey_tiny1"));
 		smallMeteors.add(textures.findRegion("meteorGrey_tiny2"));
 
-//		fireEffect = new Texture("effects/fire03.png");
 		fireEffect = textures.findRegion("fire03");
 
 		empShader = new ShaderProgram(
@@ -156,11 +148,6 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 				Gdx.files.internal("shaders/vignette/vertex.glsl").readString(),
 				Gdx.files.internal("shaders/vignette/fragment.glsl").readString()
 		);
-
-		//Explosions
-//		explosionTexture = new Texture(Gdx.files.internal("lasers/laserRedShot.png"));
-//		explosionTextureGreen = new Texture(Gdx.files.internal("lasers/laserGreenShot.png"));
-//		explosionTextureBlue = new Texture(Gdx.files.internal("lasers/laserBlue08.png"));
 
 		if(testCase == null) {
 			PushScreen(new BackgroundScreen());
@@ -212,7 +199,7 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 
 
 		memoryLastReported += dt;
-		if(memoryLastReported > 10000) {
+		if(memoryLastReported > 60000) {
 			memoryLastReported = 0;
 			Runtime runtime = Runtime.getRuntime();
 			NumberFormat format = NumberFormat.getInstance();

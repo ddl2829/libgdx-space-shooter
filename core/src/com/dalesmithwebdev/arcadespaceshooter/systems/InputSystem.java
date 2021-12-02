@@ -188,7 +188,7 @@ public class InputSystem extends EntitySystem {
             hasMissilesComponent.timeSinceLastShot = 0;
             PositionComponent posc = ComponentMap.positionComponentComponentMapper.get(player);
             Entity missile1 = new Entity();
-            missile1.add(new RenderComponent(ArcadeSpaceShooter.textures.findRegion("spaceMissiles[9]"), RenderComponent.PLANE_ABOVE));
+            missile1.add(new RenderComponent(ArcadeSpaceShooter.textures.findRegion("spaceMissiles", 9), RenderComponent.PLANE_ABOVE));
             missile1.add(new PositionComponent(posc.position.x - 60, posc.position.y));
             missile1.add(new SpeedComponent(-3, 1));
             missile1.add(new DealsDamageComponent(8, DamageSystem.MISSILE));
@@ -196,7 +196,7 @@ public class InputSystem extends EntitySystem {
             getEngine().addEntity(missile1);
 
             Entity missile2 = new Entity();
-            missile2.add(new RenderComponent(ArcadeSpaceShooter.textures.findRegion("spaceMissiles[9]"), RenderComponent.PLANE_ABOVE));
+            missile2.add(new RenderComponent(ArcadeSpaceShooter.textures.findRegion("spaceMissiles", 9), RenderComponent.PLANE_ABOVE));
             missile2.add(new PositionComponent(posc.position.x + 60, posc.position.y));
             missile2.add(new SpeedComponent(3, 1));
             missile2.add(new DealsDamageComponent(5, DamageSystem.MISSILE));
@@ -212,7 +212,7 @@ public class InputSystem extends EntitySystem {
 
             PositionComponent posc = ComponentMap.positionComponentComponentMapper.get(player);
             Entity missile1 = new Entity();
-            missile1.add(new RenderComponent(ArcadeSpaceShooter.textures.findRegion("spaceMissiles[12]"), RenderComponent.PLANE_ABOVE));
+            missile1.add(new RenderComponent(ArcadeSpaceShooter.textures.findRegion("spaceMissiles", 12), RenderComponent.PLANE_ABOVE));
             missile1.add(new PositionComponent(posc.position.x, posc.position.y + 50));
             missile1.add(new SpeedComponent(0, 5));
             missile1.add(new DealsDamageComponent(10, DamageSystem.BOMB));
