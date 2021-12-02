@@ -4,7 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
 import com.dalesmithwebdev.arcadespaceshooter.components.*;
@@ -25,7 +25,7 @@ public class EnemyLogicSystem extends EntitySystem {
             {
                 //dont do anything if the enemy isnt on the screen
                 sc.motion.x = 0;
-                sc.motion.y = -1;
+                sc.motion.y = -2;
                 continue;
             }
 
@@ -33,7 +33,7 @@ public class EnemyLogicSystem extends EntitySystem {
             {
                 if(pc.position.y >= ArcadeSpaceShooter.screenRect.height - (ArcadeSpaceShooter.screenRect.height / 4))
                 {
-                    sc.motion.y = -1;
+                    sc.motion.y = -2;
                 } else
                 {
                     sc.motion.y = 0;
@@ -41,7 +41,7 @@ public class EnemyLogicSystem extends EntitySystem {
             }
             else
             {
-                sc.motion.y = -1;
+                sc.motion.y = -2;
             }
             if(players.size() == 0)
             {
@@ -69,17 +69,17 @@ public class EnemyLogicSystem extends EntitySystem {
                         boolean upgraded_twice = (hasLasersComponent.typeMask & HasLasersComponent.UPGRADED_AGAIN) > 0;
 
                         int damageAmount = 10;
-                        Texture explosion = ArcadeSpaceShooter.explosionTexture;
-                        Texture laserGraphic = ArcadeSpaceShooter.laserRed;
+                        TextureRegion explosion = ArcadeSpaceShooter.textures.findRegion("laserRedShot");
+                        TextureRegion laserGraphic = ArcadeSpaceShooter.textures.findRegion("laserRed");
                         if(upgraded) {
                             damageAmount = 20;
-                            explosion = ArcadeSpaceShooter.explosionTextureGreen;
-                            laserGraphic = ArcadeSpaceShooter.laserGreen;
+                            explosion = ArcadeSpaceShooter.textures.findRegion("laserGreenShot");
+                            laserGraphic = ArcadeSpaceShooter.textures.findRegion("laserGreen");
                         }
                         if(upgraded_twice) {
                             damageAmount = 30;
-                            explosion = ArcadeSpaceShooter.explosionTextureBlue;
-                            laserGraphic = ArcadeSpaceShooter.laserBlue;
+                            explosion = ArcadeSpaceShooter.textures.findRegion("laserBlue08");
+                            laserGraphic = ArcadeSpaceShooter.textures.findRegion("laserBlue12");
                         }
 
                         if((hasLasersComponent.typeMask & HasLasersComponent.SINGLE) > 0) {
@@ -87,7 +87,7 @@ public class EnemyLogicSystem extends EntitySystem {
                             newLaser.add(new RenderComponent(laserGraphic, RenderComponent.PLANE_ABOVE));
                             newLaser.add(new LaserComponent(explosion));
                             newLaser.add(new SpeedComponent(0, -20));
-                            newLaser.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f, pc.position.y - 30)));
+                            newLaser.add(new PositionComponent(new Vector2(pc.position.x - laserGraphic.getRegionWidth() / 2.0f, pc.position.y - 30)));
                             newLaser.add(new DealsDamageComponent(damageAmount, DamageSystem.ENEMY_LASER));
                             this.getEngine().addEntity(newLaser);
                         }
@@ -97,7 +97,7 @@ public class EnemyLogicSystem extends EntitySystem {
                             newLaser.add(new RenderComponent(laserGraphic, RenderComponent.PLANE_ABOVE));
                             newLaser.add(new LaserComponent(explosion));
                             newLaser.add(new SpeedComponent(0, -20));
-                            newLaser.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f - 10, pc.position.y - 30)));
+                            newLaser.add(new PositionComponent(new Vector2(pc.position.x - laserGraphic.getRegionWidth() / 2.0f - 10, pc.position.y - 30)));
                             newLaser.add(new DealsDamageComponent(damageAmount, DamageSystem.ENEMY_LASER));
                             this.getEngine().addEntity(newLaser);
 
@@ -105,7 +105,7 @@ public class EnemyLogicSystem extends EntitySystem {
                             newLaser2.add(new RenderComponent(laserGraphic, RenderComponent.PLANE_ABOVE));
                             newLaser2.add(new LaserComponent(explosion));
                             newLaser2.add(new SpeedComponent(0, -20));
-                            newLaser2.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f + 10, pc.position.y - 30)));
+                            newLaser2.add(new PositionComponent(new Vector2(pc.position.x - laserGraphic.getRegionWidth() / 2.0f + 10, pc.position.y - 30)));
                             newLaser2.add(new DealsDamageComponent(damageAmount, DamageSystem.ENEMY_LASER));
                             this.getEngine().addEntity(newLaser2);
                         }
@@ -115,7 +115,7 @@ public class EnemyLogicSystem extends EntitySystem {
                             newLaser3.add(new RenderComponent(laserGraphic, RenderComponent.PLANE_ABOVE));
                             newLaser3.add(new LaserComponent(explosion));
                             newLaser3.add(new SpeedComponent(10, -20));
-                            newLaser3.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f - 10, pc.position.y - 30)));
+                            newLaser3.add(new PositionComponent(new Vector2(pc.position.x - laserGraphic.getRegionWidth() / 2.0f - 10, pc.position.y - 30)));
                             newLaser3.add(new DealsDamageComponent(damageAmount, DamageSystem.ENEMY_LASER));
                             this.getEngine().addEntity(newLaser3);
 
@@ -123,7 +123,7 @@ public class EnemyLogicSystem extends EntitySystem {
                             newLaser4.add(new RenderComponent(laserGraphic, RenderComponent.PLANE_ABOVE));
                             newLaser4.add(new LaserComponent(explosion));;
                             newLaser4.add(new SpeedComponent(-10, -20));
-                            newLaser4.add(new PositionComponent(new Vector2(pc.position.x - ArcadeSpaceShooter.laserGreen.getWidth() / 2.0f + 10, pc.position.y - 30)));
+                            newLaser4.add(new PositionComponent(new Vector2(pc.position.x - laserGraphic.getRegionWidth() / 2.0f + 10, pc.position.y - 30)));
                             newLaser4.add(new DealsDamageComponent(damageAmount, DamageSystem.ENEMY_LASER));
                             this.getEngine().addEntity(newLaser4);
                         }

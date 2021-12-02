@@ -7,7 +7,7 @@ import com.dalesmithwebdev.arcadespaceshooter.systems.DamageSystem;
 
 public class EmpUpgrade extends Entity {
     public EmpUpgrade(float xPos, float yPos) {
-        this.add(new RenderComponent(ArcadeSpaceShooter.empUpgrade, RenderComponent.PLANE_ABOVE));
+        this.add(new RenderComponent(ArcadeSpaceShooter.textures.findRegion("powerupBlue_star"), RenderComponent.PLANE_ABOVE));
         this.add(new PositionComponent(xPos, yPos));
         this.add(new SpeedComponent(0, -1));
         this.add(new TakesDamageComponent(1, DamageSystem.PLAYER));

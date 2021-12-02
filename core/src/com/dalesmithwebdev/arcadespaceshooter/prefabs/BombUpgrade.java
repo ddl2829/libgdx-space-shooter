@@ -7,7 +7,7 @@ import com.dalesmithwebdev.arcadespaceshooter.systems.DamageSystem;
 
 public class BombUpgrade extends Entity {
     public BombUpgrade(float xPos, float yPos) {
-        this.add(new RenderComponent(ArcadeSpaceShooter.bombUpgrade, RenderComponent.PLANE_ABOVE));
+        this.add(new RenderComponent(ArcadeSpaceShooter.textures.findRegion("powerupRed_star"), RenderComponent.PLANE_ABOVE));
         this.add(new PositionComponent(xPos, yPos));
         this.add(new SpeedComponent(0, -1));
         this.add(new TakesDamageComponent(1, DamageSystem.PLAYER));

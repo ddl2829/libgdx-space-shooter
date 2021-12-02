@@ -1,7 +1,7 @@
 package com.dalesmithwebdev.arcadespaceshooter.components;
 
 import com.badlogic.ashley.core.Component;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
 import java.util.ArrayList;
@@ -9,34 +9,35 @@ import java.util.Arrays;
 
 public class RenderComponent implements Component {
     public int currentTexture = 0;
-    public ArrayList<Texture> textures;
+    public ArrayList<TextureRegion> textures;
     public boolean visible = true;
     public int width = 0;
     public int height = 0;
     public int zIndex = 0;
     public ShaderProgram shader = null;
     public int shaderTime = 0;
+    public boolean stickyShader = false;
 
     public static int PLANE_BACKGROUND_IMAGE = -2;
     public static int PLANE_BACKGROUND_OBJECTS = -1;
     public static int PLANE_MAIN = 0;
     public static int PLANE_ABOVE = 1;
 
-    public Texture CurrentTexture()
+    public TextureRegion CurrentTexture()
     {
         return textures.get(currentTexture);
     }
 
-    public RenderComponent(Texture t, int zPlane)
+    public RenderComponent(TextureRegion t, int zPlane)
     {
         textures = new ArrayList<>();
         textures.add(t);
-        this.width = t.getWidth();
-        this.height = t.getHeight();
+        this.width = t.getRegionWidth();
+        this.height = t.getRegionHeight();
         zIndex = zPlane;
     }
 
-    public RenderComponent(Texture t, int width, int height, int zPlane) {
+    public RenderComponent(TextureRegion t, int width, int height, int zPlane) {
         textures = new ArrayList<>();
         textures.add(t);
         this.width = width;
@@ -44,12 +45,12 @@ public class RenderComponent implements Component {
         zIndex = zPlane;
     }
 
-    public RenderComponent(Texture[] inTextures, int zPlane)
+    public RenderComponent(TextureRegion[] inTextures, int zPlane)
     {
         textures = new ArrayList<>();
         textures.addAll(Arrays.asList(inTextures));
-        width = inTextures[0].getWidth();
-        height = inTextures[0].getHeight();
+        width = inTextures[0].getRegionWidth();
+        height = inTextures[0].getRegionHeight();
         zIndex = zPlane;
     }
 }

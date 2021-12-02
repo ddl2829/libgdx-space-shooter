@@ -8,7 +8,9 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Timer;
 import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
-import com.dalesmithwebdev.arcadespaceshooter.components.*;
+import com.dalesmithwebdev.arcadespaceshooter.components.BossEnemyComponent;
+import com.dalesmithwebdev.arcadespaceshooter.components.NotificationComponent;
+import com.dalesmithwebdev.arcadespaceshooter.components.PositionComponent;
 import com.dalesmithwebdev.arcadespaceshooter.prefabs.EnemyFighter;
 import com.dalesmithwebdev.arcadespaceshooter.prefabs.FighterBoss;
 import com.dalesmithwebdev.arcadespaceshooter.prefabs.LargeMeteor;
@@ -29,9 +31,9 @@ public class LevelSystem extends EntitySystem {
             return;
         }
         //we know it's time to seed a new level when no meteors or enemies are left
-        ImmutableArray<Entity> enemies = this.getEngine().getEntitiesFor(Family.all(EnemyComponent.class).get());
-        ImmutableArray<Entity> meteors = this.getEngine().getEntitiesFor(Family.all(MeteorComponent.class).get());
-        if (enemies.size() == 0 && meteors.size() == 0)
+        ImmutableArray<Entity> boss = this.getEngine().getEntitiesFor(Family.all(BossEnemyComponent.class).get());
+        //ImmutableArray<Entity> meteors = this.getEngine().getEntitiesFor(Family.all(MeteorComponent.class).get());
+        if (boss.size() == 0)
         {
             levelNumber++;
             if (levelNumber > 1)
@@ -87,17 +89,22 @@ public class LevelSystem extends EntitySystem {
 
     private void BuildLevel()
     {
-        levelLength = (int)ArcadeSpaceShooter.screenRect.height + 3000 + (500 * levelNumber);
+        levelLength = (int)ArcadeSpaceShooter.screenRect.height + 5000 + (2000 * levelNumber);
 
         int startPosition = levelNumber == 1 ? (int)ArcadeSpaceShooter.screenRect.height + 1000 : (int)ArcadeSpaceShooter.screenRect.height;
 
-        for (int l = startPosition; l < levelLength; l++)
+        for (int l = startPosition; l < levelLength + 5000; l++)
         {
             //Initialize random meteors
-            double randomAmt = 1 + (0.05 * levelNumber);
+            double randomAmt = 2 + (0.05 * levelNumber);
             if(Rand.nextFloat() * 100 < randomAmt) {
-                boolean bigMeteor = Rand.nextFloat() * 100 < 20;
-                Entity newMeteor = bigMeteor ? new LargeMeteor(l) : new SmallMeteor(l);
+                Entity newMeteor = new SmallMeteor(l);
+                this.getEngine().addEntity(newMeteor);
+            }
+
+            randomAmt = 1 + (0.05 * levelNumber);
+            if(Rand.nextFloat() * 100 < randomAmt) {
+                Entity newMeteor = new LargeMeteor(l);
                 this.getEngine().addEntity(newMeteor);
             }
 

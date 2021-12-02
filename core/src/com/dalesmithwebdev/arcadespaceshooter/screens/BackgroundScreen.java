@@ -25,7 +25,7 @@ public class BackgroundScreen extends BaseScreen {
     {
         Entity background = new Entity();
         background.add(new PositionComponent(ArcadeSpaceShooter.screenRect.width / 2, ArcadeSpaceShooter.screenRect.height / 2));
-        background.add(new RenderComponent(ArcadeSpaceShooter.background, (int)ArcadeSpaceShooter.screenRect.width, (int)ArcadeSpaceShooter.screenRect.height, RenderComponent.PLANE_BACKGROUND_IMAGE));
+        background.add(new RenderComponent(ArcadeSpaceShooter.textures.findRegion("backgroundColor"), (int)ArcadeSpaceShooter.screenRect.width, (int)ArcadeSpaceShooter.screenRect.height, RenderComponent.PLANE_BACKGROUND_IMAGE));
         ArcadeSpaceShooter.engine.addEntity(background);
     }
 

@@ -11,8 +11,9 @@ public class ShaderTestScreen extends BaseScreen {
     public ShaderTestScreen() {
         super();
         Entity shaderEntity = new Entity();
-        RenderComponent rc = new RenderComponent(ArcadeSpaceShooter.enemyShip, 200, 200, RenderComponent.PLANE_MAIN);
+        RenderComponent rc = new RenderComponent(ArcadeSpaceShooter.textures.findRegion("enemyShip"), 200, 200, RenderComponent.PLANE_MAIN);
         rc.shader = ArcadeSpaceShooter.outlineShader;
+        rc.stickyShader = true;
         shaderEntity.add(rc);
         shaderEntity.add(new PositionComponent(ArcadeSpaceShooter.screenRect.width / 2, ArcadeSpaceShooter.screenRect.height / 2));
         ArcadeSpaceShooter.engine.addEntity(shaderEntity);

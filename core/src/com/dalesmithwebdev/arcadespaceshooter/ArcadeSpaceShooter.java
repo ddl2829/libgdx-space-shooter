@@ -4,10 +4,7 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Rectangle;
 import com.dalesmithwebdev.arcadespaceshooter.screens.BackgroundScreen;
@@ -29,39 +26,22 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 	public static int kills = 0;
 	public static double playerScore = 0;
 
-	public static Texture playerShield;
-	public static Texture playerLivesGraphic;
+	public static TextureRegion playerShield;
+	public static TextureRegion playerLivesGraphic;
 
-	public static Texture background;
-	public static ArrayList<Texture> backgroundElements;
+	public static ArrayList<TextureRegion> backgroundElements;
 
-	public static Texture blank;
+	public static TextureRegion blank;
 
-	public static Texture ufoBlue;
-	public static Texture ufoGreen;
-	public static Texture ufoRed;
-	public static Texture ufoYellow;
-	public static Texture enemyShip;
-	public static Texture bossTexture;
+	public static ArrayList<TextureRegion> shipTextures;
 
-	public static Texture laserRed;
-	public static Texture laserGreen;
-	public static Texture laserBlue;
+	public static ArrayList<TextureRegion> smallMeteors;
+	public static ArrayList<TextureRegion> bigMeteors;
 
-	public static ArrayList<Texture> shipTextures;
+	public static TextureRegion missile;
+	public static TextureRegion bomb;
 
-	public static ArrayList<Texture> smallMeteors;
-	public static ArrayList<Texture> bigMeteors;
-
-	//Explosions for laser-meteor collisions
-	public static Texture explosionTexture;
-	public static Texture explosionTextureGreen;
-	public static Texture explosionTextureBlue;
-
-	public static Texture missile;
-	public static Texture bomb;
-
-	public static Texture fireEffect;
+	public static TextureRegion fireEffect;
 
 	public static Music backgroundMusic;
 
@@ -77,14 +57,7 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 	public static GameTestCase testCase;
 	public int memoryLastReported = 0;
 
-	public static Texture laserStrengthUpgradeGreen;
-	public static Texture laserStrengthUpgradeBlue;
-	public static Texture dualLaserUpgrade;
-	public static Texture diagonalLaserUpgrade;
-	public static Texture missileUpgrade;
-	public static Texture bombUpgrade;
-	public static Texture shieldUpgrade;
-	public static Texture empUpgrade;
+	public static TextureAtlas textures;
 
 	public ArcadeSpaceShooter(GameTestCase testCase) {
 		super();
@@ -98,8 +71,8 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 		bitmapFont = new BitmapFont();
 		glyphLayout = new GlyphLayout();
 		screenRect = new Rectangle(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		backgroundElements = new ArrayList<Texture>();
-		screens = new ArrayList<BaseScreen>();
+		backgroundElements = new ArrayList<>();
+		screens = new ArrayList<>();
 
 		engine = new Engine();
 		engine.addSystem(new RenderSystem());
@@ -111,76 +84,63 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 		//Spritefont for scores & notifications
 		spriteBatch = new SpriteBatch();
 
-		laserStrengthUpgradeGreen = new Texture(Gdx.files.internal("power-ups/powerupGreen_bolt.png"));
-		laserStrengthUpgradeBlue = new Texture(Gdx.files.internal("power-ups/powerupBlue_bolt.png"));
-		diagonalLaserUpgrade = new Texture(Gdx.files.internal("power-ups/pill_green.png"));
-		bombUpgrade = new Texture(Gdx.files.internal("power-ups/powerupRed_star.png"));
-		dualLaserUpgrade = new Texture(Gdx.files.internal("power-ups/pill_red.png"));
-		empUpgrade = new Texture(Gdx.files.internal("power-ups/powerupBlue_star.png"));
-		missileUpgrade = new Texture(Gdx.files.internal("power-ups/powerupYellow_star.png"));
-		shieldUpgrade = new Texture(Gdx.files.internal("power-ups/powerupBlue_shield.png"));
+		textures = new TextureAtlas(Gdx.files.internal("ArcadeShooter.atlas"));
 
-		//Purple background
-		background = new Texture(Gdx.files.internal("background/backgroundColor.png"));
-		backgroundElements.add(new Texture(Gdx.files.internal("background/speedLine.png")));
-		backgroundElements.add(new Texture(Gdx.files.internal("background/starBig.png")));
-		backgroundElements.add(new Texture(Gdx.files.internal("background/starSmall.png")));
-		blank = new Texture(Gdx.files.internal("ui/blank.png"));
+		blank = textures.findRegion("blank");
 
-		ufoBlue = new Texture(Gdx.files.internal("ships-enemies/ufoBlue.png"));
-		ufoGreen = new Texture(Gdx.files.internal("ships-enemies/ufoGreen.png"));
-		ufoRed = new Texture(Gdx.files.internal("ships-enemies/ufoRed.png"));
-		ufoYellow = new Texture(Gdx.files.internal("ships-enemies/ufoYellow.png"));
-		enemyShip = new Texture(Gdx.files.internal("ships-enemies/enemyShip.png"));
-		bossTexture = new Texture(Gdx.files.internal("ships-enemies/bossEnemy.png"));
+		backgroundElements.add(textures.findRegion("speedLine"));
+		backgroundElements.add(textures.findRegion("starBig"));
+		backgroundElements.add(textures.findRegion("starSmall"));
 
 		backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/loop-transit.mp3"));
 
 		//Ship textures
-		shipTextures = new ArrayList<Texture>();
-		shipTextures.add(new Texture(Gdx.files.internal("ships-player/player.png")));
-		shipTextures.add(new Texture(Gdx.files.internal("ships-player/playerleft.png")));
-		shipTextures.add(new Texture(Gdx.files.internal("ships-player/playerright.png")));
-		playerLivesGraphic = new Texture(Gdx.files.internal("ui/life.png"));
-		playerShield = new Texture(Gdx.files.internal("power-ups/shield.png"));
+		shipTextures = new ArrayList<>();
+		shipTextures.add(textures.findRegion("player"));
+		shipTextures.add(textures.findRegion("playerLeft"));
+		shipTextures.add(textures.findRegion("playerRight"));
 
-		//Lasers
-		laserRed = new Texture(Gdx.files.internal("lasers/laserRed.png"));
-		laserGreen = new Texture(Gdx.files.internal("lasers/laserGreen.png"));
-		laserBlue = new Texture(Gdx.files.internal("lasers/laserBlue12.png"));
+		playerLivesGraphic = textures.findRegion("life");
+		playerShield = textures.findRegion("shield");
 
-		missile = new Texture(Gdx.files.internal("lasers/spaceMissiles_009.png"));
-		bomb = new Texture(Gdx.files.internal("lasers/spaceMissiles_012.png"));
+//		//Lasers
+//		laserRed = new Texture(Gdx.files.internal("lasers/laserRed.png"));
+//		laserGreen = new Texture(Gdx.files.internal("lasers/laserGreen.png"));
+//		laserBlue = new Texture(Gdx.files.internal("lasers/laserBlue12.png"));
+
+//		missile = new Texture(Gdx.files.internal("lasers/spaceMissiles_009.png"));
+//		bomb = new Texture(Gdx.files.internal("lasers/spaceMissiles_012.png"));
+		missile = textures.findRegion("spaceMissiles", 9);
+		bomb = textures.findRegion("spaceMissiles", 12);
 
 		//Meteors
 		bigMeteors = new ArrayList<>();
-		bigMeteors.add(new Texture("meteors/meteorBig.png"));
-		bigMeteors.add(new Texture("meteors/meteorBrown_big1.png"));
-		bigMeteors.add(new Texture("meteors/meteorBrown_big2.png"));
-		bigMeteors.add(new Texture("meteors/meteorBrown_big3.png"));
-		bigMeteors.add(new Texture("meteors/meteorBrown_big4.png"));
-		bigMeteors.add(new Texture("meteors/meteorBrown_med1.png"));
-		bigMeteors.add(new Texture("meteors/meteorBrown_med2.png"));
-
-		bigMeteors.add(new Texture("meteors/meteorGrey_big1.png"));
-		bigMeteors.add(new Texture("meteors/meteorGrey_big2.png"));
-		bigMeteors.add(new Texture("meteors/meteorGrey_big3.png"));
-		bigMeteors.add(new Texture("meteors/meteorGrey_big4.png"));
-		bigMeteors.add(new Texture("meteors/meteorGrey_med1.png"));
-		bigMeteors.add(new Texture("meteors/meteorGrey_med2.png"));
+		bigMeteors.add(textures.findRegion("meteorBig"));
+		bigMeteors.add(textures.findRegion("meteorBrown_big1"));
+		bigMeteors.add(textures.findRegion("meteorBrown_big2"));
+		bigMeteors.add(textures.findRegion("meteorBrown_big3"));
+		bigMeteors.add(textures.findRegion("meteorBrown_big4"));
+		bigMeteors.add(textures.findRegion("meteorBrown_med1"));
+		bigMeteors.add(textures.findRegion("meteorBrown_med2"));
+		bigMeteors.add(textures.findRegion("meteorGrey_big1"));
+		bigMeteors.add(textures.findRegion("meteorGrey_big2"));
+		bigMeteors.add(textures.findRegion("meteorGrey_big3"));
+		bigMeteors.add(textures.findRegion("meteorGrey_big4"));
+		bigMeteors.add(textures.findRegion("meteorGrey_med1"));
+		bigMeteors.add(textures.findRegion("meteorGrey_med2"));
 
 		smallMeteors = new ArrayList<>();
-		smallMeteors.add(new Texture("meteors/meteorBrown_small1.png"));
-		smallMeteors.add(new Texture("meteors/meteorBrown_small2.png"));
-		smallMeteors.add(new Texture("meteors/meteorBrown_tiny1.png"));
-		smallMeteors.add(new Texture("meteors/meteorBrown_tiny2.png"));
+		smallMeteors.add(textures.findRegion("meteorBrown_small1"));
+		smallMeteors.add(textures.findRegion("meteorBrown_small2"));
+		smallMeteors.add(textures.findRegion("meteorBrown_tiny1"));
+		smallMeteors.add(textures.findRegion("meteorBrown_tiny2"));
+		smallMeteors.add(textures.findRegion("meteorGrey_small1"));
+		smallMeteors.add(textures.findRegion("meteorGrey_small2"));
+		smallMeteors.add(textures.findRegion("meteorGrey_tiny1"));
+		smallMeteors.add(textures.findRegion("meteorGrey_tiny2"));
 
-		smallMeteors.add(new Texture("meteors/meteorGrey_small1.png"));
-		smallMeteors.add(new Texture("meteors/meteorGrey_small2.png"));
-		smallMeteors.add(new Texture("meteors/meteorGrey_tiny1.png"));
-		smallMeteors.add(new Texture("meteors/meteorGrey_tiny2.png"));
-
-		fireEffect = new Texture("effects/fire03.png");
+//		fireEffect = new Texture("effects/fire03.png");
+		fireEffect = textures.findRegion("fire03");
 
 		empShader = new ShaderProgram(
 				Gdx.files.internal("shaders/emp/vertex.glsl").readString(),
@@ -198,9 +158,9 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 		);
 
 		//Explosions
-		explosionTexture = new Texture(Gdx.files.internal("lasers/laserRedShot.png"));
-		explosionTextureGreen = new Texture(Gdx.files.internal("lasers/laserGreenShot.png"));
-		explosionTextureBlue = new Texture(Gdx.files.internal("lasers/laserBlue08.png"));
+//		explosionTexture = new Texture(Gdx.files.internal("lasers/laserRedShot.png"));
+//		explosionTextureGreen = new Texture(Gdx.files.internal("lasers/laserGreenShot.png"));
+//		explosionTextureBlue = new Texture(Gdx.files.internal("lasers/laserBlue08.png"));
 
 		if(testCase == null) {
 			PushScreen(new BackgroundScreen());

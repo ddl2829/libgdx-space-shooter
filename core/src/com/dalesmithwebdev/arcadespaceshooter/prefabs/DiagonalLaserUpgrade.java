@@ -7,7 +7,7 @@ import com.dalesmithwebdev.arcadespaceshooter.systems.DamageSystem;
 
 public class DiagonalLaserUpgrade extends Entity {
     public DiagonalLaserUpgrade(float xPos, float yPos) {
-        this.add(new RenderComponent(ArcadeSpaceShooter.diagonalLaserUpgrade, RenderComponent.PLANE_ABOVE));
+        this.add(new RenderComponent(ArcadeSpaceShooter.textures.findRegion("pill_green"), RenderComponent.PLANE_ABOVE));
         this.add(new PositionComponent(xPos, yPos));
         this.add(new SpeedComponent(0, -1));
         this.add(new TakesDamageComponent(1, DamageSystem.PLAYER));

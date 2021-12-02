@@ -47,9 +47,9 @@ public class MovementSystem extends EntitySystem {
                 {
                     pc.position.x = ArcadeSpaceShooter.screenRect.width;
                 }
-                if (pc.position.y > ArcadeSpaceShooter.screenRect.height - renderComp.CurrentTexture().getHeight())
+                if (pc.position.y > ArcadeSpaceShooter.screenRect.height - renderComp.height)
                 {
-                    pc.position.y = ArcadeSpaceShooter.screenRect.height - renderComp.CurrentTexture().getHeight();
+                    pc.position.y = ArcadeSpaceShooter.screenRect.height - renderComp.height;
                 }
             }
 
@@ -66,7 +66,7 @@ public class MovementSystem extends EntitySystem {
             if (ComponentMap.laserComponentComponentMapper.has(moveable) || ComponentMap.missileComponentComponentMapper.has(moveable) || ComponentMap.bombComponentComponentMapper.has(moveable))
             {
                 //Despawn lasers, missiles, and bombs shortly after they leave the screen
-                if(pc.position.y < -ArcadeSpaceShooter.laserRed.getHeight() || pc.position.y > ArcadeSpaceShooter.screenRect.height + ArcadeSpaceShooter.laserRed.getHeight() || pc.position.x < 0 || pc.position.x > ArcadeSpaceShooter.screenRect.width)
+                if(pc.position.y < -10 || pc.position.y > ArcadeSpaceShooter.screenRect.height + 5 || pc.position.x < 0 || pc.position.x > ArcadeSpaceShooter.screenRect.width)
                 {
                     this.getEngine().removeEntity(moveable);
                 }

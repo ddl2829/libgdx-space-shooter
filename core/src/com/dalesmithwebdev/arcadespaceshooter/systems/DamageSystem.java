@@ -71,7 +71,7 @@ public class DamageSystem extends EntitySystem {
                     continue;
                 }
                 RenderComponent td_rc = ComponentMap.renderComponentComponentMapper.get(damageTaker);
-                Rectangle damageTakerRect = new Rectangle((int)td_pc.position.x - (td_rc.CurrentTexture().getWidth() / 2.0f), (int)td_pc.position.y - (td_rc.CurrentTexture().getHeight() / 2.0f), td_rc.CurrentTexture().getWidth(), td_rc.CurrentTexture().getHeight());
+                Rectangle damageTakerRect = new Rectangle((int)td_pc.position.x - (td_rc.width / 2.0f), (int)td_pc.position.y - (td_rc.height / 2.0f), td_rc.width, td_rc.height);
                 if(damageDealerRect.overlaps(damageTakerRect))
                 {
                     if(!ComponentMap.shieldedComponentComponentMapper.has(damageTaker))
@@ -106,7 +106,7 @@ public class DamageSystem extends EntitySystem {
                     {
                         //Spawn an explosion at the location of collision
                         Entity explosion = new Entity();
-                        explosion.add(new RenderComponent(ArcadeSpaceShooter.explosionTexture, RenderComponent.PLANE_ABOVE));
+                        explosion.add(new RenderComponent(ArcadeSpaceShooter.textures.findRegion("laserRedShot"), RenderComponent.PLANE_ABOVE));
                         explosion.add(new PositionComponent(dd_pc.position));
                         explosion.add(new ExplosionComponent());
                         this.getEngine().addEntity(explosion);
@@ -117,7 +117,7 @@ public class DamageSystem extends EntitySystem {
                     {
                         //Spawn an explosion at the location of collision
                         Entity explosion = new Entity();
-                        explosion.add(new RenderComponent(ArcadeSpaceShooter.explosionTexture, RenderComponent.PLANE_ABOVE));
+                        explosion.add(new RenderComponent(ArcadeSpaceShooter.textures.findRegion("laserRedShot"), RenderComponent.PLANE_ABOVE));
                         explosion.add(new PositionComponent(dd_pc.position));
                         explosion.add(new ExplosionComponent(200));
                         explosion.add(new DealsDamageComponent(10, DamageSystem.BOMB));
@@ -282,6 +282,12 @@ public class DamageSystem extends EntitySystem {
 
                         if(ComponentMap.playerComponentComponentMapper.has(damageTaker))
                         {
+                            HasLasersComponent lasers = ComponentMap.hasLasersComponentComponentMapper.get(damageTaker);
+                            lasers.typeMask = HasLasersComponent.SINGLE;
+                            damageTaker.remove(HasBombsComponent.class);
+                            damageTaker.remove(HasMissilesComponent.class);
+                            damageTaker.remove(HasShieldComponent.class);
+                            damageTaker.remove(HasEmpComponent.class);
                             PlayerComponent playerComp = ComponentMap.playerComponentComponentMapper.get(damageTaker);
                             playerComp.lives -= 1;
                             damageTaker.remove(RenderComponent.class);
@@ -317,7 +323,7 @@ public class DamageSystem extends EntitySystem {
                             this.getEngine().addEntity(e);
 
                             // random chance for a upgrade drop
-                            if(Rand.nextInt(100) < 8) {
+                            if(Rand.nextInt(100) < 15) {
                                 ImmutableArray<Entity> players = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
                                 Entity player = players.first();
 
@@ -326,8 +332,10 @@ public class DamageSystem extends EntitySystem {
                                     HasLasersComponent lasersComponent = ComponentMap.hasLasersComponentComponentMapper.get(player);
                                     if ((lasersComponent.typeMask & HasLasersComponent.UPGRADED) > 0) {
                                         //spawn second upgrade
-                                        Entity upgradeOne = new LaserStrengthUpgrade(2, td_pc.position.x, td_pc.position.y);
-                                        this.getEngine().addEntity(upgradeOne);
+                                        if(LevelSystem.levelNumber >= 3) {
+                                            Entity upgradeOne = new LaserStrengthUpgrade(2, td_pc.position.x, td_pc.position.y);
+                                            this.getEngine().addEntity(upgradeOne);
+                                        }
                                     } else {
                                         // spawn first upgrade
                                         Entity upgradeOne = new LaserStrengthUpgrade(1, td_pc.position.x, td_pc.position.y);
@@ -339,8 +347,10 @@ public class DamageSystem extends EntitySystem {
                                     this.getEngine().addEntity(upgradeOne);
                                 } else if(nextUpgrade >= 40 && nextUpgrade < 43) {
                                     // diagonal lasers
-                                    Entity upgradeOne = new DiagonalLaserUpgrade(td_pc.position.x, td_pc.position.y);
-                                    this.getEngine().addEntity(upgradeOne);
+                                    if(LevelSystem.levelNumber >= 3) {
+                                        Entity upgradeOne = new DiagonalLaserUpgrade(td_pc.position.x, td_pc.position.y);
+                                        this.getEngine().addEntity(upgradeOne);
+                                    }
                                 } else if(nextUpgrade >= 50 && nextUpgrade < 70) {
                                     // shields
                                     Entity upgradeOne = new ShieldUpgrade(td_pc.position.x, td_pc.position.y);
@@ -375,7 +385,8 @@ public class DamageSystem extends EntitySystem {
                                     newMeteor.add(new TakesDamageComponent(2, LASER ^ MISSILE ^ BOMB));
                                     newMeteor.add(new DealsDamageComponent(5, METEOR));
                                     newMeteor.add(new RenderComponent(ArcadeSpaceShooter.smallMeteors.get(Rand.nextInt(ArcadeSpaceShooter.smallMeteors.size())), RenderComponent.PLANE_MAIN));
-                                    newMeteor.add(new SpeedComponent(this.randomInRange(-3, 3), this.randomInRange(2, 5) * -1));
+                                    int[] speeds = new int[] { 2, 2, 2, 3, 3, 3, 4, 4, 5, 6 };
+                                    newMeteor.add(new SpeedComponent(speeds[Rand.nextInt(speeds.length)] * (Rand.nextBoolean() ? -1 : 1), -speeds[Rand.nextInt(speeds.length)]));
                                     newMeteor.add(new PositionComponent(new Vector2(td_pc.position.x, td_pc.position.y)));
                                     this.getEngine().addEntity(newMeteor);
                                 }

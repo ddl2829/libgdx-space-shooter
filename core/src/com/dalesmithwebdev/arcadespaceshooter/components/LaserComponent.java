@@ -1,11 +1,11 @@
 package com.dalesmithwebdev.arcadespaceshooter.components;
 
 import com.badlogic.ashley.core.Component;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class LaserComponent implements Component {
-    public Texture explosionTexture;
-    public LaserComponent(Texture explosion)
+    public TextureRegion explosionTexture;
+    public LaserComponent(TextureRegion explosion)
     {
         explosionTexture = explosion;
     }

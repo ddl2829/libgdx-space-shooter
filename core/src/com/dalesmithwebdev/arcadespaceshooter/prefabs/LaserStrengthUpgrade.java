@@ -8,10 +8,10 @@ import com.dalesmithwebdev.arcadespaceshooter.systems.DamageSystem;
 public class LaserStrengthUpgrade extends Entity {
     public LaserStrengthUpgrade(int level, float xPos, float yPos) {
         if(level == 1) {
-            this.add(new RenderComponent(ArcadeSpaceShooter.laserStrengthUpgradeGreen, RenderComponent.PLANE_ABOVE));
+            this.add(new RenderComponent(ArcadeSpaceShooter.textures.findRegion("powerupGreen_bolt"), RenderComponent.PLANE_ABOVE));
         }
         if(level == 2) {
-            this.add(new RenderComponent(ArcadeSpaceShooter.laserStrengthUpgradeBlue, RenderComponent.PLANE_ABOVE));
+            this.add(new RenderComponent(ArcadeSpaceShooter.textures.findRegion("powerupBlue_bolt"), RenderComponent.PLANE_ABOVE));
         }
         this.add(new PositionComponent(xPos, yPos));
         this.add(new SpeedComponent(0, -1));

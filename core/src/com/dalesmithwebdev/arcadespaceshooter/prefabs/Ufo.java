@@ -49,7 +49,7 @@ public class Ufo extends Entity {
                 this.add(new HasLasersComponent(Rand.nextInt(2000, 5000), laserMask));
             }
         }
-        this.add(new RenderComponent(ArcadeSpaceShooter.ufoRed, RenderComponent.PLANE_MAIN));
+        this.add(new RenderComponent(ArcadeSpaceShooter.textures.findRegion("ufoRed"), RenderComponent.PLANE_MAIN));
         this.add(new PositionComponent(new Vector2(Rand.nextInt(50, (int)ArcadeSpaceShooter.screenRect.width - 50), yPosition)));
         this.add(new SpeedComponent(speeds[Rand.nextInt(speeds.length)]));
         this.add(new TakesDamageComponent(5 + (int)(0.5 * levelNumber), DamageSystem.LASER ^ DamageSystem.MISSILE ^ DamageSystem.BOMB));

@@ -42,7 +42,9 @@ public class RenderSystem extends EntitySystem {
             if(ComponentMap.recentlyDamagedComponentComponentMapper.has(drawable)) {
                 rc.shader = ArcadeSpaceShooter.outlineShader;
             } else {
-                rc.shader = null;
+                if(!rc.stickyShader) {
+                    rc.shader = null;
+                }
             }
 
             if (rc.visible)
@@ -52,26 +54,21 @@ public class RenderSystem extends EntitySystem {
                         rc.shader.setUniformf("iResolution", new Vector2(ArcadeSpaceShooter.screenRect.width, ArcadeSpaceShooter.screenRect.height));
                     }
                     if(rc.shader.hasUniform("texSize")) {
-                        rc.shader.setUniformf("texSize", new Vector2(rc.CurrentTexture().getWidth(), rc.CurrentTexture().getHeight()));
+                        rc.shader.setUniformf("texSize", new Vector2(rc.CurrentTexture().getTexture().getWidth(), rc.CurrentTexture().getTexture().getHeight()));
                     }
                 }
                 if(ComponentMap.explosionComponentComponentMapper.has(drawable)) {
                     ExplosionComponent ec = ComponentMap.explosionComponentComponentMapper.get(drawable);
                     ArcadeSpaceShooter.spriteBatch.draw(rc.CurrentTexture(), (int) pc.position.x - ec.radius, (int) pc.position.y - ec.radius, ec.radius * 2, ec.radius * 2);
                 } else {
-                    if(rc.width == 0) {
-                        ArcadeSpaceShooter.spriteBatch.draw(rc.CurrentTexture(), (int) pc.position.x - (rc.CurrentTexture().getWidth() / 2.0f), (int) pc.position.y - (rc.CurrentTexture().getHeight() / 2.0f), rc.CurrentTexture().getWidth(), rc.CurrentTexture().getHeight());
-                    } else {
-                        ArcadeSpaceShooter.spriteBatch.draw(rc.CurrentTexture(), (int) pc.position.x - (rc.width / 2.0f), (int) pc.position.y - (rc.height / 2.0f), rc.width, rc.height);
-                    }
+                    ArcadeSpaceShooter.spriteBatch.draw(rc.CurrentTexture(), (int) pc.position.x - (rc.width / 2.0f), (int) pc.position.y - (rc.height / 2.0f), rc.width, rc.height);
                 }
 
                 if (ComponentMap.playerComponentComponentMapper.has(drawable))
                 {
                     if(ComponentMap.shieldedComponentComponentMapper.has(drawable))
                     {
-                        Texture shield = ArcadeSpaceShooter.playerShield;
-                        ArcadeSpaceShooter.spriteBatch.draw(shield, (int)(pc.position.x - rc.CurrentTexture().getWidth() / 2) - 25, (int)(pc.position.y - rc.CurrentTexture().getHeight() / 2) - 10, shield.getWidth(), shield.getHeight());
+                        ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.playerShield, (int)(pc.position.x - rc.width / 2) - 25, (int)(pc.position.y - rc.height / 2) - 10, rc.width, rc.height);
                     }
                 }
 
@@ -79,7 +76,7 @@ public class RenderSystem extends EntitySystem {
                 if(ComponentMap.missileComponentComponentMapper.has(drawable)) {
                     MissileComponent mc = ComponentMap.missileComponentComponentMapper.get(drawable);
                     if(mc.speedBoosted) {
-                        ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.fireEffect, pc.position.x - (ArcadeSpaceShooter.fireEffect.getWidth() / 2.0f) - 1, pc.position.y - ArcadeSpaceShooter.fireEffect.getHeight() - rc.CurrentTexture().getHeight() / 2.0f - 3);
+                        ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.fireEffect, pc.position.x - (ArcadeSpaceShooter.fireEffect.getRegionWidth() / 2.0f) - 1, pc.position.y - ArcadeSpaceShooter.fireEffect.getRegionHeight() - rc.height / 2.0f - 3);
                     }
                 }
             }
@@ -146,12 +143,20 @@ public class RenderSystem extends EntitySystem {
         {
             Entity player = players.first();
 
+            if(ComponentMap.hasBombsComponentComponentMapper.has(player)) {
+                ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.bomb, 5, 5, ArcadeSpaceShooter.bomb.getRegionWidth(), ArcadeSpaceShooter.bomb.getRegionHeight());
+            }
+
+            if(ComponentMap.hasMissilesComponentComponentMapper.has(player)) {
+                ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.missile, 30, 5, ArcadeSpaceShooter.missile.getRegionWidth(), ArcadeSpaceShooter.missile.getRegionHeight());
+            }
+
             PlayerComponent pc = ComponentMap.playerComponentComponentMapper.get(player);
             TakesDamageComponent ptdc = ComponentMap.takesDamageComponentComponentMapper.get(player);
-            int livesY = (int)ArcadeSpaceShooter.screenRect.height - ArcadeSpaceShooter.playerLivesGraphic.getHeight() - 10;
+            int livesY = (int)ArcadeSpaceShooter.screenRect.height - ArcadeSpaceShooter.playerLivesGraphic.getRegionHeight() - 10;
             for (int i = 0; i < pc.lives; i++)
             {
-                ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.playerLivesGraphic, 40 * i + 10, livesY, ArcadeSpaceShooter.playerLivesGraphic.getWidth(), ArcadeSpaceShooter.playerLivesGraphic.getHeight());
+                ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.playerLivesGraphic, 40 * i + 10, livesY, ArcadeSpaceShooter.playerLivesGraphic.getRegionWidth(), ArcadeSpaceShooter.playerLivesGraphic.getRegionHeight());
             }
 
             //String scoreText = "" + Math.floor(ArcadeSpaceShooter.playerScore);
@@ -168,30 +173,31 @@ public class RenderSystem extends EntitySystem {
             ArcadeSpaceShooter.bitmapFont.setColor(Color.WHITE);
             ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, sb, ArcadeSpaceShooter.screenRect.width - ArcadeSpaceShooter.measureText(sb) - 10, ArcadeSpaceShooter.screenRect.height - 80);
 
-            ArcadeSpaceShooter.spriteBatch.setColor(Color.BLACK);
-            ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 8, livesY - 13, 150, 12);
-            ArcadeSpaceShooter.spriteBatch.setColor(Color.WHITE);
-            ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 12, 148, 10);
-            ArcadeSpaceShooter.spriteBatch.setColor(Color.RED);
-            ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 12, (int)(((double)ptdc.health / ptdc.maxHealth) * 148), 10);
-
-            if(ComponentMap.hasShieldComponentComponentMapper.has(player))
-            {
-                HasShieldComponent hasShieldComponent = ComponentMap.hasShieldComponentComponentMapper.get(player);
+            RenderComponent player_rc = ComponentMap.renderComponentComponentMapper.get(player);
+            if(player_rc.visible) {
                 ArcadeSpaceShooter.spriteBatch.setColor(Color.BLACK);
-                ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 8, livesY - 30, 150, 12);
+                ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 8, livesY - 13, 100, 12);
                 ArcadeSpaceShooter.spriteBatch.setColor(Color.WHITE);
-                ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 29, 148, 10);
-                ArcadeSpaceShooter.spriteBatch.setColor(Color.BLUE);
-                ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 29, (int)((hasShieldComponent.shieldPower / hasShieldComponent.maxShieldPower) * 148), 10);
+                ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 12, 98, 10);
+                ArcadeSpaceShooter.spriteBatch.setColor(Color.RED);
+                ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 12, (int) (((double) ptdc.health / ptdc.maxHealth) * 98), 10);
 
-                if (hasShieldComponent.shieldCooldown)
-                {
-                    ArcadeSpaceShooter.spriteBatch.setColor(Color.PURPLE);
-                    ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 31, (int)(Math.min((hasShieldComponent.shieldPower / hasShieldComponent.maxShieldPower), 1) * 148), 10);
+                if (ComponentMap.hasShieldComponentComponentMapper.has(player)) {
+                    HasShieldComponent hasShieldComponent = ComponentMap.hasShieldComponentComponentMapper.get(player);
+                    ArcadeSpaceShooter.spriteBatch.setColor(Color.BLACK);
+                    ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 8, livesY - 30, 100, 12);
+                    ArcadeSpaceShooter.spriteBatch.setColor(Color.WHITE);
+                    ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 29, 98, 10);
+                    ArcadeSpaceShooter.spriteBatch.setColor(Color.BLUE);
+                    ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 29, (int) ((hasShieldComponent.shieldPower / hasShieldComponent.maxShieldPower) * 98), 10);
+
+                    if (hasShieldComponent.shieldCooldown) {
+                        ArcadeSpaceShooter.spriteBatch.setColor(Color.PURPLE);
+                        ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 31, (int) (Math.min((hasShieldComponent.shieldPower / hasShieldComponent.maxShieldPower), 1) * 98), 10);
+                    }
                 }
+                ArcadeSpaceShooter.spriteBatch.setColor(Color.WHITE);
             }
-            ArcadeSpaceShooter.spriteBatch.setColor(Color.WHITE);
         }
 
         ImmutableArray<Entity> boss = this.getEngine().getEntitiesFor(Family.all(BossEnemyComponent.class).get());
