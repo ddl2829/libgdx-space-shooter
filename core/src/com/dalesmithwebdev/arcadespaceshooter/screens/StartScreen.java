@@ -50,6 +50,7 @@ public class StartScreen extends ScreenAdapter {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 ArcadeSpaceShooter.instance.setScreen(new GameScreen());
+                //ArcadeSpaceShooter.instance.setScreen(new GameOverScreen());
             }
         });
 
