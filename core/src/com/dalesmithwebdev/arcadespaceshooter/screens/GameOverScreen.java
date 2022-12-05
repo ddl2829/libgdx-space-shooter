@@ -1,7 +1,6 @@
 package com.dalesmithwebdev.arcadespaceshooter.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
@@ -18,14 +17,13 @@ import com.dalesmithwebdev.arcadespaceshooter.screens.listeners.GameOverScreenKe
 import com.dalesmithwebdev.arcadespaceshooter.systems.LevelSystem;
 
 public class GameOverScreen extends ScreenAdapter {
-    private Stage ui;
-    private VerticalGroup gameOverMenu;
+    private final Stage ui;
     public VerticalGroup gameOverMenuOptions;
     public int selectedMenuItem = 0;
 
     public GameOverScreen() {
         ui = new Stage();
-        gameOverMenu = new VerticalGroup();
+        VerticalGroup gameOverMenu = new VerticalGroup();
         gameOverMenu.align(Align.center);
         gameOverMenu.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
         gameOverMenu.space(Gdx.graphics.getHeight() / 4f);

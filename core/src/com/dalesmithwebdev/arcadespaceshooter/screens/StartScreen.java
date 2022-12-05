@@ -1,30 +1,28 @@
 package com.dalesmithwebdev.arcadespaceshooter.screens;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.SnapshotArray;
-import com.badlogic.gdx.utils.StringBuilder;
 import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
 import com.dalesmithwebdev.arcadespaceshooter.screens.listeners.StartScreenKeyboardListener;
 
 public class StartScreen extends ScreenAdapter {
-    private Stage ui;
-    private VerticalGroup startMenu;
+    private final Stage ui;
     public VerticalGroup startMenuOptions;
     public int selectedMenuItem = 0;
 
     public StartScreen() {
         ui = new Stage();
-        startMenu = new VerticalGroup();
+        VerticalGroup startMenu = new VerticalGroup();
         startMenu.align(Align.center);
         startMenu.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
         startMenu.space(Gdx.graphics.getHeight() / 4f);
