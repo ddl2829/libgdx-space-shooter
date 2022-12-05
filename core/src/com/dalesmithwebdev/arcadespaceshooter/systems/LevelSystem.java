@@ -26,6 +26,9 @@ public class LevelSystem extends EntitySystem {
     public void update(float gameTime)
     {
         final Engine engine = this.getEngine();
+        if(ArcadeSpaceShooter.paused) {
+            return;
+        }
         if (preppingLevel)
         {
             return;

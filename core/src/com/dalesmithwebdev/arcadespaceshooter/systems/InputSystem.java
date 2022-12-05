@@ -18,6 +18,9 @@ import com.dalesmithwebdev.arcadespaceshooter.utility.ComponentMap;
 public class InputSystem extends EntitySystem {
     public void update(float gameTime)
     {
+        if(ArcadeSpaceShooter.paused) {
+            return;
+        }
         Entity player;
         ImmutableArray<Entity> playerEntities = this.getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
         if (playerEntities.size() == 0)
@@ -59,26 +62,21 @@ public class InputSystem extends EntitySystem {
                             prc.height + 20
                     );
                 }
+            } else {
+                Timer.schedule(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        ArcadeSpaceShooter.instance.setScreen(new GameOverScreen());
+                    }
+                }, 3);
+
+                return;
             }
-        }
-
-        PlayerComponent pc = ComponentMap.playerComponentComponentMapper.get(player);
-        SpeedComponent sc = ComponentMap.speedComponentComponentMapper.get(player);
-        RenderComponent rc = ComponentMap.renderComponentComponentMapper.get(player);
-
-        if(pc.lives == 0)
-        {
-            rc.visible = false;
-            Timer.schedule(new Timer.Task() {
-                @Override
-                public void run() {
-                    ArcadeSpaceShooter.PopScreen();
-                    ArcadeSpaceShooter.PushScreen(new GameOverScreen());
-                }
-            }, 3);
-
             return;
         }
+
+        SpeedComponent sc = ComponentMap.speedComponentComponentMapper.get(player);
+        RenderComponent rc = ComponentMap.renderComponentComponentMapper.get(player);
 
         sc.motion = new Vector2(0, 0);
 

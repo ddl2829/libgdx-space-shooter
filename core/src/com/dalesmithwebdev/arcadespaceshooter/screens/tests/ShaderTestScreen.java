@@ -1,12 +1,12 @@
 package com.dalesmithwebdev.arcadespaceshooter.screens.tests;
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.ScreenAdapter;
 import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
 import com.dalesmithwebdev.arcadespaceshooter.components.PositionComponent;
 import com.dalesmithwebdev.arcadespaceshooter.components.RenderComponent;
-import com.dalesmithwebdev.arcadespaceshooter.screens.BaseScreen;
 
-public class ShaderTestScreen extends BaseScreen {
+public class ShaderTestScreen extends ScreenAdapter {
 
     public ShaderTestScreen() {
         super();
@@ -20,12 +20,7 @@ public class ShaderTestScreen extends BaseScreen {
     }
 
     @Override
-    public void update(float gameTime) {
+    public void render(float gameTime) {
         ArcadeSpaceShooter.engine.update(gameTime);
-    }
-
-    @Override
-    public void draw(float gameTime) {
-
     }
 }

@@ -14,6 +14,9 @@ import com.dalesmithwebdev.arcadespaceshooter.utility.Rand;
 public class EnemyLogicSystem extends EntitySystem {
     public void update(float gameTime)
     {
+        if(ArcadeSpaceShooter.paused) {
+            return;
+        }
         ImmutableArray<Entity> players = this.getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
         ImmutableArray<Entity> enemies = this.getEngine().getEntitiesFor(Family.all(EnemyComponent.class, PositionComponent.class, SpeedComponent.class).get());
         for(Entity enemy : enemies)

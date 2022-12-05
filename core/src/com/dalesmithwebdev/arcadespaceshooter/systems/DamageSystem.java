@@ -25,6 +25,9 @@ public class DamageSystem extends EntitySystem {
 
     public void update(float gameTime)
     {
+        if(ArcadeSpaceShooter.paused) {
+            return;
+        }
         ImmutableArray<Entity> thingsThatDoDamage = this.getEngine().getEntitiesFor(Family.all(DealsDamageComponent.class, PositionComponent.class, RenderComponent.class).get());
         ImmutableArray<Entity> thingsThatTakeDamage = this.getEngine().getEntitiesFor(Family.all(TakesDamageComponent.class, PositionComponent.class, RenderComponent.class).get());
 
@@ -52,6 +55,7 @@ public class DamageSystem extends EntitySystem {
                     damageDealerRect = new Rectangle((int) dd_pc.position.x - (dd_rc.width / 2.0f), (int) dd_pc.position.y - (dd_rc.height / 2.0f), dd_rc.width, dd_rc.height);
                 } catch (NullPointerException npe) {
                     npe.printStackTrace();
+                    return;
                 }
             }
 

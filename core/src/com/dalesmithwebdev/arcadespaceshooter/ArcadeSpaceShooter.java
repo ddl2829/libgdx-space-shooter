@@ -1,23 +1,32 @@
 package com.dalesmithwebdev.arcadespaceshooter;
 
 import com.badlogic.ashley.core.Engine;
-import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Rectangle;
-import com.dalesmithwebdev.arcadespaceshooter.screens.BackgroundScreen;
-import com.dalesmithwebdev.arcadespaceshooter.screens.BaseScreen;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Pool;
+import com.dalesmithwebdev.arcadespaceshooter.components.BackgroundObjectComponent;
+import com.dalesmithwebdev.arcadespaceshooter.components.PositionComponent;
+import com.dalesmithwebdev.arcadespaceshooter.components.RenderComponent;
+import com.dalesmithwebdev.arcadespaceshooter.prefabs.BackgroundElement;
 import com.dalesmithwebdev.arcadespaceshooter.screens.StartScreen;
 import com.dalesmithwebdev.arcadespaceshooter.screens.tests.ShaderTestScreen;
 import com.dalesmithwebdev.arcadespaceshooter.systems.*;
+import com.dalesmithwebdev.arcadespaceshooter.utility.ComponentMap;
 import com.dalesmithwebdev.arcadespaceshooter.utility.GameTestCase;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
-public class ArcadeSpaceShooter extends ApplicationAdapter {
+public class ArcadeSpaceShooter extends Game {
 	public static Rectangle screenRect;
 	public static Engine engine;
 	public static SpriteBatch spriteBatch;
@@ -45,8 +54,6 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 
 	public static Music backgroundMusic;
 
-	public static ArrayList<BaseScreen> screens;
-
 	public static ShaderProgram empShader;
 	public static ShaderProgram outlineShader;
 	public static ShaderProgram vignetteShader;
@@ -59,10 +66,24 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 
 	public static TextureAtlas textures;
 
+	public static Skin uiSkin;
+
+	public static ArcadeSpaceShooter instance;
+
+	private final Pool<Entity> backgroundPool = new Pool<Entity>() {
+		@Override
+		protected Entity newObject() {
+			return new BackgroundElement();
+		}
+	};
+
+	public static boolean paused = false;
+
 	public ArcadeSpaceShooter(GameTestCase testCase) {
 		super();
 		ShaderProgram.pedantic = false;
 		ArcadeSpaceShooter.testCase = testCase;
+		instance = this;
 	}
 	
 	@Override
@@ -72,7 +93,6 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 		glyphLayout = new GlyphLayout();
 		screenRect = new Rectangle(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		backgroundElements = new ArrayList<>();
-		screens = new ArrayList<>();
 
 		engine = new Engine();
 		engine.addSystem(new RenderSystem());
@@ -83,6 +103,8 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 
 		//Spritefont for scores & notifications
 		spriteBatch = new SpriteBatch();
+
+		uiSkin = new Skin(Gdx.files.internal("ui/uiskin.json"));
 
 		textures = new TextureAtlas(Gdx.files.internal("ArcadeShooter.atlas"));
 
@@ -149,13 +171,17 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 				Gdx.files.internal("shaders/vignette/fragment.glsl").readString()
 		);
 
+		Entity background = new Entity();
+		background.add(new PositionComponent(ArcadeSpaceShooter.screenRect.width / 2, ArcadeSpaceShooter.screenRect.height / 2));
+		background.add(new RenderComponent(ArcadeSpaceShooter.textures.findRegion("backgroundColor"), (int)ArcadeSpaceShooter.screenRect.width, (int)ArcadeSpaceShooter.screenRect.height, RenderComponent.PLANE_BACKGROUND_IMAGE));
+		ArcadeSpaceShooter.engine.addEntity(background);
+
 		if(testCase == null) {
-			PushScreen(new BackgroundScreen());
-			PushScreen(new StartScreen());
+			setScreen(new StartScreen());
 		} else {
 			switch(testCase) {
 				case SHADER:
-					PushScreen(new ShaderTestScreen());
+					setScreen(new ShaderTestScreen());
 					break;
 				default:
 					break;
@@ -170,33 +196,35 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 
 	@Override
 	public void render () {
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		float dt = Gdx.graphics.getDeltaTime() * 1000;
 		totalTime += dt;
-		if(empActive) {
-			empElapsedTime += dt;
-			if(empElapsedTime >= 20000) {
-				empActive = false;
+
+
+		if(!paused) {
+			ImmutableArray<Entity> backgroundObjects = ArcadeSpaceShooter.engine.getEntitiesFor(Family.all(BackgroundObjectComponent.class).get());
+
+			for (Entity e : backgroundObjects) {
+				PositionComponent pc = ComponentMap.positionComponentComponentMapper.get(e);
+				if (pc.position.y < -10) {
+					this.backgroundPool.free(e);
+				}
+			}
+
+			if (backgroundObjects.size() < 15) {
+				ArcadeSpaceShooter.engine.addEntity(this.backgroundPool.obtain());
+			}
+
+
+			if (empActive) {
+				empElapsedTime += dt;
+				if (empElapsedTime >= 20000) {
+					empActive = false;
+				}
 			}
 		}
 
-		for(int i = screens.size() - 1; i >= 0; i--)
-		{
-			BaseScreen screen = screens.get(i);
-			screen.update(dt);
-			if(screen.pausesBelow)
-			{
-				break;
-			}
-		}
-
-		spriteBatch.begin();
-		for(int i = 0; i < screens.size(); i++)
-		{
-			BaseScreen screen = screens.get(i);
-			screen.draw(dt);
-		}
-		spriteBatch.end();
-
+		getScreen().render(dt);
 
 		memoryLastReported += dt;
 		if(memoryLastReported > 60000) {
@@ -220,15 +248,5 @@ public class ArcadeSpaceShooter extends ApplicationAdapter {
 	public void dispose () {
 		spriteBatch.dispose();
 		bitmapFont.dispose();
-	}
-
-	public static void PushScreen(BaseScreen screen)
-	{
-		screens.add(screen);
-	}
-
-	public static void PopScreen()
-	{
-		screens.remove(screens.size() - 1);
 	}
 }

@@ -7,8 +7,8 @@ import com.dalesmithwebdev.arcadespaceshooter.ArcadeSpaceShooter;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.width = 1024;
-		config.height = 768;
+		config.width = 1920;
+		config.height = 1080;
 		new LwjglApplication(new ArcadeSpaceShooter(null), config);
 	}
 }

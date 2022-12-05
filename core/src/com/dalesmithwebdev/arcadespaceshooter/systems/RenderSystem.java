@@ -173,30 +173,32 @@ public class RenderSystem extends EntitySystem {
             ArcadeSpaceShooter.bitmapFont.setColor(Color.WHITE);
             ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, sb, ArcadeSpaceShooter.screenRect.width - ArcadeSpaceShooter.measureText(sb) - 10, ArcadeSpaceShooter.screenRect.height - 80);
 
-            RenderComponent player_rc = ComponentMap.renderComponentComponentMapper.get(player);
-            if(player_rc.visible) {
-                ArcadeSpaceShooter.spriteBatch.setColor(Color.BLACK);
-                ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 8, livesY - 13, 100, 12);
-                ArcadeSpaceShooter.spriteBatch.setColor(Color.WHITE);
-                ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 12, 98, 10);
-                ArcadeSpaceShooter.spriteBatch.setColor(Color.RED);
-                ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 12, (int) (((double) ptdc.health / ptdc.maxHealth) * 98), 10);
-
-                if (ComponentMap.hasShieldComponentComponentMapper.has(player)) {
-                    HasShieldComponent hasShieldComponent = ComponentMap.hasShieldComponentComponentMapper.get(player);
+            if(ComponentMap.renderComponentComponentMapper.has(player)) {
+                RenderComponent player_rc = ComponentMap.renderComponentComponentMapper.get(player);
+                if (player_rc.visible) {
                     ArcadeSpaceShooter.spriteBatch.setColor(Color.BLACK);
-                    ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 8, livesY - 30, 100, 12);
+                    ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 8, livesY - 13, 100, 12);
                     ArcadeSpaceShooter.spriteBatch.setColor(Color.WHITE);
-                    ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 29, 98, 10);
-                    ArcadeSpaceShooter.spriteBatch.setColor(Color.BLUE);
-                    ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 29, (int) ((hasShieldComponent.shieldPower / hasShieldComponent.maxShieldPower) * 98), 10);
+                    ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 12, 98, 10);
+                    ArcadeSpaceShooter.spriteBatch.setColor(Color.RED);
+                    ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 12, (int) (((double) ptdc.health / ptdc.maxHealth) * 98), 10);
 
-                    if (hasShieldComponent.shieldCooldown) {
-                        ArcadeSpaceShooter.spriteBatch.setColor(Color.PURPLE);
-                        ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 31, (int) (Math.min((hasShieldComponent.shieldPower / hasShieldComponent.maxShieldPower), 1) * 98), 10);
+                    if (ComponentMap.hasShieldComponentComponentMapper.has(player)) {
+                        HasShieldComponent hasShieldComponent = ComponentMap.hasShieldComponentComponentMapper.get(player);
+                        ArcadeSpaceShooter.spriteBatch.setColor(Color.BLACK);
+                        ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 8, livesY - 30, 100, 12);
+                        ArcadeSpaceShooter.spriteBatch.setColor(Color.WHITE);
+                        ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 29, 98, 10);
+                        ArcadeSpaceShooter.spriteBatch.setColor(Color.BLUE);
+                        ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 29, (int) ((hasShieldComponent.shieldPower / hasShieldComponent.maxShieldPower) * 98), 10);
+
+                        if (hasShieldComponent.shieldCooldown) {
+                            ArcadeSpaceShooter.spriteBatch.setColor(Color.PURPLE);
+                            ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 31, (int) (Math.min((hasShieldComponent.shieldPower / hasShieldComponent.maxShieldPower), 1) * 98), 10);
+                        }
                     }
+                    ArcadeSpaceShooter.spriteBatch.setColor(Color.WHITE);
                 }
-                ArcadeSpaceShooter.spriteBatch.setColor(Color.WHITE);
             }
         }
 
@@ -220,34 +222,29 @@ public class RenderSystem extends EntitySystem {
             }
         }
 
+        if(!ArcadeSpaceShooter.paused) {
+            ImmutableArray<Entity> notifications = this.getEngine().getEntitiesFor(Family.all(NotificationComponent.class).get());
+            for (Entity notification : notifications) {
+                NotificationComponent notificationComponent = ComponentMap.notificationComponentComponentMapper.get(notification);
+                notificationComponent.elapsedTime += deltaTime;
+                if (notificationComponent.elapsedTime > notificationComponent.maxLife) {
+                    this.getEngine().removeEntity(notification);
+                    continue;
+                }
 
-        ImmutableArray<Entity> notifications = this.getEngine().getEntitiesFor(Family.all(NotificationComponent.class).get());
-        for (Entity notification : notifications)
-        {
-            NotificationComponent notificationComponent = ComponentMap.notificationComponentComponentMapper.get(notification);
-            notificationComponent.elapsedTime += deltaTime;
-            if (notificationComponent.elapsedTime > notificationComponent.maxLife)
-            {
-                this.getEngine().removeEntity(notification);
-                continue;
-            }
-
-            ArcadeSpaceShooter.bitmapFont.setColor(notificationComponent.color);
-            if (notificationComponent.centerText)
-            {
-                ArcadeSpaceShooter.bitmapFont.draw(
-                        ArcadeSpaceShooter.spriteBatch,
-                        notificationComponent.text,
-                        ArcadeSpaceShooter.screenRect.width / 2 - ArcadeSpaceShooter.measureText(notificationComponent.text) / 2,
-                        ArcadeSpaceShooter.screenRect.height - ArcadeSpaceShooter.screenRect.height / 3
-                );
-            }
-            else
-            {
-                if(ComponentMap.positionComponentComponentMapper.has(notification))
-                {
-                    PositionComponent pc = ComponentMap.positionComponentComponentMapper.get(notification);
-                    ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, notificationComponent.text, pc.position.x, pc.position.y);
+                ArcadeSpaceShooter.bitmapFont.setColor(notificationComponent.color);
+                if (notificationComponent.centerText) {
+                    ArcadeSpaceShooter.bitmapFont.draw(
+                            ArcadeSpaceShooter.spriteBatch,
+                            notificationComponent.text,
+                            ArcadeSpaceShooter.screenRect.width / 2 - ArcadeSpaceShooter.measureText(notificationComponent.text) / 2,
+                            ArcadeSpaceShooter.screenRect.height - ArcadeSpaceShooter.screenRect.height / 3
+                    );
+                } else {
+                    if (ComponentMap.positionComponentComponentMapper.has(notification)) {
+                        PositionComponent pc = ComponentMap.positionComponentComponentMapper.get(notification);
+                        ArcadeSpaceShooter.bitmapFont.draw(ArcadeSpaceShooter.spriteBatch, notificationComponent.text, pc.position.x, pc.position.y);
+                    }
                 }
             }
         }

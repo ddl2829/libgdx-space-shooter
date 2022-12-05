@@ -18,6 +18,9 @@ public class MovementSystem extends EntitySystem {
     public MovementSystem() {}
 
     public void update(float deltaTime) {
+        if(ArcadeSpaceShooter.paused) {
+            return;
+        }
         ImmutableArray<Entity> entities = this.getEngine().getEntitiesFor(Family.all(PositionComponent.class, SpeedComponent.class).get());
 
         for (Entity moveable : entities)
@@ -32,7 +35,7 @@ public class MovementSystem extends EntitySystem {
             }
             pc.position = pc.position.add(move);
 
-            if (ComponentMap.playerComponentComponentMapper.has(moveable))
+            if (ComponentMap.playerComponentComponentMapper.has(moveable) && ComponentMap.renderComponentComponentMapper.has(moveable))
             {
                 RenderComponent renderComp = ComponentMap.renderComponentComponentMapper.get(moveable);
                 if (pc.position.x < 0)
