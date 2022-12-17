@@ -79,6 +79,8 @@ public class ArcadeSpaceShooter extends Game {
 
 	public static boolean paused = false;
 
+	public static boolean gameOverScheduled = false;
+
 	public ArcadeSpaceShooter(GameTestCase testCase) {
 		super();
 		ShaderProgram.pedantic = false;

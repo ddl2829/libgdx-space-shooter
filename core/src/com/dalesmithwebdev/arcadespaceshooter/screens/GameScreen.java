@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -27,12 +29,26 @@ public class GameScreen extends ScreenAdapter {
     private InputMultiplexer inputMultiplexer;
     private PauseScreenKeyboardListener pauseScreenKeyboardListener;
 
+    private HorizontalGroup playerLives;
+    private VerticalGroup hudTopLeft;
+
     public GameScreen() {
         ArcadeSpaceShooter.engine.addSystem(new LevelSystem());
         ArcadeSpaceShooter.engine.addSystem(new InputSystem());
         ui = new Stage();
         pauseMenu = new VerticalGroup();
         pauseMenuOptions = new VerticalGroup();
+
+        playerLives = new HorizontalGroup();
+
+//        for(int i = 0; i < ; i++) {
+//            Image life = new Image(ArcadeSpaceShooter.playerLivesGraphic);
+//            playerLives.addActor(life);
+//        }
+
+        hudTopLeft = new VerticalGroup();
+        hudTopLeft.addActor(playerLives);
+
 
         Label pausedLabel = new Label("Paused", ArcadeSpaceShooter.uiSkin);
         pausedLabel.setFontScale(3);

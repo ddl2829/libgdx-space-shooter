@@ -63,12 +63,17 @@ public class InputSystem extends EntitySystem {
                     );
                 }
             } else {
+                if(ArcadeSpaceShooter.gameOverScheduled) {
+                    return;
+                }
                 Timer.schedule(new Timer.Task() {
                     @Override
                     public void run() {
                         ArcadeSpaceShooter.instance.setScreen(new GameOverScreen());
+
                     }
                 }, 3);
+                ArcadeSpaceShooter.gameOverScheduled = true;
 
                 return;
             }

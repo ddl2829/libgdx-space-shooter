@@ -62,7 +62,7 @@ public class StartScreen extends ScreenAdapter {
                     option.setColor(Color.WHITE);
                 }
                 optionsLabel.setColor(Color.YELLOW);
-                selectedMenuItem = 0;
+                selectedMenuItem = 1;
             }
 
             @Override
@@ -81,7 +81,7 @@ public class StartScreen extends ScreenAdapter {
                     option.setColor(Color.WHITE);
                 }
                 exitLabel.setColor(Color.YELLOW);
-                selectedMenuItem = 0;
+                selectedMenuItem = 2;
             }
 
             @Override

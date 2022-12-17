@@ -12,8 +12,8 @@ import com.dalesmithwebdev.arcadespaceshooter.screens.GameScreen;
 public class GameOverScreenKeyboardListener implements InputProcessor {
     private final GameOverScreen gameOverScreen;
 
-    public GameOverScreenKeyboardListener(GameOverScreen gameScreen) {
-        this.gameOverScreen = gameScreen;
+    public GameOverScreenKeyboardListener(GameOverScreen gameOverScreen) {
+        this.gameOverScreen = gameOverScreen;
     }
 
     @Override
