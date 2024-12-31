@@ -8,10 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.SnapshotArray;
@@ -36,18 +33,34 @@ public class GameScreen extends ScreenAdapter {
         ArcadeSpaceShooter.engine.addSystem(new LevelSystem());
         ArcadeSpaceShooter.engine.addSystem(new InputSystem());
         ui = new Stage();
+        ui.setDebugUnderMouse(true);
         pauseMenu = new VerticalGroup();
         pauseMenuOptions = new VerticalGroup();
 
         playerLives = new HorizontalGroup();
 
-//        for(int i = 0; i < ; i++) {
-//            Image life = new Image(ArcadeSpaceShooter.playerLivesGraphic);
-//            playerLives.addActor(life);
-//        }
+        for(int i = 0; i < 4; i++) {
+            Image life = new Image(ArcadeSpaceShooter.playerLivesGraphic);
+            life.setAlign(Align.topLeft);
+            playerLives.addActor(life);
+        }
+
+        playerLives.space(10);
 
         hudTopLeft = new VerticalGroup();
         hudTopLeft.addActor(playerLives);
+
+        ProgressBar healthBar = new ProgressBar(0, 100, 1, false, ArcadeSpaceShooter.uiSkin);
+        healthBar.setValue(100);
+        healthBar.setColor(Color.RED);
+        hudTopLeft.addActor(healthBar);
+        //hudTopLeft.setWidth(ArcadeSpaceShooter.playerLivesGraphic.getRegionWidth() * 4 + (10 * 3));;
+        //hudTopLeft.setDebug(true);
+
+        hudTopLeft.setPosition(10, Gdx.graphics.getHeight() - 10);
+        hudTopLeft.align(Align.topLeft);
+
+        ui.addActor(hudTopLeft);
 
 
         Label pausedLabel = new Label("Paused", ArcadeSpaceShooter.uiSkin);

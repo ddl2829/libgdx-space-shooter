@@ -154,10 +154,10 @@ public class RenderSystem extends EntitySystem {
             PlayerComponent pc = ComponentMap.playerComponentComponentMapper.get(player);
             TakesDamageComponent ptdc = ComponentMap.takesDamageComponentComponentMapper.get(player);
             int livesY = (int)ArcadeSpaceShooter.screenRect.height - ArcadeSpaceShooter.playerLivesGraphic.getRegionHeight() - 10;
-            for (int i = 0; i < pc.lives; i++)
-            {
-                ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.playerLivesGraphic, 40 * i + 10, livesY, ArcadeSpaceShooter.playerLivesGraphic.getRegionWidth(), ArcadeSpaceShooter.playerLivesGraphic.getRegionHeight());
-            }
+//            for (int i = 0; i < pc.lives; i++)
+//            {
+//                ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.playerLivesGraphic, 40 * i + 10, livesY, ArcadeSpaceShooter.playerLivesGraphic.getRegionWidth(), ArcadeSpaceShooter.playerLivesGraphic.getRegionHeight());
+//            }
 
             //String scoreText = "" + Math.floor(ArcadeSpaceShooter.playerScore);
             sb.clear();
@@ -176,12 +176,12 @@ public class RenderSystem extends EntitySystem {
             if(ComponentMap.renderComponentComponentMapper.has(player)) {
                 RenderComponent player_rc = ComponentMap.renderComponentComponentMapper.get(player);
                 if (player_rc.visible) {
-                    ArcadeSpaceShooter.spriteBatch.setColor(Color.BLACK);
-                    ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 8, livesY - 13, 100, 12);
-                    ArcadeSpaceShooter.spriteBatch.setColor(Color.WHITE);
-                    ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 12, 98, 10);
-                    ArcadeSpaceShooter.spriteBatch.setColor(Color.RED);
-                    ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 12, (int) (((double) ptdc.health / ptdc.maxHealth) * 98), 10);
+//                    ArcadeSpaceShooter.spriteBatch.setColor(Color.BLACK);
+//                    ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 8, livesY - 13, 100, 12);
+//                    ArcadeSpaceShooter.spriteBatch.setColor(Color.WHITE);
+//                    ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 12, 98, 10);
+//                    ArcadeSpaceShooter.spriteBatch.setColor(Color.RED);
+//                    ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, 9, livesY - 12, (int) (((double) ptdc.health / ptdc.maxHealth) * 98), 10);
 
                     if (ComponentMap.hasShieldComponentComponentMapper.has(player)) {
                         HasShieldComponent hasShieldComponent = ComponentMap.hasShieldComponentComponentMapper.get(player);
