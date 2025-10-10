@@ -16,6 +16,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.dalesmithwebdev.galaxia.ArcadeSpaceShooter;
 import com.dalesmithwebdev.galaxia.components.*;
+import com.dalesmithwebdev.galaxia.services.GameStateService;
+import com.dalesmithwebdev.galaxia.services.ServiceLocator;
 import com.dalesmithwebdev.galaxia.utility.ComponentMap;
 import com.dalesmithwebdev.galaxia.utility.FontManager;
 
@@ -161,8 +163,9 @@ public class RenderSystem extends EntitySystem {
 //            }
 
             // Score display with custom monospace font
+            GameStateService gameState = ServiceLocator.getInstance().getGameState();
             sb.clear();
-            sb.append((int)Math.floor(ArcadeSpaceShooter.playerScore));
+            sb.append((int)Math.floor(gameState.getPlayerScore()));
             String scoreText = sb.toString();
             float scoreWidth = FontManager.getTextWidth(scoreText, "score");
             FontManager.getLabelStyle("score").font.setColor(Color.YELLOW);
@@ -255,7 +258,8 @@ public class RenderSystem extends EntitySystem {
         }
 
         // Notifications with custom HUD font
-        if(!ArcadeSpaceShooter.paused) {
+        GameStateService gameState = ServiceLocator.getInstance().getGameState();
+        if(!gameState.isPaused()) {
             ImmutableArray<Entity> notifications = this.getEngine().getEntitiesFor(Family.all(NotificationComponent.class).get());
             for (Entity notification : notifications) {
                 NotificationComponent notificationComponent = ComponentMap.notificationMapper.get(notification);
