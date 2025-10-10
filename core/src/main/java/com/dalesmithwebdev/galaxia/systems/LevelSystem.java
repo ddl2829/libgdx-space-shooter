@@ -6,404 +6,281 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 import com.dalesmithwebdev.galaxia.ArcadeSpaceShooter;
-import com.dalesmithwebdev.galaxia.constants.LevelConstants;
-import com.dalesmithwebdev.galaxia.components.*;
+import com.dalesmithwebdev.galaxia.components.BossEnemyComponent;
+import com.dalesmithwebdev.galaxia.components.PositionComponent;
 import com.dalesmithwebdev.galaxia.level.LevelData;
-import com.dalesmithwebdev.galaxia.level.LevelLoader;
 import com.dalesmithwebdev.galaxia.level.LevelObject;
-import com.dalesmithwebdev.galaxia.prefabs.*;
 import com.dalesmithwebdev.galaxia.screens.LevelSelectScreen;
-import com.dalesmithwebdev.galaxia.constants.DamageTypeConstants;
-import com.dalesmithwebdev.galaxia.services.GameStateService;
-import com.dalesmithwebdev.galaxia.services.ServiceLocator;
+import com.dalesmithwebdev.galaxia.services.*;
 import com.dalesmithwebdev.galaxia.utility.ComponentMap;
 import com.dalesmithwebdev.galaxia.utility.SoundManager;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
+/**
+ * LevelSystem - Thin coordinator for level progression
+ * Single Responsibility: Orchestrate level services and manage game loop
+ */
 public class LevelSystem extends EntitySystem {
+    // Static fields for backwards compatibility
     public static int levelNumber = 0;
     public static int levelLength;
-    private boolean preppingLevel = false;
-    private float levelRunningTime = 0;
-    private static final float MIN_LEVEL_TIME = 3000; // 3 seconds minimum before checking completion
 
-    // JSON level support
-    private static String currentLevelId = null;
-    private static List<LevelLoader.LevelInfo> levelSequence = null;
-    private static int currentLevelIndex = 0;
+    // Services
+    private final LevelProgressionService progressionService;
+    private final EntitySpawnService spawnService;
+    private final LevelLoaderService loaderService;
+    private final ProceduralLevelService proceduralService;
+    private final LevelNotificationService notificationService;
+    private final GameStateService gameState;
 
-    // Lazy spawning queue for performance (to avoid single-frame spawn spike)
-    private List<PendingSpawn> spawnQueue = new ArrayList<>();
-    private int maxEntitiesPerFrame = 5; // Spawn at most this many entities per frame to avoid lag
+    // Transform data stored for entity creation callback
+    private LevelLoaderService.TransformData transformData = null;
 
-    // Coordinate transform data (stored for lazy spawning)
-    private static class TransformData {
-        float minEditorX, maxEditorX, maxEditorY, xScale, horizontalBuffer;
+    public LevelSystem() {
+        // Get services from ServiceLocator
+        ServiceLocator locator = ServiceLocator.getInstance();
+        this.progressionService = locator.getLevelProgression();
+        this.spawnService = locator.getEntitySpawn();
+        this.loaderService = locator.getLevelLoader();
+        this.proceduralService = locator.getProceduralLevel();
+        this.notificationService = locator.getLevelNotification();
+        this.gameState = locator.getGameState();
     }
-    private TransformData transformData = null;
 
     /**
-     * Pending entity spawn - created from level data but not yet added to engine
+     * Set current level ID (for backwards compatibility and external access)
      */
-    private static class PendingSpawn {
-        LevelObject levelObject;
-        float spawnY;
-
-        PendingSpawn(LevelObject obj, float spawnY) {
-            this.levelObject = obj;
-            this.spawnY = spawnY;
-        }
-    }
-
     public static void setCurrentLevelId(String levelId) {
-        System.out.println(">>> LevelSystem.setCurrentLevelId: Setting level ID to: " + levelId);
-        currentLevelId = levelId;
-        // Load the level sequence
-        System.out.println(">>> LevelSystem.setCurrentLevelId: Loading available levels");
-        levelSequence = LevelLoader.getAvailableLevels();
-        System.out.println(">>> LevelSystem.setCurrentLevelId: Found " + levelSequence.size() + " levels");
-        // Find index of current level
-        for (int i = 0; i < levelSequence.size(); i++) {
-            if (levelSequence.get(i).getId().equals(levelId)) {
-                currentLevelIndex = i;
-                System.out.println(">>> LevelSystem.setCurrentLevelId: Found level at index " + i);
-                break;
-            }
-        }
+        ServiceLocator.getInstance().getLevelProgression().setCurrentLevelId(levelId);
     }
 
+    /**
+     * Start initial level
+     */
     public void startInitialLevel() {
         System.out.println(">>> LevelSystem.startInitialLevel: Triggering initial level build");
         BuildLevel();
     }
 
+    @Override
     public void update(float gameTime) {
-        GameStateService gameState = ServiceLocator.getInstance().getGameState();
         final Engine engine = this.getEngine();
-        if(gameState.isPaused()) {
-            return;
-        }
-        if (preppingLevel) {
+
+        if (gameState.isPaused() || progressionService.isPreppingLevel()) {
             return;
         }
 
-        // Progressive entity spawning for performance (spread initial spawn over multiple frames)
-        processSpawnQueue();
+        // Progressive entity spawning (spread over multiple frames for performance)
+        spawnService.processSpawnQueue(engine, this::createEntityFromPending);
 
         // Track level running time
-        levelRunningTime += gameTime;
+        progressionService.updateLevelRunningTime(gameTime);
 
         // Only check for level completion after minimum time has passed
-        if (levelRunningTime < MIN_LEVEL_TIME) {
+        if (!progressionService.hasMinimumTimeElapsed()) {
             return;
         }
 
-        // Check if level is complete (no boss entities left)
-        ImmutableArray<Entity> boss = this.getEngine().getEntitiesFor(Family.all(BossEnemyComponent.class).get());
-        ImmutableArray<Entity> enemies = this.getEngine().getEntitiesFor(Family.all(EnemyComponent.class).get());
+        // Check if level is complete
+        if (progressionService.isLevelComplete(engine, spawnService.isSpawnQueueEmpty())) {
+            handleLevelComplete(engine);
+        }
+    }
 
-        // Level complete when all enemies are gone AND spawn queue is empty
-        if (boss.size() == 0 && enemies.size() == 0 && isSpawnQueueEmpty()) {
-            levelNumber++;
+    /**
+     * Handle level completion and transition
+     */
+    private void handleLevelComplete(final Engine engine) {
+        progressionService.advanceLevel();
 
-            if (levelNumber > 1) {
-                Entity e = new Entity();
-                e.add(new NotificationComponent("Level Complete!", 3000, true));
-                this.getEngine().addEntity(e);
-                preppingLevel = true;
+        // Sync static field for backwards compatibility
+        levelNumber = progressionService.getLevelNumber();
 
-                Timer.schedule(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        // Try to load next level in sequence
-                        if (currentLevelId != null && levelSequence != null) {
-                            currentLevelIndex++;
-                            if (currentLevelIndex < levelSequence.size()) {
-                                // Load next level
-                                currentLevelId = levelSequence.get(currentLevelIndex).getId();
-                                Entity e = new Entity();
-                                e.add(new NotificationComponent("Begin Level: " + levelSequence.get(currentLevelIndex).getName(), 3000, true));
-                                engine.addEntity(e);
+        if (progressionService.getLevelNumber() > 1) {
+            // Show completion and prep next level
+            notificationService.showLevelComplete(engine);
+            progressionService.setPreppingLevel(true);
 
-                                Timer.schedule(new Timer.Task() {
-                                    @Override
-                                    public void run() {
-                                        BuildLevel();
-                                    }
-                                }, 3);
-                            } else {
-                                // All levels complete!
-                                Entity e = new Entity();
-                                e.add(new NotificationComponent("All Levels Complete!", 3000, true));
-                                engine.addEntity(e);
-
-                                Timer.schedule(new Timer.Task() {
-                                    @Override
-                                    public void run() {
-                                        ArcadeSpaceShooter.instance.setScreen(new LevelSelectScreen());
-                                    }
-                                }, 5);
-                            }
-                        } else {
-                            // Fallback to old system
-                            Entity e = new Entity();
-                            e.add(new NotificationComponent("Begin Level " + levelNumber, 3000, true));
-                            engine.addEntity(e);
-
-                            Timer.schedule(new Timer.Task() {
-                                @Override
-                                public void run() {
-                                    BuildLevel();
-                                }
-                            }, 3);
-                        }
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    if (progressionService.isUsingLevelSequence()) {
+                        handleLevelSequenceProgression(engine);
+                    } else {
+                        handleProceduralProgression(engine);
                     }
-                }, 5);
-            } else {
-                // First level load
-                Entity e = new Entity();
-                e.add(new NotificationComponent("Use the Arrow Keys to move", 3000, true));
-                this.getEngine().addEntity(e);
-                Timer.schedule(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        Entity e = new Entity();
-                        e.add(new NotificationComponent("Hold the space bar to shoot", 3000, true));
-                        engine.addEntity(e);
+                }
+            }, 5);
+        } else {
+            // First level - show tutorial
+            notificationService.showTutorial(engine);
+            BuildLevel();
+        }
+    }
 
-                        Timer.schedule(new Timer.Task() {
-                            @Override
-                            public void run() {
-                                Entity e = new Entity();
-                                e.add(new NotificationComponent("Good Luck!", 3000, true));
-                                engine.addEntity(e);
-                            }
-                        }, 3);
-                    }
-                }, 3);
+    /**
+     * Handle progression through JSON level sequence
+     */
+    private void handleLevelSequenceProgression(final Engine engine) {
+        if (progressionService.advanceToNextLevelInSequence()) {
+            // Load next level in sequence
+            String levelName = progressionService.getCurrentLevelName();
+            notificationService.showLevelStart(engine, levelName);
 
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    BuildLevel();
+                }
+            }, 3);
+        } else {
+            // All levels complete!
+            notificationService.showAllLevelsComplete(engine);
+
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    ArcadeSpaceShooter.instance.setScreen(new LevelSelectScreen());
+                }
+            }, 5);
+        }
+    }
+
+    /**
+     * Handle progression in procedural mode
+     */
+    private void handleProceduralProgression(final Engine engine) {
+        notificationService.showLevelStart(engine, progressionService.getLevelNumber());
+
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
                 BuildLevel();
             }
-        }
+        }, 3);
     }
 
+    /**
+     * Build and load a level
+     */
     private void BuildLevel() {
         System.out.println(">>> LevelSystem.BuildLevel: Called!");
-        // Reset level timer
-        levelRunningTime = 0;
 
-        // Play warp-in sound at the start of each level
+        // Reset level timer
+        progressionService.resetLevelRunningTime();
+
+        // Play warp-in sound
         SoundManager.playWarpIn();
 
+        // Try to load JSON level first
+        String currentLevelId = progressionService.getCurrentLevelId();
         System.out.println(">>> LevelSystem.BuildLevel: currentLevelId = " + currentLevelId);
-        // Try to load from JSON first
+
         if (currentLevelId != null) {
-            System.out.println(">>> LevelSystem.BuildLevel: Loading level data for: " + currentLevelId);
-            LevelData levelData = LevelLoader.loadLevel(currentLevelId);
+            LevelData levelData = loaderService.loadLevel(currentLevelId);
             if (levelData != null) {
-                System.out.println(">>> LevelSystem.BuildLevel: Level data loaded successfully, building from JSON");
+                System.out.println(">>> LevelSystem.BuildLevel: Building from JSON");
                 BuildLevelFromJSON(levelData);
-                preppingLevel = false;
+                progressionService.setPreppingLevel(false);
                 return;
-            } else {
-                System.out.println(">>> LevelSystem.BuildLevel: Level data was NULL!");
             }
-        } else {
-            System.out.println(">>> LevelSystem.BuildLevel: currentLevelId is NULL, using procedural generation");
         }
 
-        // Fallback: procedural generation (old system)
+        // Fallback: procedural generation
         System.out.println(">>> LevelSystem.BuildLevel: Building procedural level");
         BuildProceduralLevel();
-        preppingLevel = false;
+        progressionService.setPreppingLevel(false);
     }
 
+    /**
+     * Build level from JSON data
+     */
     private void BuildLevelFromJSON(LevelData levelData) {
-        System.out.println("=== Loading level: " + levelData.getName() + " ===");
-        System.out.println("Total objects in level: " + levelData.getObjects().size());
-
         // Clear spawn queue for new level
-        spawnQueue.clear();
+        spawnService.clearQueue();
 
-        // Find min/max X and max Y values for scaling
-        float minEditorX = Float.MAX_VALUE;
-        float maxEditorX = Float.MIN_VALUE;
-        float maxEditorY = 0;
+        // Calculate coordinate transform
+        transformData = loaderService.calculateTransform(
+            levelData,
+            ArcadeSpaceShooter.screenRect.width,
+            ArcadeSpaceShooter.screenRect.height
+        );
 
+        // Queue all objects for progressive spawning
         for (LevelObject obj : levelData.getObjects()) {
-            if (obj.getX() < minEditorX) minEditorX = obj.getX();
-            if (obj.getX() > maxEditorX) maxEditorX = obj.getX();
-            if (obj.getY() > maxEditorY) maxEditorY = obj.getY();
-        }
-
-        System.out.println("Editor X range: " + minEditorX + " to " + maxEditorX);
-        System.out.println("Max editor Y value: " + maxEditorY);
-        System.out.println("Screen dimensions: " + ArcadeSpaceShooter.screenRect.width + " x " + ArcadeSpaceShooter.screenRect.height);
-
-        // Add buffer/padding on each side (typical entity width / 2)
-        float horizontalBuffer = LevelConstants.HORIZONTAL_BUFFER;
-        float availableWidth = ArcadeSpaceShooter.screenRect.width - (2 * horizontalBuffer);
-
-        // Calculate X scaling factor to fit within available width
-        float editorWidth = maxEditorX - minEditorX;
-        float xScale = editorWidth > 0 ? availableWidth / editorWidth : 1.0f;
-        System.out.println("X scaling factor: " + xScale + " (editor width: " + editorWidth + ", buffer: " + horizontalBuffer + ")");
-
-        // Store transform data for lazy spawning
-        transformData = new TransformData();
-        transformData.minEditorX = minEditorX;
-        transformData.maxEditorX = maxEditorX;
-        transformData.maxEditorY = maxEditorY;
-        transformData.xScale = xScale;
-        transformData.horizontalBuffer = horizontalBuffer;
-
-        // Queue all objects for progressive spawning (spread over multiple frames to avoid lag spike)
-        for (LevelObject obj : levelData.getObjects()) {
-            float invertedY = maxEditorY - obj.getY();
+            float invertedY = transformData.getMaxEditorY() - obj.getY();
             float spawnY = ArcadeSpaceShooter.screenRect.height + invertedY;
-            spawnQueue.add(new PendingSpawn(obj, spawnY));
+            spawnService.queueEntity(obj, spawnY);
         }
 
-        System.out.println("Queued " + spawnQueue.size() + " entities for progressive spawning (avoiding lag spike)");
+        System.out.println("Queued " + spawnService.getQueueSize() + " entities for progressive spawning");
 
-        // Set level length based on max Y (which represents level distance)
-        levelLength = (int)(ArcadeSpaceShooter.screenRect.height + maxEditorY + 1000);
-        System.out.println("Level length set to: " + levelLength);
-        System.out.println("=== Level loading complete (instant!) ===");
+        // Set level length
+        int calculatedLength = loaderService.calculateLevelLength(levelData, ArcadeSpaceShooter.screenRect.height);
+        progressionService.setLevelLength(calculatedLength);
+
+        // Sync static field for backwards compatibility
+        levelLength = calculatedLength;
+
+        System.out.println("=== Level loading complete ===");
     }
 
     /**
-     * Check if spawn queue has any enemies or bosses left
+     * Build procedural level
      */
-    private boolean isSpawnQueueEmpty() {
-        if (spawnQueue.isEmpty()) {
-            return true;
-        }
-
-        // Check if any remaining entities in queue are enemies or bosses
-        for (PendingSpawn pending : spawnQueue) {
-            String type = pending.levelObject.getType();
-            if (type.equals("ENEMY_FIGHTER") || type.startsWith("BOSS_")) {
-                return false; // Still have enemies waiting to spawn
-            }
-        }
-
-        return true; // Only powerups/meteors left, doesn't count
-    }
-
-    /**
-     * Process spawn queue - spawn entities progressively to avoid single-frame lag spike.
-     * All entities spawn at their designed Y positions (respecting level design),
-     * but spread over multiple frames for performance.
-     */
-    private void processSpawnQueue() {
-        if (spawnQueue.isEmpty() || transformData == null) {
-            return;
-        }
-
-        // Spawn a limited number of entities per frame to avoid lag
-        int spawnedThisFrame = 0;
-        while (!spawnQueue.isEmpty() && spawnedThisFrame < maxEntitiesPerFrame) {
-            // Take from front of queue (FIFO)
-            PendingSpawn pending = spawnQueue.remove(0);
-            spawnedThisFrame++;
-
-            Entity entity = createEntityFromType(
-                pending.levelObject,
-                transformData.minEditorX,
-                transformData.maxEditorX,
-                transformData.maxEditorY,
-                transformData.xScale,
-                transformData.horizontalBuffer
-            );
-
-            if (entity != null) {
-                this.getEngine().addEntity(entity);
-            }
-        }
-    }
-
-    private Entity createEntityFromType(LevelObject obj, float minEditorX, float maxEditorX, float maxEditorY, float xScale, float horizontalBuffer) {
-        // Scale X coordinate to fit screen width with buffer
-        float normalizedX = horizontalBuffer + (obj.getX() - minEditorX) * xScale;
-
-        // Invert Y coordinate: editor high Y = start, Y=0 = end
-        // Game high Y = later encounter, low Y = early encounter
-        float invertedY = maxEditorY - obj.getY();
-        float spawnY = ArcadeSpaceShooter.screenRect.height + invertedY;
-
-        switch (obj.getType()) {
-            case "METEOR_SMALL":
-                return new SmallMeteor(normalizedX, spawnY, LevelConstants.ENTITY_FIXED_DOWNWARD_SPEED); // Fixed downward speed
-            case "METEOR_LARGE":
-                return new LargeMeteor(normalizedX, spawnY, LevelConstants.ENTITY_FIXED_DOWNWARD_SPEED); // Fixed downward speed
-            case "ENEMY_FIGHTER":
-                return new EnemyFighter(1, normalizedX, spawnY, LevelConstants.ENEMY_HORIZONTAL_SPEED); // Fixed horizontal speed
-            case "POWERUP_LASER_STRENGTH":
-                return new LaserStrengthUpgrade(1, normalizedX, spawnY);
-            case "POWERUP_DUAL_LASER":
-                return new DualLaserUpgrade(normalizedX, spawnY);
-            case "POWERUP_DIAGONAL_LASER":
-                return new DiagonalLaserUpgrade(normalizedX, spawnY);
-            case "POWERUP_MISSILE":
-                return new MissileUpgrade(normalizedX, spawnY);
-            case "POWERUP_BOMB":
-                return new BombUpgrade(normalizedX, spawnY);
-            case "POWERUP_EMP":
-                return new EmpUpgrade(normalizedX, spawnY);
-            case "POWERUP_SHIELD":
-                return new ShieldUpgrade(normalizedX, spawnY);
-            default:
-                System.err.println("Unknown object type: " + obj.getType());
-                return null;
-        }
-    }
-
     private void BuildProceduralLevel() {
-        // Old procedural generation system
-        levelLength = (int)ArcadeSpaceShooter.screenRect.height + LevelConstants.BASE_LEVEL_LENGTH + (LevelConstants.LEVEL_LENGTH_INCREMENT * levelNumber);
-        int startPosition = levelNumber == 1 ? (int)ArcadeSpaceShooter.screenRect.height + 1000 : (int)ArcadeSpaceShooter.screenRect.height;
+        int calculatedLength = proceduralService.calculateLevelLength(
+            progressionService.getLevelNumber(),
+            ArcadeSpaceShooter.screenRect.height
+        );
 
-        for (int l = startPosition; l < levelLength + 5000; l++) {
-            double randomAmt = LevelConstants.SMALL_METEOR_BASE_RATE + (LevelConstants.SMALL_METEOR_SCALE_RATE * levelNumber);
-            if(com.dalesmithwebdev.galaxia.utility.Rand.nextFloat() * 100 < randomAmt) {
-                Entity newMeteor = new SmallMeteor(l);
-                this.getEngine().addEntity(newMeteor);
-            }
+        progressionService.setLevelLength(calculatedLength);
+        levelLength = calculatedLength; // Sync static field
 
-            randomAmt = LevelConstants.LARGE_METEOR_BASE_RATE + (LevelConstants.LARGE_METEOR_SCALE_RATE * levelNumber);
-            if(com.dalesmithwebdev.galaxia.utility.Rand.nextFloat() * 100 < randomAmt) {
-                Entity newMeteor = new LargeMeteor(l);
-                this.getEngine().addEntity(newMeteor);
-            }
-
-            double enemyAmount = LevelConstants.ENEMY_BASE_RATE + (LevelConstants.ENEMY_SCALE_RATE * levelNumber);
-            if(com.dalesmithwebdev.galaxia.utility.Rand.nextFloat() * 100 < enemyAmount) {
-                Entity enemy = new EnemyFighter(levelNumber, l);
-                this.getEngine().addEntity(enemy);
-            }
-        }
-
-        Entity boss = new FighterBoss(levelNumber, levelLength);
-        this.getEngine().addEntity(boss);
+        proceduralService.generateLevel(
+            this.getEngine(),
+            progressionService.getLevelNumber(),
+            calculatedLength
+        );
     }
 
+    /**
+     * Create entity from pending spawn (callback for spawn service)
+     */
+    private Entity createEntityFromPending(EntitySpawnService.PendingSpawn pending) {
+        if (transformData == null) {
+            return null;
+        }
+        return loaderService.createEntityFromLevelObject(pending.getLevelObject(), transformData);
+    }
+
+    /**
+     * Draw boss health bar
+     */
     public void draw() {
         ArcadeSpaceShooter.spriteBatch.setColor(Color.BLACK);
-        ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, ArcadeSpaceShooter.screenRect.width - 158, 25, 150, 12);
+        ArcadeSpaceShooter.spriteBatch.draw(
+            ArcadeSpaceShooter.blank,
+            ArcadeSpaceShooter.screenRect.width - 158,
+            25,
+            150,
+            12
+        );
+
         ImmutableArray<Entity> bossEntities = this.getEngine().getEntitiesFor(Family.all(BossEnemyComponent.class).get());
         if (bossEntities.size() > 0) {
             Entity boss = bossEntities.get(0);
             PositionComponent bossPosition = ComponentMap.positionMapper.get(boss);
-            double pct = (levelLength - bossPosition.position.y) / levelLength;
+            double pct = (progressionService.getLevelLength() - bossPosition.position.y) / progressionService.getLevelLength();
             ArcadeSpaceShooter.spriteBatch.setColor(Color.WHITE);
-            ArcadeSpaceShooter.spriteBatch.draw(ArcadeSpaceShooter.blank, ArcadeSpaceShooter.screenRect.width - 159, 26, (int)(pct * 148), 10);
+            ArcadeSpaceShooter.spriteBatch.draw(
+                ArcadeSpaceShooter.blank,
+                ArcadeSpaceShooter.screenRect.width - 159,
+                26,
+                (int)(pct * 148),
+                10
+            );
         }
     }
 }

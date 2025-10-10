@@ -12,9 +12,19 @@ public class ServiceLocator {
     private static ServiceLocator instance;
 
     private final GameStateService gameStateService;
+    private final LevelProgressionService levelProgressionService;
+    private final EntitySpawnService entitySpawnService;
+    private final LevelLoaderService levelLoaderService;
+    private final ProceduralLevelService proceduralLevelService;
+    private final LevelNotificationService levelNotificationService;
 
     private ServiceLocator() {
         this.gameStateService = new GameStateService();
+        this.levelProgressionService = new LevelProgressionService();
+        this.entitySpawnService = new EntitySpawnService();
+        this.levelLoaderService = new LevelLoaderService();
+        this.proceduralLevelService = new ProceduralLevelService();
+        this.levelNotificationService = new LevelNotificationService();
     }
 
     /**
@@ -33,6 +43,8 @@ public class ServiceLocator {
     public static void reset() {
         if (instance != null) {
             instance.gameStateService.reset();
+            instance.levelProgressionService.reset();
+            instance.entitySpawnService.clearQueue();
         }
     }
 
@@ -48,5 +60,40 @@ public class ServiceLocator {
      */
     public GameStateService getGameState() {
         return gameStateService;
+    }
+
+    /**
+     * Get level progression service
+     */
+    public LevelProgressionService getLevelProgression() {
+        return levelProgressionService;
+    }
+
+    /**
+     * Get entity spawn service
+     */
+    public EntitySpawnService getEntitySpawn() {
+        return entitySpawnService;
+    }
+
+    /**
+     * Get level loader service
+     */
+    public LevelLoaderService getLevelLoader() {
+        return levelLoaderService;
+    }
+
+    /**
+     * Get procedural level service
+     */
+    public ProceduralLevelService getProceduralLevel() {
+        return proceduralLevelService;
+    }
+
+    /**
+     * Get level notification service
+     */
+    public LevelNotificationService getLevelNotification() {
+        return levelNotificationService;
     }
 }

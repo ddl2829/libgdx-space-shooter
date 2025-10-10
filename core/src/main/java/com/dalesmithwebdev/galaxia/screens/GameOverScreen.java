@@ -71,13 +71,10 @@ public class GameOverScreen extends ScreenAdapter {
 
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Reset game state
-                GameStateService gameState = ServiceLocator.getInstance().getGameState();
-                gameState.setPlayerScore(0);
-                gameState.setKills(0);
-                LevelSystem.levelNumber = 0;
+                // Reset all services (game state and level progression)
+                ServiceLocator.reset();
+                LevelSystem.levelNumber = 0; // Sync static field
                 GameScreen.timeStayedAlive = 0;
-                gameState.setGameOverScheduled(false);
 
                 // Remove LevelSystem that will be re-added by GameScreen
                 ArcadeSpaceShooter.engine.removeSystem(ArcadeSpaceShooter.engine.getSystem(LevelSystem.class));
