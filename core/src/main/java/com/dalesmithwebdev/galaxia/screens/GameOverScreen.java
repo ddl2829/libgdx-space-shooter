@@ -18,7 +18,6 @@ import com.badlogic.gdx.utils.SnapshotArray;
 import com.dalesmithwebdev.galaxia.ArcadeSpaceShooter;
 import com.dalesmithwebdev.galaxia.components.BackgroundObjectComponent;
 import com.dalesmithwebdev.galaxia.screens.listeners.GameOverScreenKeyboardListener;
-import com.dalesmithwebdev.galaxia.systems.InputSystem;
 import com.dalesmithwebdev.galaxia.systems.LevelSystem;
 import com.dalesmithwebdev.galaxia.utility.FontManager;
 
@@ -76,9 +75,8 @@ public class GameOverScreen extends ScreenAdapter {
                 GameScreen.timeStayedAlive = 0;
                 ArcadeSpaceShooter.gameOverScheduled = false;
 
-                // Remove all existing systems that will be re-added by GameScreen
+                // Remove LevelSystem that will be re-added by GameScreen
                 ArcadeSpaceShooter.engine.removeSystem(ArcadeSpaceShooter.engine.getSystem(LevelSystem.class));
-                ArcadeSpaceShooter.engine.removeSystem(ArcadeSpaceShooter.engine.getSystem(InputSystem.class));
 
                 // Remove all entities except background image
                 ImmutableArray<Entity> allEntities = ArcadeSpaceShooter.engine.getEntities();

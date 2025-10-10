@@ -121,6 +121,12 @@ public class ArcadeSpaceShooter extends Game {
 		engine.addSystem(new EnemyLogicSystem());
 		engine.addSystem(new ExplosionSystem());
 
+		// Create player control systems with dependencies
+		com.dalesmithwebdev.galaxia.services.WeaponService weaponService =
+			new com.dalesmithwebdev.galaxia.services.WeaponService(engine);
+		engine.addSystem(new RespawnSystem());
+		engine.addSystem(new PlayerControlSystem(weaponService));
+
 		uiSkin = new Skin(Gdx.files.internal("ui/uiskin.json"));
 
 		// Initialize custom TTF fonts

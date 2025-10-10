@@ -20,7 +20,6 @@ import com.dalesmithwebdev.galaxia.components.HasShieldComponent;
 import com.dalesmithwebdev.galaxia.components.PlayerComponent;
 import com.dalesmithwebdev.galaxia.components.TakesDamageComponent;
 import com.dalesmithwebdev.galaxia.screens.listeners.PauseScreenKeyboardListener;
-import com.dalesmithwebdev.galaxia.systems.InputSystem;
 import com.dalesmithwebdev.galaxia.systems.LevelSystem;
 import com.dalesmithwebdev.galaxia.utility.ComponentMap;
 import com.dalesmithwebdev.galaxia.utility.FontManager;
@@ -45,8 +44,6 @@ public class GameScreen extends ScreenAdapter {
         System.out.println(">>> GameScreen: Adding LevelSystem to engine");
         LevelSystem levelSystem = new LevelSystem();
         ArcadeSpaceShooter.engine.addSystem(levelSystem);
-        System.out.println(">>> GameScreen: Adding InputSystem to engine");
-        ArcadeSpaceShooter.engine.addSystem(new InputSystem());
         System.out.println(">>> GameScreen: Creating UI stage");
         ui = new Stage();
         ui.setDebugUnderMouse(true);
