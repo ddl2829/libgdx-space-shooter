@@ -15,6 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Pool;
 import com.dalesmithwebdev.galaxia.constants.GameConstants;
 import com.dalesmithwebdev.galaxia.components.BackgroundObjectComponent;
+import com.dalesmithwebdev.galaxia.services.GameStateService;
+import com.dalesmithwebdev.galaxia.services.ServiceLocator;
 import com.dalesmithwebdev.galaxia.components.PositionComponent;
 import com.dalesmithwebdev.galaxia.components.RenderComponent;
 import com.dalesmithwebdev.galaxia.prefabs.BackgroundElement;
@@ -35,8 +37,6 @@ public class ArcadeSpaceShooter extends Game {
 	public static SpriteBatch spriteBatch;
 	public static BitmapFont bitmapFont;
 	public static GlyphLayout glyphLayout;
-	public static int kills = 0;
-	public static double playerScore = 0;
 
 	public static TextureRegion playerShield;
 	public static TextureRegion playerLivesGraphic;
@@ -61,9 +61,6 @@ public class ArcadeSpaceShooter extends Game {
 	public static ShaderProgram outlineShader;
 	public static ShaderProgram vignetteShader;
 
-	public static boolean empActive = false;
-	public static int empElapsedTime = 0;
-	public static int totalTime = 0;
 	public static GameTestCase testCase;
 	public int memoryLastReported = 0;
 
@@ -80,10 +77,6 @@ public class ArcadeSpaceShooter extends Game {
 		}
 	};
 
-	public static boolean paused = false;
-
-	public static boolean gameOverScheduled = false;
-
 	public ArcadeSpaceShooter(GameTestCase testCase) {
 		super();
 		ShaderProgram.pedantic = false;
@@ -94,6 +87,10 @@ public class ArcadeSpaceShooter extends Game {
 	@Override
 	public void create () {
 		System.out.println(">>> ArcadeSpaceShooter.create: Application starting!");
+
+		// Initialize services (new architecture)
+		ServiceLocator.getInstance(); // Initialize service locator
+
 		spriteBatch = new SpriteBatch();
 		bitmapFont = new BitmapFont();
 		glyphLayout = new GlyphLayout();
@@ -227,10 +224,11 @@ public class ArcadeSpaceShooter extends Game {
 	public void render () {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		float dt = Gdx.graphics.getDeltaTime() * 1000;
-		totalTime += dt;
+		GameStateService gameState = ServiceLocator.getInstance().getGameState();
+		gameState.updateTotalTime(dt);
 
 
-		if(!paused) {
+		if(!gameState.isPaused()) {
 			ImmutableArray<Entity> backgroundObjects = ArcadeSpaceShooter.engine.getEntitiesFor(Family.all(BackgroundObjectComponent.class).get());
 
 			for (Entity e : backgroundObjects) {
@@ -245,10 +243,11 @@ public class ArcadeSpaceShooter extends Game {
 			}
 
 
-			if (empActive) {
-				empElapsedTime += dt;
-				if (empElapsedTime >= GameConstants.EMP_DURATION_MS) {
-					empActive = false;
+			if (gameState.isEmpActive()) {
+				gameState.updateEmpElapsedTime(dt);
+				if (gameState.getEmpElapsedTime() >= GameConstants.EMP_DURATION_MS) {
+					gameState.setEmpActive(false);
+					gameState.resetEmpElapsedTime();
 				}
 			}
 		}

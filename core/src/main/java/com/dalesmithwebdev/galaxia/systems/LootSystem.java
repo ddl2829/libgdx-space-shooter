@@ -12,6 +12,8 @@ import com.dalesmithwebdev.galaxia.constants.ScoreConstants;
 import com.dalesmithwebdev.galaxia.constants.UpgradeConstants;
 import com.dalesmithwebdev.galaxia.prefabs.*;
 import com.dalesmithwebdev.galaxia.screens.GameScreen;
+import com.dalesmithwebdev.galaxia.services.GameStateService;
+import com.dalesmithwebdev.galaxia.services.ServiceLocator;
 import com.dalesmithwebdev.galaxia.utility.ComponentMap;
 import com.dalesmithwebdev.galaxia.utility.Rand;
 
@@ -30,16 +32,18 @@ public class LootSystem extends EntitySystem {
             return;
         }
 
+        GameStateService gameState = ServiceLocator.getInstance().getGameState();
+
         int credit = calculateCredit(victim);
         double multiplier = 1 + Math.log(GameScreen.timeStayedAlive);
         double score = (credit * multiplier) * ScoreConstants.BASE_SCORE_PER_CREDIT;
-        ArcadeSpaceShooter.playerScore += score;
+        gameState.addScore(score);
 
         // Update kill count
         if (ComponentMap.bossEnemyMapper.has(victim)) {
-            ArcadeSpaceShooter.kills += ScoreConstants.BOSS_KILL_CREDIT;
+            gameState.incrementKills(ScoreConstants.BOSS_KILL_CREDIT);
         } else {
-            ArcadeSpaceShooter.kills += 1;
+            gameState.incrementKills(1);
         }
 
         // Spawn score notification

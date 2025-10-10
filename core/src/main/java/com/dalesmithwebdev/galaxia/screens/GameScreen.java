@@ -20,6 +20,8 @@ import com.dalesmithwebdev.galaxia.components.HasShieldComponent;
 import com.dalesmithwebdev.galaxia.components.PlayerComponent;
 import com.dalesmithwebdev.galaxia.components.TakesDamageComponent;
 import com.dalesmithwebdev.galaxia.screens.listeners.PauseScreenKeyboardListener;
+import com.dalesmithwebdev.galaxia.services.GameStateService;
+import com.dalesmithwebdev.galaxia.services.ServiceLocator;
 import com.dalesmithwebdev.galaxia.systems.LevelSystem;
 import com.dalesmithwebdev.galaxia.utility.ComponentMap;
 import com.dalesmithwebdev.galaxia.utility.FontManager;
@@ -155,7 +157,8 @@ public class GameScreen extends ScreenAdapter {
     }
 
     public void resumeGame() {
-        ArcadeSpaceShooter.paused = false;
+        GameStateService gameState = ServiceLocator.getInstance().getGameState();
+        gameState.setPaused(false);
         pauseMenu.remove();
         inputMultiplexer.removeProcessor(pauseScreenKeyboardListener);
     }
@@ -176,10 +179,11 @@ public class GameScreen extends ScreenAdapter {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
         {
-            if(ArcadeSpaceShooter.paused) {
+            GameStateService gameState = ServiceLocator.getInstance().getGameState();
+            if(gameState.isPaused()) {
                 resumeGame();
             } else {
-                ArcadeSpaceShooter.paused = true;
+                gameState.setPaused(true);
                 ArcadeSpaceShooter.backgroundMusic.pause();
                 SoundManager.playPause();
                 ui.addActor(pauseMenu);

@@ -7,6 +7,8 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.math.Rectangle;
 import com.dalesmithwebdev.galaxia.ArcadeSpaceShooter;
 import com.dalesmithwebdev.galaxia.components.*;
+import com.dalesmithwebdev.galaxia.services.GameStateService;
+import com.dalesmithwebdev.galaxia.services.ServiceLocator;
 import com.dalesmithwebdev.galaxia.utility.ComponentMap;
 
 import java.util.ArrayList;
@@ -25,7 +27,8 @@ public class CollisionSystem extends EntitySystem {
 
     @Override
     public void update(float gameTime) {
-        if (ArcadeSpaceShooter.paused) {
+        GameStateService gameState = ServiceLocator.getInstance().getGameState();
+        if (gameState.isPaused()) {
             return;
         }
 

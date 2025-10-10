@@ -11,6 +11,8 @@ import com.dalesmithwebdev.galaxia.components.*;
 import com.dalesmithwebdev.galaxia.constants.DamageTypeConstants;
 import com.dalesmithwebdev.galaxia.constants.GameConstants;
 import com.dalesmithwebdev.galaxia.constants.WeaponConstants;
+import com.dalesmithwebdev.galaxia.services.GameStateService;
+import com.dalesmithwebdev.galaxia.services.ServiceLocator;
 import com.dalesmithwebdev.galaxia.systems.upgrades.UpgradeHandler;
 import com.dalesmithwebdev.galaxia.utility.ComponentMap;
 import com.dalesmithwebdev.galaxia.utility.SoundManager;
@@ -61,7 +63,8 @@ public class CombatSystem extends EntitySystem implements CollisionListener {
 
     @Override
     public void update(float gameTime) {
-        if (ArcadeSpaceShooter.paused) {
+        GameStateService gameState = ServiceLocator.getInstance().getGameState();
+        if (gameState.isPaused()) {
             return;
         }
 

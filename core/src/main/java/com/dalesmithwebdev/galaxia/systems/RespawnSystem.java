@@ -11,6 +11,8 @@ import com.dalesmithwebdev.galaxia.ArcadeSpaceShooter;
 import com.dalesmithwebdev.galaxia.components.*;
 import com.dalesmithwebdev.galaxia.prefabs.Player;
 import com.dalesmithwebdev.galaxia.screens.GameOverScreen;
+import com.dalesmithwebdev.galaxia.services.GameStateService;
+import com.dalesmithwebdev.galaxia.services.ServiceLocator;
 import com.dalesmithwebdev.galaxia.utility.ComponentMap;
 
 /**
@@ -24,7 +26,8 @@ public class RespawnSystem extends EntitySystem {
 
     @Override
     public void update(float gameTime) {
-        if (ArcadeSpaceShooter.paused) {
+        GameStateService gameState = ServiceLocator.getInstance().getGameState();
+        if (gameState.isPaused()) {
             return;
         }
 
@@ -45,7 +48,7 @@ public class RespawnSystem extends EntitySystem {
         Entity player;
         if (playerEntities.size() == 0) {
             // Don't create a new player if game over is scheduled
-            if (ArcadeSpaceShooter.gameOverScheduled) {
+            if (gameState.isGameOverScheduled()) {
                 return;
             }
             player = new Player();
@@ -64,11 +67,12 @@ public class RespawnSystem extends EntitySystem {
      * Handle player respawn logic
      */
     private void handleRespawn(Entity player) {
+        GameStateService gameState = ServiceLocator.getInstance().getGameState();
         PlayerComponent ppc = ComponentMap.playerMapper.get(player);
 
         // Check if player is out of lives
         if (ppc.lives <= 0) {
-            if (ArcadeSpaceShooter.gameOverScheduled) {
+            if (gameState.isGameOverScheduled()) {
                 return;
             }
             // Remove player entity immediately to prevent any respawn
@@ -81,7 +85,7 @@ public class RespawnSystem extends EntitySystem {
                     ArcadeSpaceShooter.instance.setScreen(new GameOverScreen());
                 }
             }, 3);
-            ArcadeSpaceShooter.gameOverScheduled = true;
+            gameState.setGameOverScheduled(true);
             return;
         }
 
@@ -103,11 +107,12 @@ public class RespawnSystem extends EntitySystem {
      * Respawn the player with reset state
      */
     private void respawnPlayer(Entity player, boolean isInitialSpawn) {
+        GameStateService gameState = ServiceLocator.getInstance().getGameState();
         waitingToRespawn = false;
         respawnTimer = 0;
 
         // Reset kill counter
-        ArcadeSpaceShooter.kills = 0;
+        gameState.setKills(0);
 
         // Reset laser upgrades
         HasLasersComponent hasLasersComponent = ComponentMap.hasLasersMapper.get(player);

@@ -12,13 +12,16 @@ import com.dalesmithwebdev.galaxia.components.MissileComponent;
 import com.dalesmithwebdev.galaxia.components.PositionComponent;
 import com.dalesmithwebdev.galaxia.components.RenderComponent;
 import com.dalesmithwebdev.galaxia.components.SpeedComponent;
+import com.dalesmithwebdev.galaxia.services.GameStateService;
+import com.dalesmithwebdev.galaxia.services.ServiceLocator;
 import com.dalesmithwebdev.galaxia.utility.ComponentMap;
 
 public class MovementSystem extends EntitySystem {
     public MovementSystem() {}
 
     public void update(float deltaTime) {
-        if(ArcadeSpaceShooter.paused) {
+        GameStateService gameState = ServiceLocator.getInstance().getGameState();
+        if(gameState.isPaused()) {
             return;
         }
         ImmutableArray<Entity> entities = this.getEngine().getEntitiesFor(Family.all(PositionComponent.class, SpeedComponent.class).get());

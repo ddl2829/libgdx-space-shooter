@@ -18,6 +18,8 @@ import com.badlogic.gdx.utils.SnapshotArray;
 import com.dalesmithwebdev.galaxia.ArcadeSpaceShooter;
 import com.dalesmithwebdev.galaxia.components.BackgroundObjectComponent;
 import com.dalesmithwebdev.galaxia.screens.listeners.GameOverScreenKeyboardListener;
+import com.dalesmithwebdev.galaxia.services.GameStateService;
+import com.dalesmithwebdev.galaxia.services.ServiceLocator;
 import com.dalesmithwebdev.galaxia.systems.LevelSystem;
 import com.dalesmithwebdev.galaxia.utility.FontManager;
 
@@ -42,7 +44,8 @@ public class GameOverScreen extends ScreenAdapter {
         title.setAlignment(Align.center);
 
         // Score display with monospace font
-        Label scoreLabel = new Label("SCORE: " + (int)ArcadeSpaceShooter.playerScore, FontManager.getLabelStyle("score"));
+        GameStateService gameState = ServiceLocator.getInstance().getGameState();
+        Label scoreLabel = new Label("SCORE: " + (int)gameState.getPlayerScore(), FontManager.getLabelStyle("score"));
         scoreLabel.setAlignment(Align.center);
 
         // Level display with HUD font
@@ -69,11 +72,12 @@ public class GameOverScreen extends ScreenAdapter {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 // Reset game state
-                ArcadeSpaceShooter.playerScore = 0;
-                ArcadeSpaceShooter.kills = 0;
+                GameStateService gameState = ServiceLocator.getInstance().getGameState();
+                gameState.setPlayerScore(0);
+                gameState.setKills(0);
                 LevelSystem.levelNumber = 0;
                 GameScreen.timeStayedAlive = 0;
-                ArcadeSpaceShooter.gameOverScheduled = false;
+                gameState.setGameOverScheduled(false);
 
                 // Remove LevelSystem that will be re-added by GameScreen
                 ArcadeSpaceShooter.engine.removeSystem(ArcadeSpaceShooter.engine.getSystem(LevelSystem.class));

@@ -6,12 +6,15 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.dalesmithwebdev.galaxia.ArcadeSpaceShooter;
 import com.dalesmithwebdev.galaxia.components.ExplosionComponent;
+import com.dalesmithwebdev.galaxia.services.GameStateService;
+import com.dalesmithwebdev.galaxia.services.ServiceLocator;
 import com.dalesmithwebdev.galaxia.utility.ComponentMap;
 
 public class ExplosionSystem extends EntitySystem {
     public void update(float gametime)
     {
-        if(ArcadeSpaceShooter.paused) {
+        GameStateService gameState = ServiceLocator.getInstance().getGameState();
+        if(gameState.isPaused()) {
             return;
         }
         ImmutableArray<Entity> explosions = this.getEngine().getEntitiesFor(Family.all(ExplosionComponent.class).get());

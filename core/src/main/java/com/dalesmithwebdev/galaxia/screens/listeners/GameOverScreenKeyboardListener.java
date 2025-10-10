@@ -8,6 +8,8 @@ import com.badlogic.gdx.utils.SnapshotArray;
 import com.dalesmithwebdev.galaxia.ArcadeSpaceShooter;
 import com.dalesmithwebdev.galaxia.screens.GameOverScreen;
 import com.dalesmithwebdev.galaxia.screens.GameScreen;
+import com.dalesmithwebdev.galaxia.services.GameStateService;
+import com.dalesmithwebdev.galaxia.services.ServiceLocator;
 
 public class GameOverScreenKeyboardListener implements InputProcessor {
     private final GameOverScreen gameOverScreen;
@@ -20,8 +22,9 @@ public class GameOverScreenKeyboardListener implements InputProcessor {
     public boolean keyDown(int keycode) {
         if(keycode == Input.Keys.ENTER) {
             if(gameOverScreen.selectedMenuItem == 0) {
-                ArcadeSpaceShooter.playerScore = 0;
-                ArcadeSpaceShooter.kills = 0;
+                GameStateService gameState = ServiceLocator.getInstance().getGameState();
+                gameState.setPlayerScore(0);
+                gameState.setKills(0);
                 ArcadeSpaceShooter.instance.setScreen(new GameScreen());
             } else if(gameOverScreen.selectedMenuItem == 1) {
                 System.exit(0);

@@ -9,13 +9,16 @@ import com.badlogic.gdx.math.Vector2;
 import com.dalesmithwebdev.galaxia.ArcadeSpaceShooter;
 import com.dalesmithwebdev.galaxia.components.*;
 import com.dalesmithwebdev.galaxia.constants.DamageTypeConstants;
+import com.dalesmithwebdev.galaxia.services.GameStateService;
+import com.dalesmithwebdev.galaxia.services.ServiceLocator;
 import com.dalesmithwebdev.galaxia.utility.ComponentMap;
 import com.dalesmithwebdev.galaxia.utility.Rand;
 
 public class EnemyLogicSystem extends EntitySystem {
     public void update(float gameTime)
     {
-        if(ArcadeSpaceShooter.paused) {
+        GameStateService gameState = ServiceLocator.getInstance().getGameState();
+        if(gameState.isPaused()) {
             return;
         }
         ImmutableArray<Entity> players = this.getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());

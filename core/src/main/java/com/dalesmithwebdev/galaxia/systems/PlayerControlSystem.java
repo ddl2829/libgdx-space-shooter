@@ -10,6 +10,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.dalesmithwebdev.galaxia.ArcadeSpaceShooter;
 import com.dalesmithwebdev.galaxia.components.*;
 import com.dalesmithwebdev.galaxia.constants.GameConstants;
+import com.dalesmithwebdev.galaxia.services.GameStateService;
+import com.dalesmithwebdev.galaxia.services.ServiceLocator;
 import com.dalesmithwebdev.galaxia.services.WeaponService;
 import com.dalesmithwebdev.galaxia.utility.ComponentMap;
 
@@ -26,7 +28,8 @@ public class PlayerControlSystem extends EntitySystem {
 
     @Override
     public void update(float gameTime) {
-        if (ArcadeSpaceShooter.paused) {
+        GameStateService gameState = ServiceLocator.getInstance().getGameState();
+        if (gameState.isPaused()) {
             return;
         }
 

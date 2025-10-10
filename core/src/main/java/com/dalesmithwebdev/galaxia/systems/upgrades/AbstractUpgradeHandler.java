@@ -8,6 +8,8 @@ import com.dalesmithwebdev.galaxia.ArcadeSpaceShooter;
 import com.dalesmithwebdev.galaxia.components.NotificationComponent;
 import com.dalesmithwebdev.galaxia.components.PositionComponent;
 import com.dalesmithwebdev.galaxia.constants.GameConstants;
+import com.dalesmithwebdev.galaxia.services.GameStateService;
+import com.dalesmithwebdev.galaxia.services.ServiceLocator;
 import com.dalesmithwebdev.galaxia.utility.SoundManager;
 
 /**
@@ -55,7 +57,8 @@ public abstract class AbstractUpgradeHandler implements UpgradeHandler {
      * Grant bonus points when player already has upgrade
      */
     protected void grantBonusPoints(Vector2 position, Engine engine) {
-        ArcadeSpaceShooter.playerScore += GameConstants.BONUS_POINTS_FOR_DUPLICATE_UPGRADE;
+        GameStateService gameState = ServiceLocator.getInstance().getGameState();
+        gameState.addScore(GameConstants.BONUS_POINTS_FOR_DUPLICATE_UPGRADE);
         Entity notification = new Entity();
         notification.add(new PositionComponent(position));
         notification.add(new NotificationComponent("+" + GameConstants.BONUS_POINTS_FOR_DUPLICATE_UPGRADE, 200, false));

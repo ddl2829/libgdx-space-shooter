@@ -179,7 +179,8 @@ public class WeaponService {
         }
 
         hasEmpComponent.timeSinceLastShot = 0;
-        ArcadeSpaceShooter.empActive = true;
+        GameStateService gameState = ServiceLocator.getInstance().getGameState();
+        gameState.setEmpActive(true);
         System.out.println("Emp Active");
     }
 }

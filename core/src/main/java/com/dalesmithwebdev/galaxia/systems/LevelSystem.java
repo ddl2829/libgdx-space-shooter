@@ -17,6 +17,8 @@ import com.dalesmithwebdev.galaxia.level.LevelObject;
 import com.dalesmithwebdev.galaxia.prefabs.*;
 import com.dalesmithwebdev.galaxia.screens.LevelSelectScreen;
 import com.dalesmithwebdev.galaxia.constants.DamageTypeConstants;
+import com.dalesmithwebdev.galaxia.services.GameStateService;
+import com.dalesmithwebdev.galaxia.services.ServiceLocator;
 import com.dalesmithwebdev.galaxia.utility.ComponentMap;
 import com.dalesmithwebdev.galaxia.utility.SoundManager;
 
@@ -82,8 +84,9 @@ public class LevelSystem extends EntitySystem {
     }
 
     public void update(float gameTime) {
+        GameStateService gameState = ServiceLocator.getInstance().getGameState();
         final Engine engine = this.getEngine();
-        if(ArcadeSpaceShooter.paused) {
+        if(gameState.isPaused()) {
             return;
         }
         if (preppingLevel) {
