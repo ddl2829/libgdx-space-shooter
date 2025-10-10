@@ -1,0 +1,112 @@
+{
+"id": "level_1760030156825",
+"name": "New Level",
+"difficultyRating": 10,
+"objects": [
+	{
+		"type": "METEOR_LARGE",
+		"x": 80,
+		"y": 160,
+		"health": 8,
+		"hasLasers": false
+	},
+	{
+		"type": "METEOR_LARGE",
+		"x": 260,
+		"y": 300,
+		"health": 8,
+		"hasLasers": false
+	},
+	{
+		"type": "METEOR_LARGE",
+		"x": 160,
+		"y": 400,
+		"health": 8,
+		"hasLasers": false
+	},
+	{
+		"type": "METEOR_LARGE",
+		"x": 580,
+		"y": 400,
+		"health": 8,
+		"hasLasers": false
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 400,
+		"y": 120,
+		"health": 3,
+		"hasLasers": false
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 360,
+		"y": 400,
+		"health": 3,
+		"hasLasers": false
+	},
+	{
+		"type": "POWERUP_LASER_STRENGTH",
+		"x": 120,
+		"y": 540
+	},
+	{
+		"type": "POWERUP_LASER_STRENGTH",
+		"x": 480,
+		"y": 580
+	},
+	{
+		"type": "POWERUP_DUAL_LASER",
+		"x": 180,
+		"y": 480
+	},
+	{
+		"type": "POWERUP_DUAL_LASER",
+		"x": 280,
+		"y": 500
+	},
+	{
+		"type": "POWERUP_DIAGONAL_LASER",
+		"x": 100,
+		"y": 340
+	},
+	{
+		"type": "POWERUP_DIAGONAL_LASER",
+		"x": 200,
+		"y": 280
+	},
+	{
+		"type": "POWERUP_EMP",
+		"x": 380,
+		"y": 580
+	},
+	{
+		"type": "ENEMY_BOSS",
+		"x": 460,
+		"y": 240,
+		"health": 100,
+		"fireRate": 1000
+	},
+	{
+		"type": "ENEMY_FIGHTER",
+		"x": 300,
+		"y": 180
+	},
+	{
+		"type": "ENEMY_FIGHTER",
+		"x": 200,
+		"y": 180
+	},
+	{
+		"type": "ENEMY_UFO",
+		"x": 160,
+		"y": 100
+	},
+	{
+		"type": "ENEMY_UFO",
+		"x": 240,
+		"y": 100
+	}
+],
+"bossConfig": {}
+}

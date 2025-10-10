@@ -1,0 +1,126 @@
+{
+"id": "level_1760032630507",
+"name": "New Level",
+"difficultyRating": 0.215,
+"objects": [
+	{
+		"type": "METEOR_SMALL",
+		"x": 60,
+		"y": 260,
+		"health": 3,
+		"hasLasers": false
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 40,
+		"y": 380,
+		"health": 3,
+		"hasLasers": false
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 80,
+		"y": 480,
+		"health": 3,
+		"hasLasers": false
+	},
+	{
+		"type": "METEOR_LARGE",
+		"x": 500,
+		"y": 420,
+		"health": 8,
+		"hasLasers": false
+	},
+	{
+		"type": "METEOR_LARGE",
+		"x": 520,
+		"y": 540,
+		"health": 8,
+		"hasLasers": false
+	},
+	{
+		"type": "ENEMY_FIGHTER",
+		"x": 500,
+		"y": 80
+	},
+	{
+		"type": "POWERUP_LASER_STRENGTH",
+		"x": 340,
+		"y": 340
+	},
+	{
+		"type": "POWERUP_DUAL_LASER",
+		"x": 200,
+		"y": 480
+	},
+	{
+		"type": "POWERUP_DIAGONAL_LASER",
+		"x": 340,
+		"y": 240
+	},
+	{
+		"type": "POWERUP_MISSILE",
+		"x": 140,
+		"y": 320
+	},
+	{
+		"type": "POWERUP_BOMB",
+		"x": 200,
+		"y": 240
+	},
+	{
+		"type": "POWERUP_EMP",
+		"x": 200,
+		"y": 140
+	},
+	{
+		"type": "POWERUP_SHIELD",
+		"x": 200,
+		"y": 80
+	},
+	{
+		"type": "METEOR_LARGE",
+		"x": 480,
+		"y": 840,
+		"health": 8,
+		"hasLasers": false
+	},
+	{
+		"type": "METEOR_LARGE",
+		"x": 500,
+		"y": 960,
+		"health": 8,
+		"hasLasers": false
+	},
+	{
+		"type": "POWERUP_DIAGONAL_LASER",
+		"x": 160,
+		"y": 680
+	},
+	{
+		"type": "POWERUP_LASER_STRENGTH",
+		"x": 160,
+		"y": 780
+	}
+],
+"bossConfig": {},
+"timedEvents": [
+	{
+		"eventData": {
+			"class": "java.util.HashMap",
+			"duration": {
+				"class": "java.lang.Double",
+				"value": 3
+			},
+			"style": {
+				"class": "java.lang.String",
+				"value": "INFO"
+			},
+			"message": {
+				"class": "java.lang.String",
+				"value": "GOOD LUCK"
+			}
+		}
+	}
+]
+}

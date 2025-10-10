@@ -1,0 +1,240 @@
+package com.dalesmithwebdev.galaxia.systems;
+
+import com.badlogic.ashley.core.Component;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.EntitySystem;
+import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.dalesmithwebdev.galaxia.ArcadeSpaceShooter;
+import com.dalesmithwebdev.galaxia.components.*;
+import com.dalesmithwebdev.galaxia.constants.GameConstants;
+import com.dalesmithwebdev.galaxia.constants.ScoreConstants;
+import com.dalesmithwebdev.galaxia.constants.UpgradeConstants;
+import com.dalesmithwebdev.galaxia.constants.WeaponConstants;
+import com.dalesmithwebdev.galaxia.prefabs.*;
+import com.dalesmithwebdev.galaxia.screens.GameScreen;
+import com.dalesmithwebdev.galaxia.systems.upgrades.*;
+import com.dalesmithwebdev.galaxia.utility.ComponentMap;
+import com.dalesmithwebdev.galaxia.utility.Rand;
+import com.dalesmithwebdev.galaxia.utility.SoundManager;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class DamageSystem extends EntitySystem {
+    public static int PLAYER = 1;
+    public static int METEOR = 2;
+    public static int ENEMY = 4;
+    public static int LASER = 8;
+    public static int ENEMY_LASER = 16;
+    public static int MISSILE = 32;
+    public static int BOMB = 64;
+
+    // Upgrade handler strategy pattern
+    private final Map<Class<? extends Component>, UpgradeHandler> upgradeHandlers;
+
+    // Loot system for scoring and drops
+    private LootSystem lootSystem;
+
+    public DamageSystem() {
+        this.upgradeHandlers = new HashMap<>();
+        registerUpgradeHandlers();
+    }
+
+    /**
+     * Inject LootSystem dependency (called by ArcadeSpaceShooter after creation)
+     */
+    public void setLootSystem(LootSystem lootSystem) {
+        this.lootSystem = lootSystem;
+    }
+
+    private void registerUpgradeHandlers() {
+        upgradeHandlers.put(LaserStrengthUpgradeComponent.class, new LaserStrengthUpgradeHandler());
+        upgradeHandlers.put(DualLaserUpgradeComponent.class, new DualLaserUpgradeHandler());
+        upgradeHandlers.put(DiagonalLaserUpgradeComponent.class, new DiagonalLaserUpgradeHandler());
+        upgradeHandlers.put(MissileUpgradeComponent.class, new MissileUpgradeHandler());
+        upgradeHandlers.put(BombUpgradeComponent.class, new BombUpgradeHandler());
+        upgradeHandlers.put(ShieldUpgradeComponent.class, new ShieldUpgradeHandler());
+        upgradeHandlers.put(EmpUpgradeComponent.class, new EmpUpgradeHandler());
+    }
+
+    /**
+     * Handle upgrade pickup using strategy pattern
+     */
+    private void handleUpgradePickup(Entity damageTaker, Vector2 position) {
+        ImmutableArray<Entity> players = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
+        if (players.size() == 0) return;
+
+        Entity player = players.first();
+
+        // Check each registered upgrade type
+        for (Map.Entry<Class<? extends Component>, UpgradeHandler> entry : upgradeHandlers.entrySet()) {
+            Component upgradeComponent = damageTaker.getComponent(entry.getKey());
+            if (upgradeComponent != null) {
+                entry.getValue().apply(player, position, getEngine());
+                return;
+            }
+        }
+    }
+
+    public void update(float gameTime)
+    {
+        if(ArcadeSpaceShooter.paused) {
+            return;
+        }
+        ImmutableArray<Entity> thingsThatDoDamage = this.getEngine().getEntitiesFor(Family.all(DealsDamageComponent.class, PositionComponent.class, RenderComponent.class).get());
+        ImmutableArray<Entity> thingsThatTakeDamage = this.getEngine().getEntitiesFor(Family.all(TakesDamageComponent.class, PositionComponent.class, RenderComponent.class).get());
+
+        ImmutableArray<Entity> thingsThatRecentlyTookDamage = this.getEngine().getEntitiesFor(Family.all(RecentlyDamagedComponent.class).get());
+        for(Entity damaged : thingsThatRecentlyTookDamage) {
+            RecentlyDamagedComponent rdc = ComponentMap.recentlyDamagedMapper.get(damaged);
+            rdc.timeSinceDamaged += gameTime;
+            if(rdc.timeSinceDamaged >= rdc.timeout) {
+                damaged.remove(RecentlyDamagedComponent.class);
+            }
+        }
+
+        for (Entity damageDealer : thingsThatDoDamage)
+        {
+            DealsDamageComponent ddc = ComponentMap.dealsDamageMapper.get(damageDealer);
+            PositionComponent dd_pc = ComponentMap.positionMapper.get(damageDealer);
+            RenderComponent dd_rc = ComponentMap.renderMapper.get(damageDealer);
+
+            Rectangle damageDealerRect = new Rectangle();
+            if(ComponentMap.explosionMapper.has(damageDealer)) {
+                ExplosionComponent ec = ComponentMap.explosionMapper.get(damageDealer);
+                damageDealerRect = new Rectangle((int) dd_pc.position.x - ec.radius, (int) dd_pc.position.y - ec.radius, ec.radius * 2, ec.radius * 2);
+            } else {
+                try {
+                    damageDealerRect = new Rectangle((int) dd_pc.position.x - (dd_rc.width / 2.0f), (int) dd_pc.position.y - (dd_rc.height / 2.0f), dd_rc.width, dd_rc.height);
+                } catch (NullPointerException npe) {
+                    npe.printStackTrace();
+                    return;
+                }
+            }
+
+            for (Entity damageTaker : thingsThatTakeDamage)
+            {
+                TakesDamageComponent tdc = ComponentMap.takesDamageMapper.get(damageTaker);
+
+                //Bitwise AND the collision masks, a value > 0 means we have objects that can be compared
+                if((tdc.takesDamageFromMask & ddc.damageTypeMask) == 0)
+                {
+                    continue;
+                }
+
+                PositionComponent td_pc = ComponentMap.positionMapper.get(damageTaker);
+                if(!ComponentMap.renderMapper.has(damageTaker))
+                {
+                    continue;
+                }
+                RenderComponent td_rc = ComponentMap.renderMapper.get(damageTaker);
+                Rectangle damageTakerRect = new Rectangle((int)td_pc.position.x - (td_rc.width / 2.0f), (int)td_pc.position.y - (td_rc.height / 2.0f), td_rc.width, td_rc.height);
+                if(damageDealerRect.overlaps(damageTakerRect))
+                {
+                    if(!ComponentMap.shieldedMapper.has(damageTaker))
+                    {
+                        tdc.health -= ddc.strength;
+
+                        // Play hitHurt sound if player takes damage
+                        if(ComponentMap.playerMapper.has(damageTaker)) {
+                            SoundManager.playHitHurt();
+                        }
+                    }
+
+                    RecentlyDamagedComponent rdc;
+                    if(ComponentMap.recentlyDamagedMapper.has(damageTaker)) {
+                        rdc = ComponentMap.recentlyDamagedMapper.get(damageTaker);
+                        rdc.timeSinceDamaged = 0;
+                    } else {
+                        rdc = new RecentlyDamagedComponent(GameConstants.RECENTLY_DAMAGED_TIMEOUT_MS);
+                        damageTaker.add(rdc);
+                    }
+
+                    //Check if the damage dealer was a laser
+                    if(ComponentMap.laserMapper.has(damageDealer))
+                    {
+                        LaserComponent dd_lc = ComponentMap.laserMapper.get(damageDealer);
+
+                        //Spawn an explosion at the location of collision
+                        Entity explosion = new Entity();
+                        explosion.add(new RenderComponent(dd_lc.explosionTexture, RenderComponent.PLANE_ABOVE));
+                        explosion.add(new PositionComponent(dd_pc.position));
+                        explosion.add(new ExplosionComponent());
+                        this.getEngine().addEntity(explosion);
+                    }
+
+                    //Check if the damage dealer was a missile
+                    if(ComponentMap.missileMapper.has(damageDealer))
+                    {
+                        //Spawn an explosion at the location of collision
+                        Entity explosion = new Entity();
+                        explosion.add(new RenderComponent(ArcadeSpaceShooter.textures.findRegion("laserRedShot"), RenderComponent.PLANE_ABOVE));
+                        explosion.add(new PositionComponent(dd_pc.position));
+                        explosion.add(new ExplosionComponent());
+                        this.getEngine().addEntity(explosion);
+                    }
+
+                    //Check if the damage dealer was a bomb
+                    if(ComponentMap.bombMapper.has(damageDealer))
+                    {
+                        //Spawn an explosion at the location of collision
+                        Entity explosion = new Entity();
+                        explosion.add(new RenderComponent(ArcadeSpaceShooter.textures.findRegion("laserRedShot"), RenderComponent.PLANE_ABOVE));
+                        explosion.add(new PositionComponent(dd_pc.position));
+                        explosion.add(new ExplosionComponent(WeaponConstants.BOMB_EXPLOSION_RADIUS));
+                        explosion.add(new DealsDamageComponent(WeaponConstants.BOMB_DAMAGE, DamageSystem.BOMB));
+                        this.getEngine().addEntity(explosion);
+                    }
+
+                    if(!ComponentMap.playerMapper.has(damageDealer) && !ComponentMap.explosionMapper.has(damageDealer)) {
+                        this.getEngine().removeEntity(damageDealer);
+                    }
+
+                    if (tdc.health <= 0)
+                    {
+                        // Handle upgrade pickups using strategy pattern
+                        handleUpgradePickup(damageTaker, td_pc.position);
+
+                        if(ComponentMap.playerMapper.has(damageTaker))
+                        {
+                            HasLasersComponent lasers = ComponentMap.hasLasersMapper.get(damageTaker);
+                            lasers.typeMask = HasLasersComponent.SINGLE;
+                            damageTaker.remove(HasBombsComponent.class);
+                            damageTaker.remove(HasMissilesComponent.class);
+                            damageTaker.remove(HasShieldComponent.class);
+                            damageTaker.remove(HasEmpComponent.class);
+                            PlayerComponent playerComp = ComponentMap.playerMapper.get(damageTaker);
+                            playerComp.lives -= 1;
+                            // Remove render component - InputSystem will handle respawn
+                            damageTaker.remove(RenderComponent.class);
+
+                            // Play explosion sound when player is destroyed
+                            SoundManager.playExplosion();
+                        } else
+                        {
+                            // Play explosion sound for enemies and asteroids
+                            if(ComponentMap.enemyMapper.has(damageTaker) ||
+                               ComponentMap.meteorMapper.has(damageTaker)) {
+                                SoundManager.playExplosion();
+                            }
+
+                            this.getEngine().removeEntity(damageTaker);
+                        }
+
+                        // Delegate to LootSystem for scoring and drops
+                        if (lootSystem != null) {
+                            lootSystem.handleKill(damageDealer, damageTaker, td_pc.position);
+                            lootSystem.handleMeteorSplit(damageTaker, td_pc.position);
+                        }
+                    }
+
+                    break;
+                }
+            }
+        }
+
+    }
+}

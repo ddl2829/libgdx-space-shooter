@@ -95,12 +95,20 @@ nb-configuration.xml
 /local.properties
 .gradle/
 gradle-app.setting
-/build/
-/android/build/
-/core/build/
-/desktop/build/
-/html/build/
-/ios/build/
+/lwjgl3/build/
+/tools/build/
+
+## Build Artifacts
+*.jar
+*.tar
+*.zip
+**/build/distributions/
+**/build/libs/
+**/build/resources/
+**/build/scripts/
+**/build/tmp/
+**/previous-compilation-data.bin
+MANIFEST.MF
 
 ## OS Specific
 .DS_Store

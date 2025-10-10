@@ -1,0 +1,31 @@
+plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+}
+
+java.sourceCompatibility = 17
+java.targetCompatibility = 17
+
+application {
+    mainClass = 'com.dalesmithwebdev.galaxia.tools.ToolsApplication'
+}
+
+javafx {
+    version = "21.0.1"
+    modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.swing' ]
+}
+
+dependencies {
+    implementation project(':core')
+
+    // libGDX backend for embedded rendering
+    implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+}
+
+// macOS compatibility
+run {
+    jvmArgs = [
+        '-Dprism.order=sw'  // Use software renderer to avoid macOS graphics issues
+    ]
+}
