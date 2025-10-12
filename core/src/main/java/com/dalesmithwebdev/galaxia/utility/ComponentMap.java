@@ -35,6 +35,7 @@ public class ComponentMap {
     // State Mappers
     public static ComponentMapper<ShieldedComponent> shieldedMapper = ComponentMapper.getFor(ShieldedComponent.class);
     public static ComponentMapper<BackgroundObjectComponent> backgroundObjectMapper = ComponentMapper.getFor(BackgroundObjectComponent.class);
+    public static ComponentMapper<MeteorCollisionCooldownComponent> meteorCollisionCooldownMapper = ComponentMapper.getFor(MeteorCollisionCooldownComponent.class);
 
     // Upgrade Mappers
     public static ComponentMapper<LaserStrengthUpgradeComponent> laserStrengthUpgradeMapper = ComponentMapper.getFor(LaserStrengthUpgradeComponent.class);

@@ -106,6 +106,9 @@ public class CombatSystem extends EntitySystem implements CollisionListener {
             }
         }
 
+        // Apply knockback force if laser hits meteor
+        applyLaserKnockback(damageDealer, damageTaker, dd_pc, td_pc);
+
         // Track recently damaged
         updateRecentlyDamagedStatus(damageTaker);
 
@@ -122,6 +125,43 @@ public class CombatSystem extends EntitySystem implements CollisionListener {
         if (tdc.health <= 0) {
             handleDeath(damageDealer, damageTaker, td_pc.position);
         }
+    }
+
+    /**
+     * Apply knockback force when laser hits meteor
+     * Knockback direction is based on impact position (from laser to meteor center)
+     */
+    private void applyLaserKnockback(Entity damageDealer, Entity damageTaker,
+                                      PositionComponent dealerPos, PositionComponent takerPos) {
+        // Only apply knockback if laser hits meteor
+        if (!ComponentMap.laserMapper.has(damageDealer) ||
+            !ComponentMap.meteorMapper.has(damageTaker)) {
+            return;
+        }
+
+        // Get meteor's speed component
+        if (!ComponentMap.speedMapper.has(damageTaker)) {
+            return;
+        }
+        SpeedComponent meteorSpeed = ComponentMap.speedMapper.get(damageTaker);
+
+        // Calculate knockback direction from impact point (laser position) to meteor center
+        Vector2 knockbackDir = takerPos.position.cpy().sub(dealerPos.position);
+        float distance = knockbackDir.len();
+
+        // Prevent division by zero
+        if (distance < 0.01f) {
+            knockbackDir.set(0, 1); // Default upward if positions are identical
+        } else {
+            knockbackDir.nor(); // Normalize to unit vector
+        }
+
+        // Small knockback force
+        float knockbackMagnitude = 1.2f; // Tunable parameter
+        Vector2 knockbackForce = knockbackDir.scl(knockbackMagnitude);
+
+        // Apply knockback to meteor's velocity
+        meteorSpeed.motion.add(knockbackForce);
     }
 
     /**

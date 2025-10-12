@@ -101,6 +101,7 @@ public class ArcadeSpaceShooter extends Game {
 		engine = new Engine();
 		engine.addSystem(new RenderSystem());
 		engine.addSystem(new MovementSystem());
+		engine.addSystem(new MeteorCollisionSystem()); // Meteor-to-meteor physics
 
 		// Create and wire collision/combat systems with dependencies
 		CollisionSystem collisionSystem = new CollisionSystem();
