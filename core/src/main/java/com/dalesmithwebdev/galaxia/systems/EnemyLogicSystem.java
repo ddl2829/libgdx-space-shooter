@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.dalesmithwebdev.galaxia.ArcadeSpaceShooter;
 import com.dalesmithwebdev.galaxia.components.*;
 import com.dalesmithwebdev.galaxia.constants.DamageTypeConstants;
+import com.dalesmithwebdev.galaxia.constants.LevelConstants;
 import com.dalesmithwebdev.galaxia.services.GameStateService;
 import com.dalesmithwebdev.galaxia.services.ServiceLocator;
 import com.dalesmithwebdev.galaxia.utility.ComponentMap;
@@ -32,7 +33,7 @@ public class EnemyLogicSystem extends EntitySystem {
             {
                 //dont do anything if the enemy isnt on the screen
                 sc.motion.x = 0;
-                sc.motion.y = -2;
+                sc.motion.y = LevelConstants.ENTITY_FIXED_DOWNWARD_SPEED;
                 continue;
             }
 
@@ -40,7 +41,7 @@ public class EnemyLogicSystem extends EntitySystem {
             {
                 if(pc.position.y >= ArcadeSpaceShooter.screenRect.height - (ArcadeSpaceShooter.screenRect.height / 4))
                 {
-                    sc.motion.y = -2;
+                    sc.motion.y = LevelConstants.ENTITY_FIXED_DOWNWARD_SPEED;
                 } else
                 {
                     sc.motion.y = 0;
@@ -48,7 +49,7 @@ public class EnemyLogicSystem extends EntitySystem {
             }
             else
             {
-                sc.motion.y = -2;
+                sc.motion.y = LevelConstants.ENTITY_FIXED_DOWNWARD_SPEED;
             }
             if(players.size() == 0)
             {
