@@ -9,6 +9,7 @@ import java.util.List;
 public class LevelData {
     private String id;
     private String name;
+    private int length;
     private float difficultyRating;
     private List<LevelObject> objects = new ArrayList<>();
 
@@ -19,6 +20,9 @@ public class LevelData {
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
+    public int getLength() { return length; }
+    public void setLength(int length) { this.length = length; }
 
     public float getDifficultyRating() { return difficultyRating; }
     public void setDifficultyRating(float difficultyRating) { this.difficultyRating = difficultyRating; }

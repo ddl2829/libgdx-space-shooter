@@ -17,7 +17,8 @@ public class BackgroundElement extends Entity implements Pool.Poolable {
         TextureRegion chosenTexture = ArcadeSpaceShooter.backgroundElements.get(Rand.nextInt(ArcadeSpaceShooter.backgroundElements.size()));
         this.add(new RenderComponent(chosenTexture, RenderComponent.PLANE_BACKGROUND_OBJECTS));
         this.add(new PositionComponent(Rand.nextInt(0, (int)ArcadeSpaceShooter.screenRect.width), ArcadeSpaceShooter.screenRect.height + chosenTexture.getRegionHeight() + Rand.nextInt(300)));
-        this.add(new SpeedComponent(0, -Rand.nextInt(6) - 3));
+        // Convert to pixels/second: -3 to -8 px/frame @ 60 FPS = -180 to -480 px/sec
+        this.add(new SpeedComponent(0, -(Rand.nextInt(6) + 3) * 60));
         this.add(new BackgroundObjectComponent());
     }
 

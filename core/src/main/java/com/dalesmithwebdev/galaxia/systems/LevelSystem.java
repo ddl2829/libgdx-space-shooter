@@ -10,8 +10,11 @@ import com.badlogic.gdx.utils.Timer;
 import com.dalesmithwebdev.galaxia.ArcadeSpaceShooter;
 import com.dalesmithwebdev.galaxia.components.BossEnemyComponent;
 import com.dalesmithwebdev.galaxia.components.PositionComponent;
+import com.dalesmithwebdev.galaxia.constants.LevelConstants;
 import com.dalesmithwebdev.galaxia.level.LevelData;
 import com.dalesmithwebdev.galaxia.level.LevelObject;
+import com.dalesmithwebdev.galaxia.prefabs.SmallMeteor;
+import com.dalesmithwebdev.galaxia.prefabs.LargeMeteor;
 import com.dalesmithwebdev.galaxia.screens.LevelSelectScreen;
 import com.dalesmithwebdev.galaxia.services.*;
 import com.dalesmithwebdev.galaxia.utility.ComponentMap;
@@ -29,6 +32,7 @@ public class LevelSystem extends EntitySystem {
     // Services
     private final LevelProgressionService progressionService;
     private final EntitySpawnService spawnService;
+    private final VirtualSpawnService virtualSpawnService;
     private final LevelLoaderService loaderService;
     private final ProceduralLevelService proceduralService;
     private final LevelNotificationService notificationService;
@@ -37,11 +41,15 @@ public class LevelSystem extends EntitySystem {
     // Transform data stored for entity creation callback
     private LevelLoaderService.TransformData transformData = null;
 
+    // Track if current level uses virtual spawning (JSON) or progressive spawning (procedural)
+    private boolean usingVirtualSpawn = false;
+
     public LevelSystem() {
         // Get services from ServiceLocator
         ServiceLocator locator = ServiceLocator.getInstance();
         this.progressionService = locator.getLevelProgression();
         this.spawnService = locator.getEntitySpawn();
+        this.virtualSpawnService = locator.getVirtualSpawn();
         this.loaderService = locator.getLevelLoader();
         this.proceduralService = locator.getProceduralLevel();
         this.notificationService = locator.getLevelNotification();
@@ -71,11 +79,18 @@ public class LevelSystem extends EntitySystem {
             return;
         }
 
-        // Progressive entity spawning (spread over multiple frames for performance)
-        spawnService.processSpawnQueue(engine, this::createEntityFromPending);
-
         // Track level running time
         progressionService.updateLevelRunningTime(gameTime);
+
+        // Spawn entities using appropriate method
+        if (usingVirtualSpawn) {
+            // Virtual just-in-time spawning for JSON levels (optimized)
+            virtualSpawnService.processVirtualSpawns(engine, progressionService.getLevelRunningTime(),
+                this::createEntityFromVirtual, ArcadeSpaceShooter.screenRect.height, gameTime);
+        } else {
+            // Progressive spawning for procedural levels (legacy)
+            spawnService.processSpawnQueue(engine, this::createEntityFromPending);
+        }
 
         // Only check for level completion after minimum time has passed
         if (!progressionService.hasMinimumTimeElapsed()) {
@@ -83,7 +98,11 @@ public class LevelSystem extends EntitySystem {
         }
 
         // Check if level is complete
-        if (progressionService.isLevelComplete(engine, spawnService.isSpawnQueueEmpty())) {
+        boolean spawnQueueEmpty = usingVirtualSpawn ?
+            !virtualSpawnService.hasEnemiesRemaining() :
+            spawnService.isSpawnQueueEmpty();
+
+        if (progressionService.isLevelComplete(engine, spawnQueueEmpty)) {
             handleLevelComplete(engine);
         }
     }
@@ -197,8 +216,11 @@ public class LevelSystem extends EntitySystem {
      * Build level from JSON data
      */
     private void BuildLevelFromJSON(LevelData levelData) {
-        // Clear spawn queue for new level
-        spawnService.clearQueue();
+        // Use virtual spawning for JSON levels (optimized)
+        usingVirtualSpawn = true;
+
+        // Clear virtual spawn service for new level
+        virtualSpawnService.clear();
 
         // Calculate coordinate transform
         transformData = loaderService.calculateTransform(
@@ -207,14 +229,45 @@ public class LevelSystem extends EntitySystem {
             ArcadeSpaceShooter.screenRect.height
         );
 
-        // Queue all objects for progressive spawning
+        // First pass: Calculate all spawn positions and timings
+        float minSpawnTiming = Float.MAX_VALUE;
+        java.util.List<SpawnData> spawnDataList = new java.util.ArrayList<>();
+
         for (LevelObject obj : levelData.getObjects()) {
-            float invertedY = transformData.getMaxEditorY() - obj.getY();
-            float spawnY = ArcadeSpaceShooter.screenRect.height + invertedY;
-            spawnService.queueEntity(obj, spawnY);
+            // Calculate spawn X coordinate (with screen scaling)
+            float spawnX = transformData.getHorizontalBuffer() +
+                          (obj.getX() - transformData.getMinEditorX()) * transformData.getXScale();
+
+            // Calculate spawn timing from editor Y position
+            // Invert: editor high Y = early spawn, editor low Y = late spawn
+            // Apply Y-scaling to spread spawns over time
+            float invertedY = (transformData.getMaxEditorY() - obj.getY()) * transformData.getYScale();
+            float spawnTiming = invertedY; // Use invertedY directly for timing
+
+            // All entities spawn at same screen Y (just above screen)
+            // They will scroll down from this position
+            float spawnScreenY = ArcadeSpaceShooter.screenRect.height;
+
+            spawnDataList.add(new SpawnData(obj, spawnX, spawnScreenY, spawnTiming));
+
+            if (spawnTiming < minSpawnTiming) {
+                minSpawnTiming = spawnTiming;
+            }
         }
 
-        System.out.println("Queued " + spawnService.getQueueSize() + " entities for progressive spawning");
+        System.out.println("Spawn timing range: " + minSpawnTiming + " to " +
+                         (spawnDataList.isEmpty() ? "N/A" : spawnDataList.get(spawnDataList.size()-1).spawnTiming));
+
+        // Second pass: Normalize spawn timings to start from 0
+        for (SpawnData data : spawnDataList) {
+            float normalizedTiming = data.spawnTiming - minSpawnTiming;
+            virtualSpawnService.scheduleEntity(data.obj, data.spawnX, data.spawnScreenY, normalizedTiming);
+        }
+
+        // Sort virtual entities by normalized spawn order
+        virtualSpawnService.sortBySpawnOrder();
+
+        System.out.println("Scheduled " + virtualSpawnService.getVirtualEntityCount() + " entities for virtual just-in-time spawning");
 
         // Set level length
         int calculatedLength = loaderService.calculateLevelLength(levelData, ArcadeSpaceShooter.screenRect.height);
@@ -223,13 +276,33 @@ public class LevelSystem extends EntitySystem {
         // Sync static field for backwards compatibility
         levelLength = calculatedLength;
 
-        System.out.println("=== Level loading complete ===");
+        System.out.println("=== Level loading complete (virtual spawning enabled) ===");
+    }
+
+    /**
+     * Helper class to hold spawn data during normalization
+     */
+    private static class SpawnData {
+        final LevelObject obj;
+        final float spawnX;
+        final float spawnScreenY;
+        final float spawnTiming;
+
+        SpawnData(LevelObject obj, float spawnX, float spawnScreenY, float spawnTiming) {
+            this.obj = obj;
+            this.spawnX = spawnX;
+            this.spawnScreenY = spawnScreenY;
+            this.spawnTiming = spawnTiming;
+        }
     }
 
     /**
      * Build procedural level
      */
     private void BuildProceduralLevel() {
+        // Use progressive spawning for procedural levels (legacy)
+        usingVirtualSpawn = false;
+
         int calculatedLength = proceduralService.calculateLevelLength(
             progressionService.getLevelNumber(),
             ArcadeSpaceShooter.screenRect.height
@@ -253,6 +326,34 @@ public class LevelSystem extends EntitySystem {
             return null;
         }
         return loaderService.createEntityFromLevelObject(pending.getLevelObject(), transformData);
+    }
+
+    /**
+     * Create entity from virtual spawn (callback for virtual spawn service)
+     * Uses object pooling for meteors to eliminate GC pressure
+     */
+    private Entity createEntityFromVirtual(VirtualSpawnService.VirtualEntity virtualEntity) {
+        String type = virtualEntity.getLevelObject().getType();
+        float x = virtualEntity.getSpawnX();
+        float y = virtualEntity.getSpawnScreenY(); // Use screen Y position for placement
+
+        // Use object pools for meteors (most frequent entity type)
+        if (type.equals("METEOR_SMALL")) {
+            Entity meteor = ArcadeSpaceShooter.smallMeteorPool.obtain();
+            if (meteor instanceof SmallMeteor) {
+                ((SmallMeteor) meteor).reset(x, y, LevelConstants.ENTITY_FIXED_DOWNWARD_SPEED);
+            }
+            return meteor;
+        } else if (type.equals("METEOR_LARGE")) {
+            Entity meteor = ArcadeSpaceShooter.largeMeteorPool.obtain();
+            if (meteor instanceof LargeMeteor) {
+                ((LargeMeteor) meteor).reset(x, y, LevelConstants.ENTITY_FIXED_DOWNWARD_SPEED);
+            }
+            return meteor;
+        }
+
+        // For non-meteor entities, use standard creation (no pooling yet)
+        return loaderService.createEntityFromLevelObject(virtualEntity.getLevelObject(), transformData);
     }
 
     /**

@@ -94,7 +94,7 @@ public class EnemyLogicSystem extends EntitySystem {
                             Entity newLaser = new Entity();
                             newLaser.add(new RenderComponent(laserGraphic, RenderComponent.PLANE_ABOVE));
                             newLaser.add(new LaserComponent(explosion));
-                            newLaser.add(new SpeedComponent(0, -20));
+                            newLaser.add(new SpeedComponent(0, -1200)); // Was -20 px/frame * 60 FPS
                             newLaser.add(new PositionComponent(new Vector2(pc.position.x - laserGraphic.getRegionWidth() / 2.0f, pc.position.y - 30)));
                             newLaser.add(new DealsDamageComponent(damageAmount, DamageTypeConstants.ENEMY_LASER));
                             this.getEngine().addEntity(newLaser);
@@ -104,7 +104,7 @@ public class EnemyLogicSystem extends EntitySystem {
                             Entity newLaser = new Entity();
                             newLaser.add(new RenderComponent(laserGraphic, RenderComponent.PLANE_ABOVE));
                             newLaser.add(new LaserComponent(explosion));
-                            newLaser.add(new SpeedComponent(0, -20));
+                            newLaser.add(new SpeedComponent(0, -1200)); // Was -20 px/frame * 60 FPS
                             newLaser.add(new PositionComponent(new Vector2(pc.position.x - laserGraphic.getRegionWidth() / 2.0f - 10, pc.position.y - 30)));
                             newLaser.add(new DealsDamageComponent(damageAmount, DamageTypeConstants.ENEMY_LASER));
                             this.getEngine().addEntity(newLaser);
@@ -112,7 +112,7 @@ public class EnemyLogicSystem extends EntitySystem {
                             Entity newLaser2 = new Entity();
                             newLaser2.add(new RenderComponent(laserGraphic, RenderComponent.PLANE_ABOVE));
                             newLaser2.add(new LaserComponent(explosion));
-                            newLaser2.add(new SpeedComponent(0, -20));
+                            newLaser2.add(new SpeedComponent(0, -1200)); // Was -20 px/frame * 60 FPS
                             newLaser2.add(new PositionComponent(new Vector2(pc.position.x - laserGraphic.getRegionWidth() / 2.0f + 10, pc.position.y - 30)));
                             newLaser2.add(new DealsDamageComponent(damageAmount, DamageTypeConstants.ENEMY_LASER));
                             this.getEngine().addEntity(newLaser2);
@@ -122,7 +122,7 @@ public class EnemyLogicSystem extends EntitySystem {
                             Entity newLaser3 = new Entity();
                             newLaser3.add(new RenderComponent(laserGraphic, RenderComponent.PLANE_ABOVE));
                             newLaser3.add(new LaserComponent(explosion));
-                            newLaser3.add(new SpeedComponent(10, -20));
+                            newLaser3.add(new SpeedComponent(600, -1200)); // Was 10, -20 px/frame * 60 FPS
                             newLaser3.add(new PositionComponent(new Vector2(pc.position.x - laserGraphic.getRegionWidth() / 2.0f - 10, pc.position.y - 30)));
                             newLaser3.add(new DealsDamageComponent(damageAmount, DamageTypeConstants.ENEMY_LASER));
                             this.getEngine().addEntity(newLaser3);
@@ -130,7 +130,7 @@ public class EnemyLogicSystem extends EntitySystem {
                             Entity newLaser4 = new Entity();
                             newLaser4.add(new RenderComponent(laserGraphic, RenderComponent.PLANE_ABOVE));
                             newLaser4.add(new LaserComponent(explosion));;
-                            newLaser4.add(new SpeedComponent(-10, -20));
+                            newLaser4.add(new SpeedComponent(-600, -1200)); // Was -10, -20 px/frame * 60 FPS
                             newLaser4.add(new PositionComponent(new Vector2(pc.position.x - laserGraphic.getRegionWidth() / 2.0f + 10, pc.position.y - 30)));
                             newLaser4.add(new DealsDamageComponent(damageAmount, DamageTypeConstants.ENEMY_LASER));
                             this.getEngine().addEntity(newLaser4);

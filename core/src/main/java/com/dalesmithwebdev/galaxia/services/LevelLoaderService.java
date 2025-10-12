@@ -23,13 +23,15 @@ public class LevelLoaderService {
         private final float maxEditorX;
         private final float maxEditorY;
         private final float xScale;
+        private final float yScale;
         private final float horizontalBuffer;
 
-        public TransformData(float minEditorX, float maxEditorX, float maxEditorY, float xScale, float horizontalBuffer) {
+        public TransformData(float minEditorX, float maxEditorX, float maxEditorY, float xScale, float yScale, float horizontalBuffer) {
             this.minEditorX = minEditorX;
             this.maxEditorX = maxEditorX;
             this.maxEditorY = maxEditorY;
             this.xScale = xScale;
+            this.yScale = yScale;
             this.horizontalBuffer = horizontalBuffer;
         }
 
@@ -47,6 +49,10 @@ public class LevelLoaderService {
 
         public float getXScale() {
             return xScale;
+        }
+
+        public float getYScale() {
+            return yScale;
         }
 
         public float getHorizontalBuffer() {
@@ -106,7 +112,12 @@ public class LevelLoaderService {
         float xScale = editorWidth > 0 ? availableWidth / editorWidth : 1.0f;
         System.out.println("X scaling factor: " + xScale + " (editor width: " + editorWidth + ", buffer: " + horizontalBuffer + ")");
 
-        return new TransformData(minEditorX, maxEditorX, maxEditorY, xScale, horizontalBuffer);
+        // Calculate Y scaling factor to maintain aspect ratio with X scaling
+        // This ensures level geometry scales proportionally based on screen dimensions
+        float yScale = xScale;
+        System.out.println("Y scaling factor: " + yScale + " (matches X scale to preserve aspect ratio)");
+
+        return new TransformData(minEditorX, maxEditorX, maxEditorY, xScale, yScale, horizontalBuffer);
     }
 
     /**
@@ -118,7 +129,8 @@ public class LevelLoaderService {
 
         // Invert Y coordinate: editor high Y = start, Y=0 = end
         // Game high Y = later encounter, low Y = early encounter
-        float invertedY = transform.maxEditorY - obj.getY();
+        // Apply Y-scaling to spread objects over gameplay space
+        float invertedY = (transform.maxEditorY - obj.getY()) * transform.yScale;
         float spawnY = ArcadeSpaceShooter.screenRect.height + invertedY;
 
         switch (obj.getType()) {
@@ -153,8 +165,9 @@ public class LevelLoaderService {
      */
     public int calculateLevelLength(LevelData levelData, float screenHeight) {
         TransformData transform = calculateTransform(levelData, ArcadeSpaceShooter.screenRect.width, screenHeight);
-        int levelLength = (int)(screenHeight + transform.maxEditorY + 1000);
-        System.out.println("Level length set to: " + levelLength);
+        // Use scaled Y value for level length calculation
+        int levelLength = (int)(screenHeight + (transform.maxEditorY * transform.yScale) + 1000);
+        System.out.println("Level length set to: " + levelLength + " (scaled from editor max Y: " + transform.maxEditorY + ")");
         return levelLength;
     }
 }

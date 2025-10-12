@@ -11,8 +11,8 @@ public final class GameConstants {
     /** Initial number of lives the player starts with */
     public static final int PLAYER_INITIAL_LIVES = 3;
 
-    /** Movement speed multiplier applied to player input direction */
-    public static final float PLAYER_MOVEMENT_SPEED = 5.0f;
+    /** Movement speed multiplier applied to player input direction (pixels/second) */
+    public static final float PLAYER_MOVEMENT_SPEED = 300.0f; // Was 5.0 px/frame * 60 FPS
 
     /** Delay in milliseconds before respawning player after death */
     public static final float PLAYER_RESPAWN_DELAY_MS = 2000f;

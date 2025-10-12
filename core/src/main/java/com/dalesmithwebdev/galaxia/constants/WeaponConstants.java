@@ -27,15 +27,15 @@ public final class WeaponConstants {
     /** Time interval between laser shots at level 2 (milliseconds) */
     public static final int LASER_INTERVAL_UPGRADED_AGAIN_MS = 80;
 
-    // Laser - Speed and Positioning
-    /** Vertical speed of laser projectiles */
-    public static final float LASER_SPEED_Y = 20f;
+    // Laser - Speed and Positioning (pixels/second)
+    /** Vertical speed of laser projectiles (pixels/second) */
+    public static final float LASER_SPEED_Y = 1200f; // Was 20 px/frame * 60 FPS
 
     /** Horizontal offset for dual laser positioning from player center */
     public static final float LASER_OFFSET_DUAL = 10f;
 
-    /** Horizontal speed component for diagonal laser shots */
-    public static final float LASER_DIAGONAL_SPEED_X = 10f;
+    /** Horizontal speed component for diagonal laser shots (pixels/second) */
+    public static final float LASER_DIAGONAL_SPEED_X = 600f; // Was 10 px/frame * 60 FPS
 
     /** Vertical offset for laser spawn position relative to player */
     public static final float LASER_OFFSET_Y = 40f;
@@ -53,11 +53,11 @@ public final class WeaponConstants {
     /** Horizontal offset for missile spawn position from player center */
     public static final float MISSILE_OFFSET_X = 60f;
 
-    /** Horizontal speed factor for missiles */
-    public static final float MISSILE_SPEED_X_FACTOR = 3f;
+    /** Horizontal speed factor for missiles (pixels/second) */
+    public static final float MISSILE_SPEED_X_FACTOR = 180f; // Was 3 px/frame * 60 FPS
 
-    /** Vertical speed of missiles */
-    public static final float MISSILE_SPEED_Y = 1f;
+    /** Vertical speed of missiles (pixels/second) */
+    public static final float MISSILE_SPEED_Y = 60f; // Was 1 px/frame * 60 FPS
 
     // Bomb
     /** Damage dealt by bomb explosions */
@@ -66,8 +66,8 @@ public final class WeaponConstants {
     /** Time interval between bomb drops (milliseconds) */
     public static final int BOMB_INTERVAL_MS = 500;
 
-    /** Vertical speed of bombs */
-    public static final float BOMB_SPEED_Y = 5f;
+    /** Vertical speed of bombs (pixels/second) */
+    public static final float BOMB_SPEED_Y = 300f; // Was 5 px/frame * 60 FPS
 
     /** Vertical offset for bomb spawn position relative to player */
     public static final float BOMB_OFFSET_Y = 50f;

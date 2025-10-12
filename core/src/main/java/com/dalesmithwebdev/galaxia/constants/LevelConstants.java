@@ -46,9 +46,10 @@ public final class LevelConstants {
     /** Horizontal buffer/padding from screen edges for entity spawning */
     public static final float HORIZONTAL_BUFFER = 40f;
 
-    /** Fixed downward speed for entities in JSON-based levels */
-    public static final float ENTITY_FIXED_DOWNWARD_SPEED = -3f;
+    // Movement Speeds (pixels per second, assuming 60 FPS baseline)
+    /** Fixed downward speed for entities in JSON-based levels (pixels/second) */
+    public static final float ENTITY_FIXED_DOWNWARD_SPEED = -180f; // Was -3 px/frame * 60 FPS
 
-    /** Horizontal movement speed for enemy fighters */
-    public static final double ENEMY_HORIZONTAL_SPEED = 0.8;
+    /** Horizontal movement speed for enemy fighters (pixels/second) */
+    public static final double ENEMY_HORIZONTAL_SPEED = 48.0; // Was 0.8 px/frame * 60 FPS
 }

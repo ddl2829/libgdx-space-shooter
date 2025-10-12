@@ -34,6 +34,7 @@ levels/.gitkeep
 levels/level_1760032630507.json
 levels/level_1760033859196.json
 levels/level_1760038835156.json
+levels/level_1760038835156_copy_1760297609952.json
 lights.atlas
 lights.png
 meteors/meteorBig.png

@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import com.dalesmithwebdev.galaxia.ArcadeSpaceShooter;
+import com.dalesmithwebdev.galaxia.components.MeteorComponent;
 import com.dalesmithwebdev.galaxia.components.MissileComponent;
 import com.dalesmithwebdev.galaxia.components.PositionComponent;
 import com.dalesmithwebdev.galaxia.components.RenderComponent;
@@ -36,6 +37,9 @@ public class MovementSystem extends EntitySystem {
                     move.y = move.y * 3;
                 }
             }
+            // Apply delta-time for frame-rate independent movement
+            // deltaTime is in milliseconds, speeds are in pixels/second, so divide by 1000
+            move.scl(deltaTime / 1000f);
             pc.position = pc.position.add(move);
 
             if (ComponentMap.playerMapper.has(moveable) && ComponentMap.renderMapper.has(moveable))
@@ -64,7 +68,7 @@ public class MovementSystem extends EntitySystem {
                 missile.timelived += deltaTime;
                 if(missile.timelived >= 150 && !missile.speedBoosted) {
                     missile.speedBoosted = true;
-                    sc.motion.y = 15;
+                    sc.motion.y = 900; // Was 15 px/frame * 60 FPS = 900 px/sec
                     sc.motion.x = 0;
                 }
             }
@@ -81,7 +85,18 @@ public class MovementSystem extends EntitySystem {
             //Despawn anything going off the bottom of the screen
             if(pc.position.y < -10 && !ComponentMap.backgroundObjectMapper.has(moveable))
             {
-                this.getEngine().removeEntity(moveable);
+                // Return meteors to pool before removing (zero GC)
+                if (ComponentMap.meteorMapper.has(moveable)) {
+                    MeteorComponent mc = ComponentMap.meteorMapper.get(moveable);
+                    this.getEngine().removeEntity(moveable);
+                    if (mc.isBig) {
+                        ArcadeSpaceShooter.largeMeteorPool.free(moveable);
+                    } else {
+                        ArcadeSpaceShooter.smallMeteorPool.free(moveable);
+                    }
+                } else {
+                    this.getEngine().removeEntity(moveable);
+                }
             }
         }
     }

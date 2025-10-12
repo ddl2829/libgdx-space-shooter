@@ -1,0 +1,914 @@
+{
+"id": "level_1760038835156_copy_1760297609952",
+"name": "Level 3 (Copy)",
+"length": 2000,
+"difficultyRating": 4.5450044,
+"objects": [
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 40,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 40,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 80,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 80,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 120,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 120,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 160,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 160,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 200,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 200,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 240,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 240,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 280,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 280,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 320,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 320,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 360,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 360,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 400,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 400,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 440,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 440,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 480,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 480,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 520,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 520,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 560,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 560,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 600,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 600,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 640,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 640,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 680,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 680,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 720,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 720,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 760,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 760,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 800,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 800,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 840,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 840,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 880,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 880,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 920,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 920,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 960,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 960,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1000,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1000,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1040,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1040,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1080,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1080,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1120,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1120,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1160,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1160,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1200,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1200,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1240,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1240,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1280,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1280,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1320,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1320,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1360,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1360,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1400,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1400,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1440,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1440,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1480,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1480,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1520,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1520,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1560,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1560,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1600,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1600,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1640,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1640,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1680,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1680,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1720,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1720,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1760,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1760,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1800,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1800,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1840,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1840,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1880,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1880,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1920,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1920,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 15,
+		"y": 1960,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 985,
+		"y": 1960,
+		"scale": 0.8,
+		"health": 3,
+		"hasLasers": false,
+		"spawnDelay": -1
+	},
+	{
+		"type": "METEOR_SMALL",
+		"x": 480,
+		"y": 1980,
+		"health": 3,
+		"hasLasers": false
+	}
+],
+"bossConfig": {}
+}

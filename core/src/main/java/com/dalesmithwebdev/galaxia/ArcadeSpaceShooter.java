@@ -20,6 +20,8 @@ import com.dalesmithwebdev.galaxia.services.ServiceLocator;
 import com.dalesmithwebdev.galaxia.components.PositionComponent;
 import com.dalesmithwebdev.galaxia.components.RenderComponent;
 import com.dalesmithwebdev.galaxia.prefabs.BackgroundElement;
+import com.dalesmithwebdev.galaxia.prefabs.SmallMeteor;
+import com.dalesmithwebdev.galaxia.prefabs.LargeMeteor;
 import com.dalesmithwebdev.galaxia.screens.StartScreen;
 import com.dalesmithwebdev.galaxia.screens.tests.ShaderTestScreen;
 import com.dalesmithwebdev.galaxia.systems.*;
@@ -74,6 +76,22 @@ public class ArcadeSpaceShooter extends Game {
 		@Override
 		protected Entity newObject() {
 			return new BackgroundElement();
+		}
+	};
+
+	// Meteor pools for performance optimization
+	// Pre-sized for levels with hundreds of meteors on screen
+	public static Pool<Entity> smallMeteorPool = new Pool<Entity>(100, 500) {
+		@Override
+		protected Entity newObject() {
+			return new SmallMeteor();
+		}
+	};
+
+	public static Pool<Entity> largeMeteorPool = new Pool<Entity>(50, 250) {
+		@Override
+		protected Entity newObject() {
+			return new LargeMeteor();
 		}
 	};
 
@@ -235,6 +253,8 @@ public class ArcadeSpaceShooter extends Game {
 			for (Entity e : backgroundObjects) {
 				PositionComponent pc = ComponentMap.positionMapper.get(e);
 				if (pc.position.y < -10) {
+					// MUST remove from engine before freeing to pool
+					ArcadeSpaceShooter.engine.removeEntity(e);
 					this.backgroundPool.free(e);
 				}
 			}
