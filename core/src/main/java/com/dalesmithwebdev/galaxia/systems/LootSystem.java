@@ -163,8 +163,9 @@ public class LootSystem extends EntitySystem {
                 RenderComponent.PLANE_MAIN
             ));
 
-            // Random velocity for scattered effect
-            int[] speeds = new int[] { 2, 2, 2, 3, 3, 3, 4, 4, 5, 6 };
+            // Random velocity for scattered effect (pixels per second)
+            // Old frame-based: 2-6 px/frame, converted to time-based: 120-360 px/sec at 60 FPS
+            int[] speeds = new int[] { 120, 120, 120, 180, 180, 180, 240, 240, 300, 360 };
             int vx = speeds[Rand.nextInt(speeds.length)] * (Rand.nextBoolean() ? -1 : 1);
             int vy = -speeds[Rand.nextInt(speeds.length)];
             smallMeteor.add(new SpeedComponent(vx, vy));

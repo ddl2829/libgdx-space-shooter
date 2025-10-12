@@ -239,8 +239,8 @@ public class CombatSystem extends EntitySystem implements CollisionListener {
             knockbackDir.nor(); // Normalize to unit vector
         }
 
-        // Small knockback force
-        float knockbackMagnitude = 1.2f; // Tunable parameter
+        // Very strong knockback force - dramatically pushes meteors back when hit
+        float knockbackMagnitude = 40.0f; // Tunable parameter
         Vector2 knockbackForce = knockbackDir.scl(knockbackMagnitude);
 
         // Apply knockback to meteor's velocity
