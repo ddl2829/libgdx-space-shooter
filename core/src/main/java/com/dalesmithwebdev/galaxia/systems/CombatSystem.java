@@ -96,14 +96,27 @@ public class CombatSystem extends EntitySystem implements CollisionListener {
         PositionComponent dd_pc = ComponentMap.positionMapper.get(damageDealer);
         PositionComponent td_pc = ComponentMap.positionMapper.get(damageTaker);
 
-        // Apply damage (unless shielded)
-        if (!ComponentMap.shieldedMapper.has(damageTaker)) {
+        // Check if this is a player-meteor collision for special handling
+        boolean isPlayerMeteorCollision = ComponentMap.playerMapper.has(damageTaker) &&
+                                         ComponentMap.meteorMapper.has(damageDealer);
+
+        // Check if player has invincibility frames (for player-meteor collision)
+        boolean playerHasIframes = isPlayerMeteorCollision &&
+                                   ComponentMap.recentlyDamagedMapper.has(damageTaker);
+
+        // Apply damage to damageTaker (unless shielded or has invincibility frames)
+        if (!ComponentMap.shieldedMapper.has(damageTaker) && !playerHasIframes) {
             tdc.health -= ddc.strength;
 
             // Play hitHurt sound if player takes damage
             if (ComponentMap.playerMapper.has(damageTaker)) {
                 SoundManager.playHitHurt();
             }
+        }
+
+        // Apply mutual damage and knockback for player-meteor collisions
+        if (isPlayerMeteorCollision) {
+            applyPlayerMeteorCollision(damageDealer, damageTaker, dd_pc, td_pc);
         }
 
         // Apply knockback force if laser hits meteor
@@ -115,15 +128,85 @@ public class CombatSystem extends EntitySystem implements CollisionListener {
         // Spawn explosion effects
         spawnExplosionEffect(damageDealer, dd_pc.position);
 
-        // Remove damage dealer (unless it's player or explosion)
+        // Remove damage dealer (unless it's player, explosion, or meteor that survived collision)
+        boolean meteorSurvivedPlayerCollision = isPlayerMeteorCollision &&
+                                                ComponentMap.takesDamageMapper.has(damageDealer) &&
+                                                ComponentMap.takesDamageMapper.get(damageDealer).health > 0;
+
         if (!ComponentMap.playerMapper.has(damageDealer) &&
-            !ComponentMap.explosionMapper.has(damageDealer)) {
+            !ComponentMap.explosionMapper.has(damageDealer) &&
+            !meteorSurvivedPlayerCollision) {
             getEngine().removeEntity(damageDealer);
         }
 
-        // Handle death
+        // Handle death of damageTaker
         if (tdc.health <= 0) {
             handleDeath(damageDealer, damageTaker, td_pc.position);
+        }
+
+        // Handle death of damageDealer if it's a meteor that took damage from player
+        if (isPlayerMeteorCollision && ComponentMap.takesDamageMapper.has(damageDealer)) {
+            TakesDamageComponent meteorHealth = ComponentMap.takesDamageMapper.get(damageDealer);
+            if (meteorHealth.health <= 0) {
+                handleDeath(damageTaker, damageDealer, dd_pc.position);
+            }
+        }
+    }
+
+    /**
+     * Apply mutual damage and knockback when player collides with meteor
+     */
+    private void applyPlayerMeteorCollision(Entity meteor, Entity player,
+                                             PositionComponent meteorPos, PositionComponent playerPos) {
+        // Check if meteor has invincibility frames (prevents multi-hit and excessive knockback)
+        boolean meteorHasIframes = ComponentMap.recentlyDamagedMapper.has(meteor);
+
+        // Apply damage to meteor (small amount - player ramming damage)
+        // Only apply if meteor doesn't have invincibility frames
+        if (ComponentMap.takesDamageMapper.has(meteor) && !meteorHasIframes) {
+
+            TakesDamageComponent meteorHealth = ComponentMap.takesDamageMapper.get(meteor);
+
+            // Ramming damage based on meteor size
+            MeteorComponent meteorComp = ComponentMap.meteorMapper.get(meteor);
+            int rammingDamage = meteorComp.isBig ? 1 : 1; // Small ramming damage
+
+            meteorHealth.health -= rammingDamage;
+
+            // Track recently damaged for meteor - gives longer invincibility frames for ramming
+            RecentlyDamagedComponent rdc = new RecentlyDamagedComponent(GameConstants.METEOR_RAMMING_INVINCIBILITY_MS);
+            meteor.add(rdc);
+        }
+
+        // Apply knockback to meteor away from player
+        // Only apply knockback if meteor doesn't have invincibility (prevents excessive speed buildup)
+        if (ComponentMap.speedMapper.has(meteor) && !meteorHasIframes) {
+            SpeedComponent meteorSpeed = ComponentMap.speedMapper.get(meteor);
+
+            // Calculate knockback direction from player to meteor
+            Vector2 knockbackDir = meteorPos.position.cpy().sub(playerPos.position);
+            float distance = knockbackDir.len();
+
+            // Prevent division by zero
+            if (distance < 0.01f) {
+                knockbackDir.set(0, 1); // Default upward if positions are identical
+            } else {
+                knockbackDir.nor(); // Normalize to unit vector
+            }
+
+            // Moderate knockback force (stronger than laser)
+            float knockbackMagnitude = 2.5f; // Tunable parameter
+            Vector2 knockbackForce = knockbackDir.scl(knockbackMagnitude);
+
+            // Apply knockback to meteor's velocity
+            meteorSpeed.motion.add(knockbackForce);
+        }
+
+        // Give player invincibility frames after getting hit by meteor
+        // This prevents the player from taking damage every frame while in contact
+        if (!ComponentMap.recentlyDamagedMapper.has(player)) {
+            RecentlyDamagedComponent playerRdc = new RecentlyDamagedComponent(GameConstants.METEOR_RAMMING_INVINCIBILITY_MS);
+            player.add(playerRdc);
         }
     }
 

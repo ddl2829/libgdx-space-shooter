@@ -21,6 +21,9 @@ public final class GameConstants {
     /** Duration in milliseconds that an entity remains invulnerable after taking damage */
     public static final int RECENTLY_DAMAGED_TIMEOUT_MS = 50;
 
+    /** Invincibility frame duration for meteors hit by player ramming (milliseconds) */
+    public static final int METEOR_RAMMING_INVINCIBILITY_MS = 500;
+
     /** Bonus points awarded when player collects a duplicate upgrade they already have */
     public static final int BONUS_POINTS_FOR_DUPLICATE_UPGRADE = 1000;
 
