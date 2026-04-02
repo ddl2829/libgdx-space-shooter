@@ -7,6 +7,7 @@
 - JSON files under `assets/levels/` are the long-term content source of truth for designed encounters.
 - Existing `claudedocs/` files are historical implementation notes, not the active planning system.
 - Short-term work should prioritize stabilizing the current game and content pipeline over adding large new feature areas.
+- The first implementation batch is portability, JSON contract coverage, and manual smoke checks rather than new gameplay.
 
 ## Decisions That Materially Affect Scope Or Architecture
 

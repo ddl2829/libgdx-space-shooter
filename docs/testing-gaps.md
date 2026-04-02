@@ -8,20 +8,10 @@
 
 ## Recommended Baseline Approach
 
-- Use standard JUnit 5 tests for pure Java logic, data validation, serialization, and service behavior.
-- Run tests through Gradle's normal `test` task rather than inventing a custom harness.
-- Keep the first wave of tests focused on code that does not require a real OpenGL context.
-- Treat rendering, `SpriteBatch`, shader, and screen-level assertions as a later integration layer, not the starting point.
-
-## How This Usually Looks In Java And libGDX Projects
-
-- Typical Java applications start with small unit tests around domain logic, parsing/serialization, validation, and edge cases, then add a thinner layer of integration tests for wiring and filesystem behavior.
-- libGDX projects usually benefit from the same split, but with an extra constraint: code touching `Gdx.gl`, rendering, or windowed backends is harder to test cheaply than plain Java logic.
-- In practice, the low-friction path is:
-  - plain JUnit tests for DTOs, services, validators, and content pipelines
-  - headless libGDX setup only when code genuinely depends on `Gdx` globals but not on real rendering
-  - manual smoke tests or specialized integration tests for graphics-heavy code
-- For the JavaFX editor, prefer testing persistence and validation logic first. Full UI automation can come later if the editor becomes a critical production tool.
+- Use standard JUnit 5 tests for pure Java logic, validation, and serialization.
+- Run them through Gradle's normal `test` task.
+- Keep the first wave away from rendering, shaders, `SpriteBatch`, and screen transitions.
+- Use manual smoke checks for anything that still needs a real graphics backend.
 
 ## Highest-Value Missing Coverage
 
@@ -62,9 +52,9 @@
 
 ### 4. Later Integration Coverage
 
-- If needed, add a small libGDX headless test harness for code that needs `Gdx.app`, `Gdx.files`, or similar globals but not real drawing
-- Keep OpenGL-bound code out of this layer unless there is a concrete regression worth paying for
-- For JavaFX UI automation, only add a framework such as TestFX after persistence and validation coverage already exists
+- Add a small libGDX headless harness only if code needs `Gdx.app`, `Gdx.files`, or similar globals but not real drawing
+- Keep OpenGL-bound code out of this layer unless a concrete regression justifies it
+- For JavaFX UI automation, wait until persistence and validation coverage exists
 
 ## Suggested Near-Term Build Changes
 

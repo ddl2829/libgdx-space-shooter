@@ -5,7 +5,7 @@
 ### 1. Stabilize The Level Data Pipeline
 
 - Make editor save/load paths project-relative and portable
-- Define the supported JSON schema between editor output and runtime input
+- Lock the current runtime JSON contract against representative authored levels
 - Verify the runtime can safely consume authored levels already present in `assets/levels/`
 - Decide whether timed events and boss metadata are runtime-supported or editor-only
 
@@ -19,7 +19,7 @@
 
 - Add a first wave of automated tests around pure Java/service/serialization code
 - Document manual smoke flows for gameplay and editor workflows
-- Make verification steps part of normal iteration docs instead of one-off notes
+- Keep graphical behavior out of the first automated batch unless a concrete need appears
 
 ## Post-MVP / V1
 
