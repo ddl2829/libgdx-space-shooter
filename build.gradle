@@ -54,6 +54,10 @@ configure(subprojects) {
   compileJava {
     options.incremental = true
   }
+
+  tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+  }
 }
 
 subprojects {
