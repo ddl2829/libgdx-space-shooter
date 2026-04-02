@@ -2,9 +2,9 @@
 
 ## Current State
 
-- No established automated tests under `src/test`
+- Baseline automated tests now exist under `core/src/test` and `tools/src/test`
 - Most verification is manual
-- Editor/runtime level compatibility is not protected by automated checks
+- Editor/runtime level compatibility has baseline JSON contract checks, but broader runtime behavior is still not covered
 
 ## Recommended Baseline Approach
 
@@ -15,36 +15,31 @@
 
 ## Highest-Value Missing Coverage
 
-- Level JSON serialization/deserialization round trips
-- `LevelService.validateLevel()` coverage for invalid object placement and timed-event validation
-- Runtime loading of representative authored levels from `assets/levels/`
 - Basic gameplay startup smoke validation for desktop launcher
+- Editor and runtime manual smoke execution in a real Java environment
+- Service-level runtime tests for progression and spawn behavior
+- Clear documentation of which editor fields are intentionally ignored by the runtime
 
 ## Recommended First Test Set For This Repository
 
 ### 1. Editor Data And Validation Tests
 
-- Add `tools/src/test/java/.../LevelServiceTest`
-- Cover:
-  - creating a new level
-  - duplicating a level
-  - saving and loading a level round trip
-  - validation failures for empty IDs, empty names, negative trigger times, out-of-bounds positions, and invalid enemy-wave counts
-- Use temporary directories in tests instead of the real `assets/levels/` folder
-- As part of this work, refactor `LevelService` so the levels directory can be injected or configured
+- Completed:
+  - `LevelService` now supports injected paths and project-relative default resolution
+  - `tools/src/test/java/.../LevelServiceTest` covers create/duplicate/save-load and validation edge cases
 
 ### 2. Runtime Level Contract Tests
 
-- Add `core/src/test/java/.../LevelDataLoadTest`
-- Cover:
-  - loading one or more representative JSON files from `assets/levels/`
-  - asserting required fields are parsed
-  - documenting which editor fields are ignored by the runtime today
-- These tests should make schema drift visible as soon as editor output changes
+- Completed:
+  - `core/src/test/java/.../LevelJsonContractTest` validates representative authored levels against the current runtime DTO contract
+- Remaining:
+  - document the runtime/editor schema boundary more explicitly in prose
+  - decide whether ignored editor-only fields should remain ignored or be translated
 
 ### 3. Service-Level Runtime Tests
 
-- Add tests for code that can run without rendering, especially:
+- Next:
+  - add tests for code that can run without rendering, especially:
   - level progression decisions
   - spawn queue or virtual spawn calculations
   - pure utility/constants behavior where bugs would affect gameplay
@@ -58,8 +53,9 @@
 
 ## Suggested Near-Term Build Changes
 
-- Add JUnit 5 dependencies to `core/build.gradle` and `tools/build.gradle`
-- Configure Gradle test tasks to use the JUnit Platform
+- Completed:
+  - JUnit 5 dependencies are configured in `core/build.gradle` and `tools/build.gradle`
+  - Gradle test tasks are configured to use the JUnit Platform
 - Keep tests separate by module:
   - `core` for runtime data/services
   - `tools` for editor persistence/validation
@@ -81,8 +77,8 @@
 
 ## Practical Sequence
 
-1. Make `LevelService` path handling injectable or project-relative.
-2. Add JUnit 5 and enable Gradle `test`.
-3. Land editor persistence/validation tests.
-4. Land runtime JSON contract tests.
+1. Run the new tests in a real Java environment and fix any build/runtime issues.
+2. Execute the documented manual smoke checks for game and editor flows.
+3. Decide the runtime/editor schema boundary explicitly.
+4. Add service-level runtime tests for non-rendering gameplay logic.
 5. Reassess whether any headless libGDX tests are justified.

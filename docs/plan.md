@@ -1,54 +1,49 @@
-# Plan: Initial Stabilization Slice
+# Plan: Next Steps
 
 ## Goal
 
-Fix the first stabilization batch: make the editor save path portable, add basic JSON-level tests, and define the manual smoke checks that remain after that.
+Define and implement the next work after the completed portability and baseline test pass.
 
-## Approach
+## Current Baseline
 
-Start with the smallest changes that remove current friction:
+- `LevelService` now resolves a project-relative levels directory by default and accepts an injected path for tests or alternate storage.
+- JUnit 5 is wired into the Gradle test tasks for `core` and `tools`.
+- There is now baseline automated coverage for:
+  - editor persistence and validation behavior
+  - runtime JSON contract checks against authored levels
 
-1. Make editor level storage project-relative or configurable instead of machine-specific.
-2. Add a small automated test baseline for editor validation and runtime JSON loading.
-3. Keep graphical behavior in manual smoke checks for now.
+## Next Implementation Steps
 
-## Phases
+### 1. Resolve The Runtime/Editor Schema Boundary
 
-### Phase 1: Portable Level Storage
+- Decide whether runtime should continue consuming a reduced level schema or move toward the richer editor model.
+- Document the supported runtime fields explicitly.
+- If needed, add an export/translation boundary instead of relying on silent field ignoring.
 
-- Replace the hard-coded absolute path in `tools/.../service/LevelService.java`
-- Resolve level storage relative to the project or application working directory
-- Keep the default pointed at `assets/levels/` or an equivalent project-relative location
+### 2. Add Manual Smoke Verification To The Routine
 
-### Phase 2: Level Contract Audit
-
-- Compare `tools/.../model/Level` and related classes against `core/.../level/LevelData` and `LevelObject`
-- Confirm the current runtime JSON contract against representative files in `assets/levels/`
-- Update docs to state which fields are currently relied on by the runtime and which are editor-only
-
-### Phase 3: Verification Baseline
-
-- Add tests for level validation and serialization in the code that does not require launching libGDX rendering
-- Add a short smoke checklist for:
+- Run and document smoke checks for:
   - `./gradlew lwjgl3:run`
   - `./gradlew tools:run`
-  - save/load of one authored level
-  - runtime loading of one authored level from `assets/levels/`
+  - save/load of an authored level
+  - runtime loading of an authored level from `assets/levels/`
+- Record any failures or environment-specific launch issues.
 
-## Files To Create
+### 3. Add The Next Layer Of Low-Cost Tests
 
-- `tools/src/test/...` test classes for editor persistence/validation if the module is made test-ready
-- `core/src/test/...` test classes for runtime level DTO loading if practical
-- Any small shared utility or config file needed to locate `assets/levels/` safely
+- Add service-level tests for runtime logic that does not require rendering:
+  - level progression decisions
+  - spawn queue / virtual spawn behavior
+  - other pure utility logic that affects gameplay correctness
+- Keep rendering and screen-transition behavior out of unit tests unless a concrete regression justifies deeper coverage.
 
-## Files Likely To Change
+## Likely Files To Change
 
-- `tools/src/main/java/com/dalesmithwebdev/galaxia/tools/service/LevelService.java`
 - `core/src/main/java/com/dalesmithwebdev/galaxia/level/LevelData.java`
 - `core/src/main/java/com/dalesmithwebdev/galaxia/level/LevelObject.java`
 - `core/src/main/java/com/dalesmithwebdev/galaxia/services/LevelLoaderService.java`
-- `README.md`
-- `CLAUDE.md`
+- `core/src/test/java/...`
+- `tools/src/test/java/...`
 - `docs/clarification.md`
 - `docs/testing-gaps.md`
 
@@ -56,4 +51,4 @@ Start with the smallest changes that remove current friction:
 
 - Should runtime support stay on the current reduced JSON contract, or should it grow to match the editor schema now?
 - Should `tools:run` save directly into `assets/levels/` or into a configurable export directory?
-- Is the immediate milestone portability, runtime compatibility, or editor parity?
+- Is the immediate milestone runtime compatibility, editor parity, or broader gameplay reliability?

@@ -7,7 +7,7 @@
 - JSON files under `assets/levels/` are the long-term content source of truth for designed encounters.
 - Existing `claudedocs/` files are historical implementation notes, not the active planning system.
 - Short-term work should prioritize stabilizing the current game and content pipeline over adding large new feature areas.
-- The first implementation batch is portability, JSON contract coverage, and manual smoke checks rather than new gameplay.
+- The first implementation batch is complete: editor storage is portable, JUnit 5 is wired in, and baseline editor/runtime contract tests exist.
 
 ## Decisions That Materially Affect Scope Or Architecture
 
@@ -25,12 +25,12 @@
 ### Tooling And Portability
 
 - Decide whether the editor must be portable across machines immediately.
-- If yes, replace the hard-coded absolute levels path in `LevelService` with a project-relative strategy before taking more editor dependencies.
+- Confirm the new project-relative path resolution works reliably under normal `tools:run` usage and any packaged/distributed workflows.
 
 ### Quality Bar
 
 - Decide the minimum automated verification target for this repository:
-  - Data/serialization tests only
+  - Baseline data/serialization tests plus manual smoke checks
   - Headless gameplay/service tests where practical
   - Editor service tests plus manual UI smoke checks
 

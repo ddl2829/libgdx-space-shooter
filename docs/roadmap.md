@@ -4,8 +4,8 @@
 
 ### 1. Stabilize The Level Data Pipeline
 
-- Make editor save/load paths project-relative and portable
-- Lock the current runtime JSON contract against representative authored levels
+- Keep the now-portable editor save/load path stable across machines and launch contexts
+- Decide whether the current reduced runtime JSON contract remains intentional
 - Verify the runtime can safely consume authored levels already present in `assets/levels/`
 - Decide whether timed events and boss metadata are runtime-supported or editor-only
 
@@ -17,8 +17,8 @@
 
 ### 3. Establish A Minimum Verification Layer
 
-- Add a first wave of automated tests around pure Java/service/serialization code
-- Document manual smoke flows for gameplay and editor workflows
+- Extend the initial automated tests into more runtime service coverage
+- Document and run manual smoke flows for gameplay and editor workflows
 - Keep graphical behavior out of the first automated batch unless a concrete need appears
 
 ## Post-MVP / V1
@@ -45,8 +45,8 @@
 
 ### Portability Problems In Tooling
 
-- Risk: hard-coded local paths break editor usage on other machines
-- Mitigation: move to project-relative paths or configurable storage immediately
+- Risk: editor path handling may still behave differently under some launch contexts or packaging modes
+- Mitigation: keep path resolution project-relative/configurable and verify it in normal workflows
 
 ### Manual-Only Verification
 
