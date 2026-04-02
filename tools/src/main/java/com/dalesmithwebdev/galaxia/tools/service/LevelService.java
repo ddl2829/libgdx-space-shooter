@@ -12,20 +12,24 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
  * Service for managing level persistence and loading
  */
 public class LevelService {
-    private static final String LEVELS_DIR = "/Users/dale/games/galaxia/assets/levels";
     private final Json json;
     private final Path levelsPath;
 
     public LevelService() {
+        this(resolveDefaultLevelsPath());
+    }
+
+    public LevelService(Path levelsPath) {
         this.json = new Json();
         this.json.setOutputType(JsonWriter.OutputType.json);
-        this.levelsPath = Paths.get(LEVELS_DIR);
+        this.levelsPath = Objects.requireNonNull(levelsPath, "levelsPath").toAbsolutePath().normalize();
 
         // Ensure levels directory exists
         try {
@@ -35,6 +39,19 @@ public class LevelService {
         }
 
         System.out.println("Level service initialized. Saving levels to: " + levelsPath.toAbsolutePath());
+    }
+
+    private static Path resolveDefaultLevelsPath() {
+        Path cwd = Paths.get("").toAbsolutePath().normalize();
+
+        for (Path current = cwd; current != null; current = current.getParent()) {
+            Path candidate = current.resolve("assets").resolve("levels");
+            if (Files.isDirectory(candidate)) {
+                return candidate;
+            }
+        }
+
+        return cwd.resolve("assets").resolve("levels");
     }
 
     /**
